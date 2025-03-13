@@ -5,7 +5,6 @@ class AuthMiddleware {
     public static function init() {
         $config = require_once __DIR__ . "/../../config.php";
         self::$secret_key = $config["SECRET_KEY"];
-        var_dump(self::$secret_key);
     }
 
     // Middleware para proteger APIs JSON

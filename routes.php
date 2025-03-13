@@ -14,8 +14,6 @@ $router->addRoute("POST", "/login", "AuthController", "login");
 
 $router->addRoute("GET", "/profile", "UsuarioController", "getProfile");
 
-var_dump($_SERVER["REQUEST_URI"]);
-
 $uri = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 $router->dispatch($_SERVER["REQUEST_METHOD"], $uri);
 ?>

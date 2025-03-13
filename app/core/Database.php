@@ -17,6 +17,7 @@ class Database {
 
         if ($this->conn->connect_error) {
             die(json_encode(["error" => "Error de conexión: " . $this->conn->connect_error]));
+            var_dump("No se conecto");
         }
     }
 
