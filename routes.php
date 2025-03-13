@@ -8,7 +8,7 @@ $host = "https://api-registro-faeaeyafg8fdfwdj.centralus-01.azurewebsites.net";
 
 $router = new Router;
 
-$router->addRoute("GET", `{$host}/users`, "UsuarioController", "getAllUsers");
+$router->addRoute("GET", `https://api-registro-faeaeyafg8fdfwdj.centralus-01.azurewebsites.net/users`, "UsuarioController", "getAllUsers");
 $router->addRoute("GET", `{$host}/users/{id}`, "UsuarioController", "getOneUser");
 $router->addRoute("POST", `{$host}/users`, "UsuarioController", "createUser");
 
