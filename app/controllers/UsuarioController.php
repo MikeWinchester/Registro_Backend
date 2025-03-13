@@ -13,7 +13,7 @@ class UsuarioController {
     }
 
     public function test() {
-        echo "AAAAAAAAAH";
+        echo $this->user->getAll();
     }
 
     // Obtener perfil del usuario autenticado
@@ -25,9 +25,8 @@ class UsuarioController {
 
     // Obtener todos los usuarios
     public function getAllUsers() {
-        echo "OOOOOOOH";
-
-        //echo json_encode(["message" => "Lista de usuarios", "data" => $this->user->getAll()]);
+        AuthMiddleware::authMiddleware(); // Solo usuarios autenticados pueden ver la lista
+        echo json_encode(["message" => "Lista de usuarios", "data" => $this->user->getAll()]);
     }
 
     // Obtener un usuario por ID
