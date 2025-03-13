@@ -7,8 +7,12 @@ class Router {
     }
 
     public function dispatch($method, $uri) {
+        $uri = parse_url($uri, PHP_URL_PATH); // Limpia parámetros GET
+
         foreach ($this->routes[$method] as $route => $handler) {
-            $pattern = preg_replace('/\{id\}/', '(\d+)', $route);
+            // Convierte {param} en regex para detectar variables dinámicas
+            $pattern = preg_replace('/\{(\w+)\}/', '([^/]+)', $route);
+
             if (preg_match("#^$pattern$#", $uri, $matches)) {
                 array_shift($matches);
                 $controller = new $handler["controller"]();
@@ -22,3 +26,4 @@ class Router {
     }
 }
 ?>
+
