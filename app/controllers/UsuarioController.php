@@ -12,6 +12,10 @@ class UsuarioController {
         header("Content-Type: application/json"); // Estandariza las respuestas como JSON
     }
 
+    public function test() {
+        var_dump("AAAAAAAAAH");
+    }
+
     // Obtener perfil del usuario autenticado
     public function getProfile() {
         $user = AuthMiddleware::authMiddleware(); // Verifica JWT
