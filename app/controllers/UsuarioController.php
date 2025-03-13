@@ -25,7 +25,6 @@ class UsuarioController {
 
     // Obtener todos los usuarios
     public function getAllUsers() {
-        AuthMiddleware::authMiddleware(); // Solo usuarios autenticados pueden ver la lista
         echo json_encode(["message" => "Lista de usuarios", "data" => $this->user->getAll()]);
     }
 
