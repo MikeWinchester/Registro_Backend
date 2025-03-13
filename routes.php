@@ -5,13 +5,16 @@ require_once __DIR__ . "/app/controllers/AuthController.php";
 
 $router = new Router;
 
-$router->addRoute("GET", `/users`, "UsuarioController", "getAllUsers");
-$router->addRoute("GET", `/users/{id}`, "UsuarioController", "getOneUser");
-$router->addRoute("POST", `/users`, "UsuarioController", "createUser");
+$router->addRoute("GET", "/users", "UsuarioController", "getAllUsers");
+$router->addRoute("GET", "/users/{id}", "UsuarioController", "getOneUser");
+$router->addRoute("POST", "/users", "UsuarioController", "createUser");
 
-$router->addRoute("POST", `/login`, "AuthController", "login");
+$router->addRoute("POST", "/login", "AuthController", "login");
 
-$router->addRoute("GET", `/profile`, "UsuarioController", "getProfile");
+$router->addRoute("GET", "/profile", "UsuarioController", "getProfile");
 
-$router->dispatch($_SERVER["REQUEST_METHOD"], explode("?", $_SERVER["REQUEST_URI"])[0]);
+var_dump($_SERVER["REQUEST_URI"]);
+
+$uri = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+$router->dispatch($_SERVER["REQUEST_METHOD"], $uri);
 ?>

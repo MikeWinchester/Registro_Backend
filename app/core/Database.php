@@ -12,6 +12,8 @@ class Database {
             $config["DB_NAME"]
         );
 
+        var_dump($config["DB_HOST"]);
+
         if ($this->conn->connect_error) {
             die(json_encode(["error" => "Error de conexión: " . $this->conn->connect_error]));
         }
