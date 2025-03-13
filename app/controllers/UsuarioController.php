@@ -13,7 +13,7 @@ class UsuarioController {
     }
 
     public function test() {
-        var_dump("AAAAAAAAAH");
+        echo "AAAAAAAAAH";
     }
 
     // Obtener perfil del usuario autenticado
