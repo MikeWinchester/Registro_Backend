@@ -13,7 +13,7 @@ class UsuarioController {
     }
 
     public function test() {
-        echo $this->user->getAll();
+        echo json_encode(["message" => "Lista de usuarios", "data" => $this->user->getAll()]);
     }
 
     // Obtener perfil del usuario autenticado
