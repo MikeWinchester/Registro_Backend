@@ -25,7 +25,9 @@ class UsuarioController {
 
     // Obtener todos los usuarios
     public function getAllUsers() {
-        echo json_encode(["message" => "Lista de usuarios", "data" => $this->user->getAll()]);
+        echo "OOOOOOOH";
+
+        //echo json_encode(["message" => "Lista de usuarios", "data" => $this->user->getAll()]);
     }
 
     // Obtener un usuario por ID
