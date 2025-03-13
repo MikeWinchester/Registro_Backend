@@ -1,4 +1,4 @@
 <?php
-require __DIR__ . "/routes.php";
-require __DIR__ . "/app/core/Cors.php";
+require_once __DIR__ . "/routes.php";
+require_once __DIR__ . "/app/core/Cors.php";
 ?>

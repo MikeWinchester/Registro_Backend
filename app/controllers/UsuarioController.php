@@ -16,6 +16,10 @@ class UsuarioController {
         echo json_encode(["message" => "Lista de usuarios", "data" => $this->user->getAll()]);
     }
 
+    public function lala() {
+        echo json_encode(["message" => "Lista de usuarios", "data" => $this->user->getAll()]);
+    }
+
     // Obtener perfil del usuario autenticado
     public function getProfile() {
         $user = AuthMiddleware::authMiddleware(); // Verifica JWT
