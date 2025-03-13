@@ -6,7 +6,6 @@ require_once __DIR__ . "/app/controllers/AuthController.php";
 $router = new Router;
 
 $router->addRoute("GET", "/", "UsuarioController", "test");
-$router->addRoute("GET", "/lala", "UsuarioController", "lala");
 
 $router->addRoute("GET", "/users", "UsuarioController", "getAllUsers");
 $router->addRoute("GET", "/users/{id}", "UsuarioController", "getOneUser");

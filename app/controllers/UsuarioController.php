@@ -13,10 +13,7 @@ class UsuarioController {
     }
 
     public function test() {
-        echo json_encode(["message" => "Lista de usuarios", "data" => $this->user->getAll()]);
-    }
-
-    public function lala() {
+        AuthMiddleware::authMiddleware(); // Solo usuarios autenticados pueden ver la lista
         echo json_encode(["message" => "Lista de usuarios", "data" => $this->user->getAll()]);
     }
 
