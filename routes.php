@@ -14,9 +14,5 @@ $router->addRoute("POST", "/login", "AuthController", "login");
 
 $router->addRoute("GET", "/profile", "UsuarioController", "getProfile");
 
-$uri = $_SERVER["REQUEST_URI"] ?? "/";
-$uri = strtok($uri, "?"); // Elimina parámetros GET
-
-$router->dispatch($_SERVER["REQUEST_METHOD"], $uri);
-
+$router->dispatch($_SERVER["REQUEST_METHOD"], $_SERVER["REQUEST_URI"]);
 ?>
