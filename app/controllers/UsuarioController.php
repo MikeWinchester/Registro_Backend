@@ -12,11 +12,6 @@ class UsuarioController {
         header("Content-Type: application/json"); // Estandariza las respuestas como JSON
     }
 
-    public function test() {
-        AuthMiddleware::authMiddleware(); // Solo usuarios autenticados pueden ver la lista
-        echo json_encode(["message" => "Lista de usuarios", "data" => $this->user->getAll()]);
-    }
-
     // Obtener perfil del usuario autenticado
     public function getProfile() {
         $user = AuthMiddleware::authMiddleware(); // Verifica JWT
