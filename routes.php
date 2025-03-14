@@ -5,15 +5,16 @@ require_once __DIR__ . "/app/controllers/AuthController.php";
 
 $router = new Router;
 
-$router->addRoute("GET", "/", "UsuarioController", "test");
+// Las rutas ahora son relativas, por ejemplo, "users" en vez de "/users"
+$router->addRoute("GET", "usuarios", "UsuarioController", "test");
 
-$router->addRoute("GET", "/users", "UsuarioController", "getAllUsers");
-$router->addRoute("GET", "/users/{id}", "UsuarioController", "getOneUser");
-$router->addRoute("POST", "/users", "UsuarioController", "createUser");
+$router->addRoute("GET", "users", "UsuarioController", "getAllUsers");
+$router->addRoute("GET", "users/{id}", "UsuarioController", "getOneUser");
+$router->addRoute("POST", "users", "UsuarioController", "createUser");
 
-$router->addRoute("POST", "/login", "AuthController", "login");
+$router->addRoute("POST", "login", "AuthController", "login");
 
-$router->addRoute("GET", "/profile", "UsuarioController", "getProfile");
+$router->addRoute("GET", "profile", "UsuarioController", "getProfile");
 
 $router->dispatch($_SERVER["REQUEST_METHOD"], $_SERVER["REQUEST_URI"]);
 ?>
