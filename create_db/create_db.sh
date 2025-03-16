@@ -3,7 +3,7 @@
 # Configuración de variables
 DB_NAME="bd_registro"
 DB_USER="winchester"
-DB_HOST="bd-registro.mysql.database.azure.com"
+DB_HOST="bd-registro-unah.mysql.database.azure.com"
 DB_PORT="3306"
 SQL_FILE="database.sql"
 

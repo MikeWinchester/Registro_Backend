@@ -40,7 +40,7 @@ class UsuarioController {
 
     public function createUser() {
         $data = json_decode(file_get_contents("php://input"), true);
-        if (!isset($data["NombreCompleto"]) || !isset($data["Identidad"]) || !isset($data["CorreoPersonal"]) ||
+        if (!isset($data["NombreCompleto"]) || !isset($data["Identidad"]) || !isset($data["Correo"]) ||
             !isset($data["Pass"]) || !isset($data["Rol"]) || !isset($data["NumeroCuenta"])) {
             http_response_code(400);
             echo json_encode(["error" => "Faltan datos requeridos"]);

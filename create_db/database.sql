@@ -1,17 +1,14 @@
-DROP DATABASE IF EXISTS BD_UNI;
-CREATE DATABASE BD_UNI;
-USE BD_UNI;
-
 -- Tabla Usuario
 CREATE TABLE Usuario (
     UsuarioID SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     NombreCompleto VARCHAR(50) NOT NULL,
     Identidad CHAR(13) UNIQUE NOT NULL,
     Correo VARCHAR(100) UNIQUE NOT NULL,
-    Pass VARCHAR(50) NOT NULL,
+    Pass VARCHAR(100) NOT NULL,
     Rol ENUM('Estudiante', 'Docente') NOT NULL,
+    NumeroCuenta CHAR(11) UNIQUE NOT NULL,
     Telefono CHAR(8),
-    Es_Revisor TINYINT(1) NOT NULL,
+    Es_Revisor TINYINT(1) NOT NULL DEFAULT 0,
     INDEX idx_usuario_correo (Correo)
 );
 
@@ -143,70 +140,3 @@ CREATE TABLE Notas (
     FOREIGN KEY (SeccionID) REFERENCES Seccion(SeccionID)
 );
 
--- Inserts para Usuario
-INSERT INTO Usuario (NombreCompleto, Identidad, Correo, Pass,Es_Revisor, Telefono) VALUES
-('Juan Pérez', '0801199901234', 'juan.perez@gmail.com', 'clave123',1, '98765432'),
-('María López', '0802199505678', 'maria.lopez@gmail.com', 'pass456',1, '99887766');
-
--- Inserts para Centro Regional
-INSERT INTO CentroRegional (NombreCentro, Ubicacion, Telefono, Correo) VALUES
-('Centro Regional Tegucigalpa', 'Tegucigalpa, Honduras', '22334455', 'info@uniteg.hn');
-
--- Inserts para Facultad
--- Inserts para Facultad
-INSERT INTO Facultad (NombreFacultad, Decano) VALUES
-('Facultad de Ingeniería', 2),
-('Facultad de Ciencias Económicas', NULL),
-('Facultad de Ciencias de la Salud', NULL),
-('Facultad de Ciencias Sociales', NULL),
-('Facultad de Humanidades y Artes', NULL),
-('Facultad de Ciencias Jurídicas', NULL),
-('Facultad de Ciencias Exactas y Naturales', NULL);
-
--- Inserts para Carrera
-INSERT INTO Carrera (NombreCarrera, Duracion, Nivel, FacultadID, CentroRegionalID) VALUES
--- Ingeniería
-('Ingeniería en Sistemas', 5, 'Ingeniería', 1, 1),
-('Ingeniería Civil', 5, 'Ingeniería', 1, 1),
-('Ingeniería Industrial', 5, 'Ingeniería', 1, 1),
-('Ingeniería Mecánica', 5, 'Ingeniería', 1, 1),
-('Ingeniería Eléctrica', 5, 'Ingeniería', 1, 1),
-('Ingeniería Electrónica', 5, 'Ingeniería', 1, 1),
-('Administración de Empresas', 4, 'Licenciatura', 2, 1),
-('Contaduría Pública', 4, 'Licenciatura', 2, 1),
-('Economía', 4, 'Licenciatura', 2, 1),
-('Medicina', 7, 'Licenciatura', 3, 1),
-('Odontología', 5, 'Licenciatura', 3, 1),
-('Enfermería', 5, 'Licenciatura', 3, 1),
-('Psicología', 4, 'Licenciatura', 4, 1),
-('Trabajo Social', 4, 'Licenciatura', 4, 1),
-('Ciencias de la Educación', 4, 'Licenciatura', 5, 1),
-('Artes Plásticas', 4, 'Licenciatura', 5, 1),
-('Derecho', 5, 'Licenciatura', 6, 1),
-('Matemáticas', 4, 'Licenciatura', 7, 1),
-('Biología', 4, 'Licenciatura', 7, 1),
-('Física', 4, 'Licenciatura', 7, 1);
-
--- Inserts para Estudiante
-INSERT INTO Estudiante (UsuarioID, CarreraID, CentroRegionalID, CorreoInstitucional, NumeroCuenta) VALUES
-(1, 1, 1, 'juan.perez@uniteg.hn', '2023123456'),
-(2, 2, 1, 'maria.lopez@uniteg.hn', '2023127890');
-
--- Inserts para Docente
-INSERT INTO Docente (UsuarioID, NumeroCuenta, CentroRegionalID) VALUES
-(2, 'DOC-456789', 1);
-
--- Inserts para Sección
-INSERT INTO Seccion (Asignatura, DocenteID, PeriodoAcademico, Aula, Horario, CupoMaximo) VALUES
-('Programación I', 1, '2024-1', 'A101', '08:00-10:00', 30),
-('Contabilidad ', 1, '2024-1', 'B201', '10:00-12:00', 25);
-
--- Inserts para Matrícula
-INSERT INTO Matricula (EstudianteID, SeccionID, FechaInscripcion, EstadoMatricula) VALUES
-(1, 1, '2024-01-15', 'Activo'),
-(2, 2, '2024-01-16', 'Activo');
-
--- Inserts para Notas
-INSERT INTO Notas (EstudianteID, SeccionID, Calificacion) VALUES
-(1, 1, 89.50),
-(2, 2, 92.75);
