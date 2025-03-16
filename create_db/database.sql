@@ -185,7 +185,7 @@ INSERT INTO Carrera (NombreCarrera, Duracion, Nivel, FacultadID, CentroRegionalI
 ('Derecho', 5, 'Licenciatura', 6, 1),
 ('Matemáticas', 4, 'Licenciatura', 7, 1),
 ('Biología', 4, 'Licenciatura', 7, 1),
-('Física', 4, 'Licenciatura', 7, 1).
+('Física', 4, 'Licenciatura', 7, 1);
 
 -- Inserts para Estudiante
 INSERT INTO Estudiante (UsuarioID, CarreraID, CentroRegionalID, CorreoInstitucional, NumeroCuenta) VALUES
