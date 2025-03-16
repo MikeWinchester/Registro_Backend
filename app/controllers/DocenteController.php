@@ -6,13 +6,18 @@ require_once __DIR__ . "/../core/Cors.php";
 
 class DocenteController {
     private $docente;
+    private $ruta;
 
     public function __construct() {
         $this->docente = new Docente();
         header("Content-Type: application/json"); // Estandariza las respuestas como JSON
     }
 
-    //funcion para crear docente
+    /**
+     * Funcion para crear al docente y a su usuario
+     *
+     * @version 0.1.0
+     */
     public function createDocente() {
         $data = json_decode(file_get_contents("php://input"), true);
     
@@ -72,11 +77,116 @@ class DocenteController {
         }
     }
     
-    public function getDocente($id){
+    /**
+     * funcion para obtener al docente
+     *
+     * @param $idDocente id del docente seleccionado
+     * @version 0.1.0
+     */
+    public function getDocente($idDocente){
         
+        AuthMiddleware::authMiddleware();
+
+        $sql = "SELECT usr.NombreCompleto, usr.Correo, cr.NombreCentro FROM Docente AS doc
+        INNER JOIN Usuario AS usr
+        ON doc.UsuarioID = usr.UsuarioID
+        INNER JOIN CentroRegional AS cr
+        ON doc.CentroRegionalID = cr.CentroRegionalID
+        WHERE DocenteID = ?";
+
+        $result = $this->docente->customQuery($sql, [$idDocente]);
+
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "Docente obtenido", "data" => $result]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "Docente no obtenido"]);
+        }
     }
 
+    /**
+     * Obtiene todos los docentes
+     *
+     * @version 0.1.0
+     */
+    public function getAllDocentes(){
+        AuthMiddleware::authMiddleware();
 
+        $sql = "SELECT usr.NombreCompleto, doc.NumeroCuenta, cr.NombreCentro FROM Docente AS doc
+        INNER JOIN Usuario AS usr
+        ON doc.UsuarioID = usr.UsuarioID
+        INNER JOIN CentroRegional AS cr
+        ON doc.CentroRegionalID = cr.CentroRegionalID";
+
+        $result = $this->docente->customQuery($sql);
+
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "Docentes obtenidos", "data" => $result]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "Docentes no obtenidos"]);
+        }
+    }
+
+    /**
+     * Guardar video subido de la seccion correspondiente
+     *
+     * @param $idSeccion id de la seccion
+     * @param $data json donde ira el archivo
+     *
+     * @version 0.1.0
+     */
+    //Problema no soporta video grandes
+    public function uploadVideo() {
+
+        if (!isset($_POST['idSeccion']) || !isset($_FILES['video'])) {
+            echo json_encode(["error" => "Faltan datos (idSeccion o video)"]);
+            return;
+        }
+    
+        $idSeccion = $_POST['idSeccion']; 
+        $video = $_FILES['video'];
+        $ruta = __DIR__ . "/../../Videos/$idSeccion";
+    
+        $this->checkFolder($idSeccion,$ruta);
+    
+        if ($video['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(["error" => "Error en la subida del archivo", "code" => $video['error']]);
+            return;
+        }
+    
+        $nombreArchivo = basename($video['name']); 
+        $destino = $ruta . "/" . $nombreArchivo; 
+    
+        if (move_uploaded_file($video['tmp_name'], $destino)) {
+            echo json_encode(["mensaje" => "Video subido con éxito en '$ruta'."]);
+        } else {
+            echo json_encode(["error" => "Error al mover el archivo."]);
+        }
+
+    }
+
+    /**
+     * revisa la existencia de la carpeta
+     *
+     * @param $idSeccion id de la seccion
+     * @param $ruta ruta de la capeta
+     * 
+     * @version 0.1.0
+     */
+    private function checkFolder($idSeccion, $ruta){
+        if (!file_exists($ruta)) {
+            if (mkdir($ruta, 0777, true)) {
+                echo "Carpeta '$idSeccion' creada con éxito.";
+            } else {
+                echo "Error al crear la carpeta.";
+            }
+        } else {
+            echo "La carpeta '$idSeccion' ya existe.";
+        }
+    }
 }
 
 ?>
