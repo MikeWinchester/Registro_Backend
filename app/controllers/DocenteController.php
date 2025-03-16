@@ -22,7 +22,7 @@ class DocenteController {
         $data = json_decode(file_get_contents("php://input"), true);
     
         if (!isset($data["NombreCompleto"]) || !isset($data["Identidad"]) || !isset($data["Correo"]) ||
-            !isset($data["Pass"]) || !isset($data["Rol"]) || !isset($data['ES_Revisor']) || !isset($data["NumeroCuenta"]) || 
+            !isset($data["Pass"]) || !isset($data['ES_Revisor']) || !isset($data["NumeroCuenta"]) || 
             !isset($data["CentroRegionalID"])) {
             http_response_code(400);
             echo json_encode(["error" => "Faltan datos requeridos"]);
@@ -38,7 +38,7 @@ class DocenteController {
             "Identidad" => $data["Identidad"],
             "Correo" => $data["Correo"],
             "Pass" => $data["Pass"],
-            "Rol" => $data["Rol"],
+            "Rol" => "Docente",
             "Telefono" => isset($data["Telefono"]) ? $data["Telefono"] : null,
             "ES_Revisor" => $data["ES_Revisor"]
         ];

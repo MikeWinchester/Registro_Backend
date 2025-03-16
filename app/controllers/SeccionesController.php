@@ -76,7 +76,7 @@ class SeccionesController {
      */
     public function getSeccionAsig(){
 
-        #AuthMiddleware::authMiddleware();
+        AuthMiddleware::authMiddleware();
 
         $data = json_decode(file_get_contents("php://input"), true);
 
