@@ -72,7 +72,10 @@ class DocenteController {
         }
     }
     
-    
+    public function getDocente($id){
+        
+    }
+
 
 }
 

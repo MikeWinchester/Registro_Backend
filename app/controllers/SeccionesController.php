@@ -12,10 +12,16 @@ class SeccionesController {
         header("Content-Type: application/json"); // Estandariza las respuestas como JSON
     }
 
-    //Obtener Secciones por idDocente
+    /**
+     * Funcion para obtener las secciones de los docentes
+     *
+     * @param $idDocente id del docente que se quiera obtener las secciones
+     *
+     * @version 0.1.0
+     */
     public function getSecciones($idDocente){
 
-        #AuthMiddleware::authMiddleware();
+        AuthMiddleware::authMiddleware();
 
         $sql = "SELECT * FROM Seccion WHERE DocenteID = ? AND PeriodoAcademico = ?";
 
@@ -31,7 +37,13 @@ class SeccionesController {
 
     }
 
-    //obtener el periodo academico actual
+    /**
+     * Funcion para obtener el periodo acadmico actual
+     *
+     * @return "anio-trimestre" ejemplo: "2021-1"
+     * 
+     * @version 0.1.0
+     */
     private function getPeriodo(){
 
         $year = date("Y");
