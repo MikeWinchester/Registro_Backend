@@ -100,5 +100,34 @@ class Model {
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
+
+    // Ejecutar consultas personalizadas para insert con parámetros
+    public function customQueryInsert($sql, $params = []) {
+        $stmt = $this->conn->prepare($sql);
+    
+        if (!$stmt) {
+            error_log("Error en la consulta SQL: " . $this->conn->error);
+            return false;
+        }
+    
+        if (!empty($params)) {
+            $types = str_repeat("s", count($params));
+            $stmt->bind_param($types, ...$params);
+        }
+    
+        if (!$stmt->execute()) {
+            error_log("Error al ejecutar la consulta: " . $stmt->error);
+            return false;
+        }
+    
+        $result = $stmt->get_result();
+    
+        if (!$result) {
+            return false;
+        }
+    
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+    
 }
 ?>
