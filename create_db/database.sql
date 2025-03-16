@@ -144,9 +144,9 @@ CREATE TABLE Notas (
 );
 
 -- Inserts para Usuario
-INSERT INTO Usuario (NombreCompleto, Identidad, Correo, Pass, Telefono) VALUES
-('Juan Pérez', '0801199901234', 'juan.perez@gmail.com', 'clave123', '98765432'),
-('María López', '0802199505678', 'maria.lopez@gmail.com', 'pass456', '99887766');
+INSERT INTO Usuario (NombreCompleto, Identidad, Correo, Pass,Es_Revisor, Telefono) VALUES
+('Juan Pérez', '0801199901234', 'juan.perez@gmail.com', 'clave123',1, '98765432'),
+('María López', '0802199505678', 'maria.lopez@gmail.com', 'pass456',1, '99887766');
 
 -- Inserts para Centro Regional
 INSERT INTO CentroRegional (NombreCentro, Ubicacion, Telefono, Correo) VALUES
