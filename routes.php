@@ -29,5 +29,7 @@ $router->addRoute("GET", "/matricula/estudiantes/{id}", "MatriculaController", "
 
 $router->addRoute("POST", "/admisiones", "AdmisionController", "createAdmision");
 
+$router->addRoute("POST", "/notas", "NotasController", "asigNotas");
+
 $router->dispatch($_SERVER["REQUEST_METHOD"], $_SERVER["REQUEST_URI"]);
 ?>
