@@ -5,11 +5,6 @@ require_once __DIR__ . "/../core/Cors.php";
 
 $router = new Router;
 
-echo json_encode([
-    'status' => 'success',
-    'message' => 'Tu madre tiene una polla, que ya la quisiera yo'
-]);
-
 class AdmisionController {
     private $adm;
 
