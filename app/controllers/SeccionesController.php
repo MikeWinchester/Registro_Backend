@@ -23,7 +23,10 @@ class SeccionesController {
 
         AuthMiddleware::authMiddleware();
 
-        $sql = "SELECT * FROM Seccion WHERE DocenteID = ? AND PeriodoAcademico = ?";
+        $sql = "SELECT Asignatura ,PeriodoAcademico, Aula, Horario, CupoMaximo
+        FROM Seccion 
+        WHERE DocenteID = ?
+        AND PeriodoAcademico = ?";
 
         $result = $this->seccion->customQuery($sql, [$idDocente, $this->getPeriodo()]);
 
@@ -82,7 +85,8 @@ class SeccionesController {
 
         $sql = "SELECT sec.Asignatura, sec.PeriodoAcademico, sec.Aula, sec.Horario, sec.CupoMaximo
         FROM Seccion as sec
-        WHERE TRIM(Asignatura) = ? AND PeriodoAcademico = ?
+        WHERE TRIM(Asignatura) = ?
+        AND PeriodoAcademico = ?
         ";
 
         $result = $this->seccion->customQuery($sql, [$data['Asignatura'], $this->getPeriodo()]);
@@ -96,7 +100,28 @@ class SeccionesController {
         }
     }
 
-     /**
+    public function getSeccionCount($idDocente){
+
+        AuthMiddleware::authMiddleware();
+
+        $sql = "SELECT count(1) as cantidad
+        FROM Seccion
+        WHERE DocenteID = ?
+        AND PeriodoAcademico = ?
+        ";
+
+        $result = $this->seccion->customQuery($sql, [$idDocente, $this->getPeriodo()]);
+
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "Secciones encontradas", "data" => $result]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "Secciones no disponibles"]);
+        }
+    }
+
+    /**
      * Funcion para obtener el periodo acadmico actual
      *
      * @return "anio-trimestre" ejemplo: "2021-1"

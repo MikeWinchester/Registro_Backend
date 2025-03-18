@@ -21,9 +21,10 @@ $router->addRoute("GET", "/docentes/{id}", "DocenteController", "getDocente");
 $router->addRoute("GET", "/docentes", "DocenteController", "getAllDocentes");
 $router->addRoute("POST", "/docentes/seccion", "DocenteController", "uploadVideo");
 
-$router->addRoute("GET", "/secciones/docente/{id}", "SeccionesController", "getSecciones");
-$router->addRoute("GET", "/secciones/{id}", "SeccionesController", "getSeccion");
+$router->addRoute("GET", "/secciones/docente/{idDocente}", "SeccionesController", "getSecciones");
+$router->addRoute("GET", "/secciones/{idSeccion}", "SeccionesController", "getSeccion");
 $router->addRoute("GET", "/secciones/matricula/", "SeccionesController", "getSeccionAsig");
+$router->addRoute("GET", "/secciones/count/{idDocente}", "SeccionesController", "getSeccionCount");
 
 $router->addRoute("GET", "/matricula/estudiantes/{id}", "MatriculaController", "getEstudiantes");
 
