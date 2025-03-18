@@ -19,33 +19,38 @@ class AdmisionController {
         error_log(print_r($data, true)); // Esto imprimirá los datos en el archivo de log de PHP
 
         // Validar los datos requeridos
-        if (empty($data["NombreCompleto"]) || empty($data["Identidad"]) || empty($data["Correo"]) ||
-            empty($data["Pass"]) || !isset($data["Es_Revisor"]) || empty($data["NumeroCuenta"])) {
+        if (empty($data["Primer_nombre"]) || empty($data["Segundo_nombre"]) || empty($data["Primer_apellido"]) ||
+            empty($data["Segundo_apellido"]) || empty($data["Correo"]) || empty($data["Numero_identidad"]) ||
+            empty($data["Numero_telefono"]) || !isset($data["CertificadoSecundaria"])) {
             // Si falta cualquier dato necesario, respondemos con código 444
             http_response_code(444);
             echo json_encode(["error" => "Faltan datos requeridos"]);
             return;
         }
 
-        // Hash de la contraseña para almacenamiento seguro
-        $data["Pass"] = password_hash($data["Pass"], PASSWORD_DEFAULT);
+        // Asignar los valores predeterminados si no se proporcionan
+        //$CarreraID = isset($data["CarreraID"]) ? $data["CarreraID"] : 21;
+        //$CarreraAlternativaID = isset($data["CarreraAlternativaID"]) ? $data["CarreraAlternativaID"] : 38;
+        //$CentroRegionalID = isset($data["CentroRegionalID"]) ? $data["CentroRegionalID"] : 1;
 
         // Preparar los datos para la inserción
         $data_usr = [
-            "NombreCompleto" => $data["NombreCompleto"],
-            "Identidad" => $data["Identidad"],
+            "Primer_nombre" => $data["Primer_nombre"],
+            "Segundo_nombre" => $data["Segundo_nombre"],
+            "Primer_apellido" => $data["Primer_apellido"],
+            "Pegundo_apellido" => $data["Segundo_apellido"],
             "Correo" => $data["Correo"],
-            "Pass" => $data["Pass"],
-            "Rol" => isset($data["Rol"]) ? $data["Rol"] : 'Estudiante',  // Asegurarse de que siempre haya un rol
-            "NumeroCuenta" => $data["NumeroCuenta"],
-            "Telefono" => isset($data["Telefono"]) ? $data["Telefono"] : null,
-            "Es_Revisor" => $data["Es_Revisor"], // Asegurarse de que "Es_Revisor" esté correctamente asignado
+            "Numero_identidad" => $data["Numero_identidad"],
+            "Numero_telefono" => $data["Numero_telefono"],
+            "CarreraID" => 21,
+            "CarreraAlternativaID" => 39,
+            "CertificadoSecundaria" => isset($data["CertificadoSecundaria"]) ? $data["CertificadoSecundaria"] : null,
         ];
 
         // Llamada al modelo para insertar en la base de datos
         $result = $this->adm->customQueryInsert(
-            "INSERT INTO usuario (NombreCompleto, Identidad, Correo, Pass, Rol, NumeroCuenta, Telefono, ES_Revisor)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO admision (Primer_nombre, Segundo_nombre, Primer_apellido, Pegundo_apellido, Correo, Numero_identidad, Numero_telefono, CarreraID, CarreraAlternativaID, CertificadoSecundaria)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             array_values($data_usr)
         );
 
