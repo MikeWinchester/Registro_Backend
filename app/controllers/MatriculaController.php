@@ -25,7 +25,8 @@ class MatriculaController{
 
         #AuthMiddleware::authMiddleware();
 
-        $sql = "SELECT est.EstudianteID, usr.NombreCompleto, est.NumeroCuenta FROM Matricula as mat
+        $sql = "SELECT est.EstudianteID, usr.NombreCompleto, est.NumeroCuenta, est.CorreoInstitucional 
+        FROM Matricula as mat
         left join Estudiante as est
         on mat.EstudianteID = est.EstudianteID
         left join Usuario as usr
