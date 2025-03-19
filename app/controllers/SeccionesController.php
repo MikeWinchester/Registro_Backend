@@ -13,6 +13,35 @@ class SeccionesController {
     }
 
     /**
+     * Funcion para obtener las secciones de los docentes actuales
+     *
+     * @param $idDocente id del docente que se quiera obtener las secciones
+     *
+     * @version 0.1.0
+     */
+    public function getSeccionesActuales($idDocente){
+
+        #AuthMiddleware::authMiddleware();
+
+        $sql = "SELECT SeccionID, Asignatura ,PeriodoAcademico, Aula, Horario, CupoMaximo
+        FROM Seccion
+        WHERE DocenteID = ?
+        AND PeriodoAcademico = ?
+        ";
+
+        $result = $this->seccion->customQuery($sql, [$idDocente, $this->getPeriodo()]);
+
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "Secciones encontradas", "data" => $result]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "Secciones no disponibles"]);
+        }
+
+    }
+
+     /**
      * Funcion para obtener las secciones de los docentes
      *
      * @param $idDocente id del docente que se quiera obtener las secciones
@@ -21,14 +50,14 @@ class SeccionesController {
      */
     public function getSecciones($idDocente){
 
-        AuthMiddleware::authMiddleware();
+        #AuthMiddleware::authMiddleware();
 
-        $sql = "SELECT Asignatura ,PeriodoAcademico, Aula, Horario, CupoMaximo
-        FROM Seccion 
+        $sql = "SELECT SeccionID, Asignatura ,PeriodoAcademico, Aula, Horario, CupoMaximo
+        FROM Seccion
         WHERE DocenteID = ?
-        AND PeriodoAcademico = ?";
+        ";
 
-        $result = $this->seccion->customQuery($sql, [$idDocente, $this->getPeriodo()]);
+        $result = $this->seccion->customQuery($sql, [$idDocente]);
 
         if ($result) {
             http_response_code(200);
@@ -102,7 +131,7 @@ class SeccionesController {
 
     public function getSeccionCount($idDocente){
 
-        AuthMiddleware::authMiddleware();
+        #AuthMiddleware::authMiddleware();
 
         $sql = "SELECT count(1) as cantidad
         FROM Seccion

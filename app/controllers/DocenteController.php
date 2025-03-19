@@ -85,9 +85,10 @@ class DocenteController {
      */
     public function getDocente($idDocente){
         
-        AuthMiddleware::authMiddleware();
+        #AuthMiddleware::authMiddleware();
 
-        $sql = "SELECT usr.NombreCompleto, usr.Correo, cr.NombreCentro FROM Docente AS doc
+        $sql = "SELECT usr.NombreCompleto, usr.Correo, doc.NumeroCuenta, cr.NombreCentro 
+        FROM Docente AS doc
         INNER JOIN Usuario AS usr
         ON doc.UsuarioID = usr.UsuarioID
         INNER JOIN CentroRegional AS cr

@@ -13,25 +13,48 @@ class NotasController{
         $this->notas = new Notas();
     }
 
-    public function asigNotas(){
+    /**
+     * Asigna notas al estudiantes
+     *
+     * @version 0.1.0
+     */
+    public function asigNotas() {
         $data = json_decode(file_get_contents("php://input"), true);
-
-        if(!isset($data["EstudianteID"]) || !isset($data["SeccionID"]) || !isset($data["Calificacion"])){
+    
+        if (!$data) {
             http_response_code(400);
-            echo json_encode(["error" => "Faltan datos requeridos"]);
+            echo json_encode(["error" => "Datos JSON inválidos"]);
             return;
         }
+        
+        foreach ($data as $key => $estudiante) {
+            if (!isset($estudiante["EstudianteId"]) || !isset($estudiante["SeccionId"]) || !isset($estudiante["Nota"])) {
+                http_response_code(400);
+                echo json_encode(["error" => "Faltan datos requeridos en $key"]);
+                return;
+            }
+    
+            
+            $notas = [
+                "EstudianteID" => $estudiante["EstudianteId"],
+                "SeccionID"    => $estudiante["SeccionId"],
+                "Calificacion" => $estudiante["Nota"]
+            ];
 
-        $result = $this->notas->create($data);
-
+            $result = $this->notas->create($notas);
+        }
+    
+        
+    
         if ($result) {
             http_response_code(200);
-            echo json_encode(["message" => "Nota Asignada", "data" => $result]);
+            echo json_encode(["message" => "Notas asignadas correctamente", "data" => $result]);
         } else {
-            http_response_code(404);
-            echo json_encode(["error" => "Notas no asignadas"]);
+            http_response_code(500);
+            echo json_encode(["error" => "No se pudieron asignar las notas"]);
         }
     }
+    
 
 
 }
