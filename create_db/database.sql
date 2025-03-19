@@ -224,4 +224,3 @@ CREATE TABLE Revisores (
 
 INSERT INTO Revisores (UsuarioID)
 SELECT UsuarioID FROM Usuario;
-ALTER TABLE Usuario DROP COLUMN Es_Revisor;
