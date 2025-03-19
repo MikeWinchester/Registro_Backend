@@ -12,7 +12,6 @@ CREATE TABLE Usuario (
     Rol ENUM('Estudiante', 'Docente') NOT NULL,
     NumeroCuenta VARCHAR(50) UNIQUE NOT NULL,
     Telefono CHAR(8),
-    Es_Revisor TINYINT(1) NOT NULL,
     INDEX idx_usuario_correo (Correo)
 );
 
@@ -217,3 +216,12 @@ ADD COLUMN CodigoEmpleado CHAR(10) UNIQUE NOT NULL AFTER NumeroCuenta;
 ALTER TABLE Docente 
 ADD COLUMN CarreraID TINYINT UNSIGNED NOT NULL AFTER CentroRegionalID, 
 ADD FOREIGN KEY (CarreraID) REFERENCES Carrera(CarreraID);
+
+CREATE TABLE Revisores (
+    UsuarioID SMALLINT UNSIGNED PRIMARY KEY,
+    FOREIGN KEY (UsuarioID) REFERENCES Usuario(UsuarioID) ON DELETE CASCADE
+);
+
+INSERT INTO Revisores (UsuarioID)
+SELECT UsuarioID FROM Usuario;
+ALTER TABLE Usuario DROP COLUMN Es_Revisor;
