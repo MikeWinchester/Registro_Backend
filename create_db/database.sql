@@ -52,11 +52,13 @@ CREATE TABLE Admision (
     Estado ENUM('Pendiente', 'Aprobada', 'Rechazada') NOT NULL,
     CarreraID TINYINT UNSIGNED NOT NULL,
     CarreraAlternativaID TINYINT UNSIGNED,
+    CentroRegionalID TINYINT UNSIGNED NOT NULL,
     CertificadoSecundaria TEXT,
     Observaciones TEXT,
     FOREIGN KEY (UsuarioID) REFERENCES Usuario(UsuarioID),
     FOREIGN KEY (CarreraID) REFERENCES Carrera(CarreraID),
     FOREIGN KEY (CarreraAlternativaID) REFERENCES Carrera(CarreraID)
+    FOREIGN KEY (CentroRegionalID) REFERENCES CentroRegional(CentroRegionalID)
 );
 
 -- Tabla Estudiante

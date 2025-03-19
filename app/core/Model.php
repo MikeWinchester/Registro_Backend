@@ -33,11 +33,16 @@ class Model {
         $sql = "INSERT INTO `$this->table` ($columns) VALUES ($placeholders)";
         
         $stmt = $this->conn->prepare($sql);
-        $types = str_repeat("s", count($fields));
+        $types = str_repeat("s", count($fields));  // Suponiendo que todos los campos son cadenas
         $stmt->bind_param($types, ...array_values($fields));
 
-        return $stmt->execute();
+        if ($stmt->execute()) {
+            // Retorna el ID del nuevo registro insertado
+            return $this->conn->insert_id;
+        }
+        return false;  // Si algo falla
     }
+
 
     public function update($id, $fields) {
 

@@ -1,8 +1,6 @@
 <?php
 require_once __DIR__ . "/../models/Usuario.php";
 require_once __DIR__ . "/../core/AuthMiddleware.php";
-require_once __DIR__ . "/../core/Cors.php";
-
 
 class UsuarioController {
     private $user;

@@ -3,64 +3,88 @@
 require_once __DIR__ . "/../models/Admisiones.php";
 require_once __DIR__ . "/../core/Cors.php"; 
 
-class AdmisionController {
-    private $adm;
+class AdmisionesController {
+    private $admision;
 
     public function __construct() {
-        $this->adm = new Admisiones();
+        $this->admision = new Admisiones();
         header("Content-Type: application/json"); // Estandariza las respuestas como JSON
     }
 
-    public function createAdmision() {
-        // Obtener los datos del cuerpo de la solicitud
-        $data = json_decode(file_get_contents("php://input"), true);
-
-        // Imprimir los datos recibidos para depuración
-        error_log(print_r($data, true)); // Esto imprimirá los datos en el archivo de log de PHP
-
-        // Validar los datos requeridos
-        if (empty($data["Primer_nombre"]) || empty($data["Segundo_nombre"]) || empty($data["Primer_apellido"]) ||
-            empty($data["Segundo_apellido"]) || empty($data["Correo"]) || empty($data["Numero_identidad"]) ||
-            empty($data["Numero_telefono"]) || !isset($data["CertificadoSecundaria"])) {
-            // Si falta cualquier dato necesario, respondemos con código 444
-            http_response_code(444);
-            echo json_encode(["error" => "Faltan datos requeridos"]);
+    public function createAdmission() {
+        // Verificación de campos obligatorios
+        if (!isset($_POST['primerNombre'], $_POST['segundoNombre'], $_POST['primerApellido'], $_POST['segundoApellido'], 
+                  $_POST['correo'], $_POST['identidad'], $_POST['telefono'], $_POST['carreraPrincipal'], 
+                  $_POST['carreraSecundaria'], $_POST['centroRegional']) || 
+            !isset($_FILES['certificado'])) {
+            echo json_encode(['error' => 'Todos los campos son obligatorios']);
             return;
         }
 
-        // Asignar los valores predeterminados si no se proporcionan
-        //$CarreraID = isset($data["CarreraID"]) ? $data["CarreraID"] : 21;
-        //$CarreraAlternativaID = isset($data["CarreraAlternativaID"]) ? $data["CarreraAlternativaID"] : 38;
-        //$CentroRegionalID = isset($data["CentroRegionalID"]) ? $data["CentroRegionalID"] : 1;
+        // Obtener los valores del formulario
+        $primerNombre = $_POST['primerNombre'];
+        $segundoNombre = $_POST['segundoNombre'];
+        $primerApellido = $_POST['primerApellido'];
+        $segundoApellido = $_POST['segundoApellido'];
+        $correo = $_POST['correo'];
+        $identidad = $_POST['identidad'];
+        $telefono = $_POST['telefono'];
+        $carreraPrincipal = $_POST['carreraPrincipal'];
+        $carreraSecundaria = $_POST['carreraSecundaria'];
+        $centroRegional = $_POST['centroRegional'];
 
-        // Preparar los datos para la inserción
-        $data_usr = [
-            "Primer_nombre" => $data["Primer_nombre"],
-            "Segundo_nombre" => $data["Segundo_nombre"],
-            "Primer_apellido" => $data["Primer_apellido"],
-            "Pegundo_apellido" => $data["Segundo_apellido"],
-            "Correo" => $data["Correo"],
-            "Numero_identidad" => $data["Numero_identidad"],
-            "Numero_telefono" => $data["Numero_telefono"],
-            "CarreraID" => 21,
-            "CarreraAlternativaID" => 39,
-            "CertificadoSecundaria" => isset($data["CertificadoSecundaria"]) ? $data["CertificadoSecundaria"] : null,
+        // Obtener el archivo de certificado
+        $certificado = $_FILES['certificado'];
+
+        // Definir la ruta de subida
+        $uploadDir = __DIR__ . "/../uploads/certificados";
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+
+        // Obtener la extensión del archivo
+        $fileExtension = pathinfo($certificado['name'], PATHINFO_EXTENSION);
+        $fileName = uniqid('certificado_') . '.' . $fileExtension;
+        $uploadPath = $uploadDir . '/' . $fileName;
+
+        // Mover el archivo a la carpeta de destino
+        if (!move_uploaded_file($certificado['tmp_name'], $uploadPath)) {
+            echo json_encode(['error' => 'Hubo un problema al subir el certificado']);
+            return;
+        }
+
+        // Crear un arreglo con los campos a insertar en la base de datos
+        $fields = [
+            'Primer_nombre' => $primerNombre,
+            'Segundo_nombre' => $segundoNombre,
+            'Primer_apellido' => $primerApellido,
+            'Pegundo_apellido' => $segundoApellido,
+            'Correo' => $correo,
+            'Numero_identidad' => $identidad,
+            'Numero_telefono' => $telefono,
+            'CarreraID' => $carreraPrincipal,
+            'CarreraAlternativaID' => $carreraSecundaria,
+            'CentroRegionalID' => $centroRegional,
+            'CertificadoSecundaria' => $fileName // Guardamos solo el nombre del archivo
         ];
 
-        // Llamada al modelo para insertar en la base de datos
-        $result = $this->adm->customQueryInsert(
-            "INSERT INTO admision (Primer_nombre, Segundo_nombre, Primer_apellido, Pegundo_apellido, Correo, Numero_identidad, Numero_telefono, CarreraID, CarreraAlternativaID, CertificadoSecundaria)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            array_values($data_usr)
-        );
+        // Instanciar el modelo y realizar la creación
+        $newAdmissionId = $this->admision->create($fields);
 
-        // Responder con éxito o error según el resultado
-        if ($result) {
-            http_response_code(201);
-            echo json_encode(["success" => "Admisión creada exitosamente"]);
+        if ($newAdmissionId) {
+            // Recuperar la admisión recién creada usando el ID
+            $newAdmission = $this->admision->getOne($newAdmissionId);
+            
+            // Responder con el registro recién creado
+            http_response_code(200);
+            echo json_encode([
+                'success' => 'Admisión creada correctamente',
+                'admision' => $newAdmission
+            ]);
         } else {
+            // En caso de error
             http_response_code(500);
-            echo json_encode(["error" => "Error al crear la admisión"]);
+            echo json_encode(['error' => 'Hubo un error al crear la admisión']);
         }
     }
 }
