@@ -1,11 +1,11 @@
 <?php
 require_once __DIR__ . "/app/controllers/UsuarioController.php";
 require_once __DIR__ . "/app/core/Router.php";
-require_once __DIR__ . "/app/controllers/AuthController.php";
 require_once __DIR__ . "/app/controllers/DocenteController.php";
 require_once __DIR__ . "/app/controllers/AdmisionesController.php";
 require_once __DIR__ . "/app/controllers/SeccionesController.php";
 require_once __DIR__ . "/app/controllers/MatriculaController.php";
+require_once __DIR__ . "/app/controllers/NotasController.php";
 
 $router = new Router;
 
@@ -31,7 +31,7 @@ $router->addRoute("GET", "/matricula/estudiantes/{id}", "MatriculaController", "
 
 $router->addRoute("POST", "/admisiones", "AdmisionController", "createAdmision");
 
-$router->addRoute("POST", "/notas", "NotasController", "asigNotas");
+$router->addRoute("POST", "/notas/asignar", "NotasController", "asigNotas");
 
 $router->dispatch($_SERVER["REQUEST_METHOD"], $_SERVER["REQUEST_URI"]);
 ?>
