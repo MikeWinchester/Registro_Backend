@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . "/app/controllers/UsuarioController.php";
 require_once __DIR__ . "/app/core/Router.php";
+require_once __DIR__ . "/app/controllers/SolicitudController.php";
 require_once __DIR__ . "/app/controllers/DocenteController.php";
 require_once __DIR__ . "/app/controllers/AdmisionesController.php";
 require_once __DIR__ . "/app/controllers/SeccionesController.php";
@@ -46,6 +47,9 @@ $router->addRoute("GET", "/carreras", "CarreraController", "getAllCareers");
 
 //Routes for Centros
 $router->addRoute("GET", "/centros", "CentroController", "getAllCenters");
+
+//Routes
+$router->addRoute("GET", "/solicitud/{id}/estado", "SolicitudController", "getSolicitudEstado");
 
 $router->dispatch($_SERVER["REQUEST_METHOD"], $_SERVER["REQUEST_URI"]);
 ?>
