@@ -58,17 +58,9 @@ CREATE TABLE Admision (
     Numero_identidad VARCHAR(20) UNIQUE NOT NULL,
     Numero_telefono VARCHAR(20) NOT NULL,
     Fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-<<<<<<< HEAD
     CarreraID TINYINT UNSIGNED NOT NULL,
     CarreraAlternativaID TINYINT UNSIGNED,
     CertificadoSecundaria TEXT,
-=======
-    CentroRegionalID TINYINT UNSIGNED NOT NULL,
-    CarreraID TINYINT UNSIGNED NOT NULL,
-    CarreraAlternativaID TINYINT UNSIGNED,
-    CertificadoSecundaria TEXT,
-    FOREIGN KEY (CentroRegionalID) REFERENCES CentroRegional(CentroRegionalID),
->>>>>>> fda226a (controllers updated)
     FOREIGN KEY (CarreraID) REFERENCES Carrera(CarreraID),
     FOREIGN KEY (CarreraAlternativaID) REFERENCES Carrera(CarreraID)
 );
@@ -161,15 +153,9 @@ CREATE TABLE Notas (
 );
 
 -- Inserts para Usuario
-<<<<<<< HEAD
 INSERT INTO Usuario (NombreCompleto, Identidad, Correo, Pass,Es_Revisor,NumeroCuenta, Telefono) VALUES
 ('Juan Pérez', '0801199901234', 'juan.perez@gmail.com', 'clave123',1, '123456789','98765432'),
 ('María López', '0802199505678', 'maria.lopez@gmail.com', 'pass456',1,'987654321', '99887766');
-=======
-INSERT INTO Usuario (NombreCompleto, Identidad, Correo, Pass, NumeroCuenta, Telefono) VALUES
-('Juan Pérez', '0801199901234', 'juan.perez@gmail.com', 'clave123', '123456789','98765432'),
-('María López', '0802199505678', 'maria.lopez@gmail.com', 'pass456','987654321', '99887766');
->>>>>>> fda226a (controllers updated)
 
 -- Inserts para Centro Regional
 INSERT INTO CentroRegional (NombreCentro, Ubicacion, Telefono, Correo) VALUES
@@ -213,11 +199,7 @@ INSERT INTO Carrera (NombreCarrera, Duracion, Nivel, FacultadID, CentroRegionalI
 DELIMITER $$
 
 CREATE TRIGGER after_admision_insert
-<<<<<<< HEAD
 AFTER INSERT ON admisiones
-=======
-AFTER INSERT ON Admision
->>>>>>> fda226a (controllers updated)
 FOR EACH ROW
 BEGIN
     INSERT INTO solicitud (id, estado)
@@ -229,11 +211,7 @@ DELIMITER ;
 ALTER TABLE Usuario MODIFY Pass VARCHAR(255) NOT NULL;
 
 ALTER TABLE Docente 
-<<<<<<< HEAD
 ADD COLUMN CodigoEmpleado CHAR(10) UNIQUE NOT NULL AFTER NumeroCuenta;
-=======
-ADD COLUMN CodigoEmpleado CHAR(10) UNIQUE NOT NULL AFTER UsuarioID;
->>>>>>> fda226a (controllers updated)
 
 ALTER TABLE Docente 
 ADD COLUMN CarreraID TINYINT UNSIGNED NOT NULL AFTER CentroRegionalID, 
@@ -245,8 +223,4 @@ CREATE TABLE Revisores (
 );
 
 INSERT INTO Revisores (UsuarioID)
-<<<<<<< HEAD
 SELECT UsuarioID FROM Usuario;
-=======
-SELECT UsuarioID FROM Usuario;
->>>>>>> fda226a (controllers updated)
