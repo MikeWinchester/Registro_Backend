@@ -15,21 +15,25 @@ class SeccionesController {
     /**
      * Funcion para obtener las secciones de los docentes actuales
      *
-     * @param $idDocente id del docente que se quiera obtener las secciones
+     * 
      *
-     * @version 0.1.0
+     * @version 0.1.1
      */
-    public function getSeccionesActuales($idDocente){
+    public function getSeccionesActuales(){
 
         #AuthMiddleware::authMiddleware();
 
-        $sql = "SELECT SeccionID, Asignatura ,PeriodoAcademico, Aula, Horario, CupoMaximo
-        FROM Seccion
+        $data = json_decode(file_get_contents("php://input"), true);
+        
+        $sql = "SELECT SeccionID, cl.Nombre ,PeriodoAcademico, Aula, Horario, CupoMaximo
+        FROM Seccion as sec
+        INNER JOIN Clase as cl
+        ON sec.ClaseID = cl.ClaseID
         WHERE DocenteID = ?
         AND PeriodoAcademico = ?
         ";
 
-        $result = $this->seccion->customQuery($sql, [$idDocente, $this->getPeriodo()]);
+        $result = $this->seccion->customQuery($sql, [$data['DocenteID'], $this->getPeriodo()]);
 
         if ($result) {
             http_response_code(200);
@@ -44,20 +48,24 @@ class SeccionesController {
      /**
      * Funcion para obtener las secciones de los docentes
      *
-     * @param $idDocente id del docente que se quiera obtener las secciones
      *
-     * @version 0.1.0
+     *
+     * @version 0.1.1
      */
-    public function getSecciones($idDocente){
+    public function getSecciones(){
 
         #AuthMiddleware::authMiddleware();
 
-        $sql = "SELECT SeccionID, Asignatura ,PeriodoAcademico, Aula, Horario, CupoMaximo
-        FROM Seccion
+        $data = json_decode(file_get_contents("php://input"), true);
+        
+        $sql = "SELECT SeccionID, cl.Nombre ,PeriodoAcademico, Aula, Horario, CupoMaximo
+        FROM Seccion as sec
+        INNER JOIN Clase as cl
+        ON sec.ClaseID = cl.ClaseID
         WHERE DocenteID = ?
         ";
 
-        $result = $this->seccion->customQuery($sql, [$idDocente]);
+        $result = $this->seccion->customQuery($sql, [$data['DocenteID']]);
 
         if ($result) {
             http_response_code(200);
@@ -77,9 +85,10 @@ class SeccionesController {
      * @version 0.1.0
      */
     public function getSeccion($idSeccion){
-        AuthMiddleware::authMiddleware();
 
-        $sql = "SELECT sec.Asignatura, sec.PeriodoAcademico, sec.Aula, sec.Horario, sec.CupoMaximo, usr.NombreCompleto, usr.Correo
+        #AuthMiddleware::authMiddleware();
+
+        $sql = "SELECT cl.Nombre, sec.PeriodoAcademico, sec.Aula, sec.Horario, sec.CupoMaximo, usr.NombreCompleto, usr.Correo
         FROM Seccion as sec
         INNER JOIN Docente as doc
         ON sec.DocenteID = doc.DocenteID
@@ -108,13 +117,13 @@ class SeccionesController {
      */
     public function getSeccionAsig(){
 
-        AuthMiddleware::authMiddleware();
+        #AuthMiddleware::authMiddleware();
 
         $data = json_decode(file_get_contents("php://input"), true);
 
         $sql = "SELECT sec.Asignatura, sec.PeriodoAcademico, sec.Aula, sec.Horario, sec.CupoMaximo
         FROM Seccion as sec
-        WHERE TRIM(Asignatura) = ?
+        WHERE ClaseID = ?
         AND PeriodoAcademico = ?
         ";
 
@@ -128,10 +137,17 @@ class SeccionesController {
             echo json_encode(["error" => "Secciones no disponibles"]);
         }
     }
-
-    public function getSeccionCount($idDocente){
+    
+    /**
+     * Funcion para contar las secciones asignadas a un docente
+     *
+     * @version 0.1.0
+     */
+    public function getSeccionCount(){
 
         #AuthMiddleware::authMiddleware();
+
+        $data = json_decode(file_get_contents("php://input"), true);
 
         $sql = "SELECT count(1) as cantidad
         FROM Seccion
@@ -139,7 +155,7 @@ class SeccionesController {
         AND PeriodoAcademico = ?
         ";
 
-        $result = $this->seccion->customQuery($sql, [$idDocente, $this->getPeriodo()]);
+        $result = $this->seccion->customQuery($sql, [$data['DocenteID'], $this->getPeriodo()]);
 
         if ($result) {
             http_response_code(200);
@@ -151,11 +167,31 @@ class SeccionesController {
     }
 
     /**
+     * Crea secciones de clases
+     *
+     * @version 0.1.0
+     */
+    public function createSeccion(){
+
+        #AuthMiddleware::authMiddleware();
+
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        if ($this->seccion->create($data)) {
+            http_response_code(200);
+            echo json_encode(["message" => "Seccion creada", "data" => $data]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "No se logro crear la seccion"]);
+        }
+    }
+
+    /**
      * Funcion para obtener el periodo acadmico actual
      *
      * @return "anio-trimestre" ejemplo: "2021-1"
      * 
-     * @version 0.1.0
+     * @version 0.1.1
      */
     private function getPeriodo(){
 
@@ -163,6 +199,21 @@ class SeccionesController {
         $mon = date("n");
 
         $trimestre = ceil($mon / 3);
+
+        switch($trimestre){
+            case 1:
+                $trimestre = "I";
+                break;
+                case 2:
+                    $trimestre = "II";
+                    break;
+                    case 3:
+                        $trimestre = "III";
+                        break;
+                    default:
+                    $trimestre;
+        }
+                
     
         return "$year-$trimestre";
     }

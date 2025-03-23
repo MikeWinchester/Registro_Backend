@@ -39,14 +39,15 @@ class DocenteController {
             "Correo" => $data["Correo"],
             "Pass" => $data["Pass"],
             "Rol" => "Docente",
+            "NumeroCuenta" => $data["NumeroCuenta"],
             "Telefono" => isset($data["Telefono"]) ? $data["Telefono"] : null,
             "ES_Revisor" => $data["ES_Revisor"]
         ];
     
         // Insertar usuario
         $this->docente->customQueryInsert(
-            "INSERT INTO Usuario (NombreCompleto, Identidad, Correo, Pass, Rol, Telefono, ES_Revisor)
-             VALUES (?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO Usuario (NombreCompleto, Identidad, Correo, Pass, Rol, NumeroCuenta, Telefono, ES_Revisor)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
             array_values($data_usr)
         );
     
@@ -64,8 +65,9 @@ class DocenteController {
     
         $data_doc = [
             "UsuarioID" => $usuario[0]['UsuarioID'],
-            "NumeroCuenta" => $data["NumeroCuenta"],
             "CentroRegionalID" => $data["CentroRegionalID"],
+            "CarreraID" => $data["CarreraID"],
+            "CodigoEmpleado" => $data["CodigoEmpleado"]
         ];
     
         // Insertar docente
@@ -87,12 +89,14 @@ class DocenteController {
         
         #AuthMiddleware::authMiddleware();
 
-        $sql = "SELECT usr.NombreCompleto, usr.Correo, doc.NumeroCuenta, cr.NombreCentro 
+        $sql = "SELECT usr.NombreCompleto, usr.Correo, usr.NumeroCuenta, doc.CodigoEmpleado, cr.NombreCentro, crr.NombreCarrera
         FROM Docente AS doc
         INNER JOIN Usuario AS usr
         ON doc.UsuarioID = usr.UsuarioID
         INNER JOIN CentroRegional AS cr
         ON doc.CentroRegionalID = cr.CentroRegionalID
+        INNER JOIN Carrera as crr
+        on doc.CarreraID = crr.CarreraID
         WHERE DocenteID = ?";
 
         $result = $this->docente->customQuery($sql, [$idDocente]);
@@ -137,7 +141,7 @@ class DocenteController {
      * @param $idSeccion id de la seccion
      * @param $data json donde ira el archivo
      *
-     * @version 0.1.0
+     * @version 0.1.1
      */
     //Problema no soporta video grandes
     public function uploadVideo() {
@@ -146,13 +150,27 @@ class DocenteController {
             echo json_encode(["error" => "Faltan datos (idSeccion o video)"]);
             return;
         }
+
+        
     
         $idSeccion = $_POST['idSeccion']; 
         $video = $_FILES['video'];
-        $ruta = __DIR__ . "/../../Videos/$idSeccion";
+        $ruta = __DIR__ . "/../uploads/Videos/$idSeccion";
+
+        echo ini_get('upload_max_filesize') . "\n";
+        echo ini_get('post_max_size') . "\n";
+
+        echo var_export($_FILES, true);
     
         $this->checkFolder($idSeccion,$ruta);
-    
+
+        $maxSize = 200 * 1024 * 1024; 
+
+        if ($video['size'] > $maxSize) {
+            echo json_encode(["error" => "El archivo excede el tamaño permitido de 200MB"]);
+            return;
+        }
+
         if ($video['error'] !== UPLOAD_ERR_OK) {
             echo json_encode(["error" => "Error en la subida del archivo", "code" => $video['error']]);
             return;
