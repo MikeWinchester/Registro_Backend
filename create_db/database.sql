@@ -200,10 +200,10 @@ INSERT INTO Carrera (NombreCarrera, Duracion, Nivel, FacultadID, CentroRegionalI
 DELIMITER $$
 
 CREATE TRIGGER after_admision_insert
-AFTER INSERT ON admisiones
+AFTER INSERT ON Admision
 FOR EACH ROW
 BEGIN
-    INSERT INTO solicitud (id, estado)
+    INSERT INTO Solicitud (id, estado)
     VALUES (NEW.id, 'Pendiente');
 END $$
 
@@ -212,21 +212,18 @@ DELIMITER ;
 ALTER TABLE Usuario MODIFY Pass VARCHAR(255) NOT NULL;
 
 ALTER TABLE Docente 
-ADD COLUMN CodigoEmpleado CHAR(10) UNIQUE NOT NULL AFTER NumeroCuenta;
+ADD COLUMN CodigoEmpleado CHAR(10) UNIQUE NOT NULL;
 
 ALTER TABLE Docente 
 ADD COLUMN CarreraID TINYINT UNSIGNED NOT NULL AFTER CentroRegionalID, 
 ADD FOREIGN KEY (CarreraID) REFERENCES Carrera(CarreraID);
 
-ALTER TABLE solicitud
+ALTER TABLE Solicitud
 ADD COLUMN nota SMALLINT NULL,
 ADD COLUMN codigo VARCHAR(20) NOT NULL;
 
-ALTER TABLE solicitud
+ALTER TABLE Solicitud
 ADD CONSTRAINT unique_codigo UNIQUE (codigo);
-
-
---crear tabla clase y separar cosas de seccion
 
 CREATE TABLE Clase (
     ClaseID SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -241,7 +238,6 @@ ADD CONSTRAINT FK_Seccion_Clase FOREIGN KEY (ClaseID) REFERENCES Clase(ClaseID);
 ALTER TABLE Seccion
 DROP COLUMN Asignatura;
 
---Relacion de muchos a muchos con centro regional y carrera
 ALTER TABLE Carrera
 DROP FOREIGN KEY Carrera_ibfk_2,
 DROP COLUMN CentroRegionalID;
@@ -253,5 +249,19 @@ CREATE TABLE CentroRegional_Carrera (
     FOREIGN KEY (CentroRegionalID) REFERENCES CentroRegional(CentroRegionalID),
     FOREIGN KEY (CarreraID) REFERENCES Carrera(CarreraID)
 );
+
+CREATE TABLE Departamento (
+    DepartamentoID INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    Departamento VARCHAR(50) NOT NULL,
+    FacultadID TINYINT UNSIGNED NOT NULL,
+    CONSTRAINT fk_facultad FOREIGN KEY (FacultadID) REFERENCES Facultad(FacultadID),
+    INDEX idx_departamento (Departamento)
+);
+
+ALTER TABLE Clase 
+ADD COLUMN DepartamentoID INT UNSIGNED NOT NULL,
+ADD CONSTRAINT fk_clase_departamento FOREIGN KEY (DepartamentoID) REFERENCES Departamento(DepartamentoID);
+
+
 
 
