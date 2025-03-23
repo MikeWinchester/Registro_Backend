@@ -94,6 +94,8 @@ class SeccionesController {
         ON sec.DocenteID = doc.DocenteID
         INNER JOIN Usuario as usr
         ON doc.UsuarioID = usr.UsuarioID
+        INNER JOIN Clase as cl
+        ON sec.ClaseID = cl.ClaseID
         WHERE sec.SeccionID = ?
         ";
 
@@ -121,14 +123,16 @@ class SeccionesController {
 
         $data = json_decode(file_get_contents("php://input"), true);
 
-        $sql = "SELECT sec.Asignatura, sec.PeriodoAcademico, sec.Aula, sec.Horario, sec.CupoMaximo
+        $sql = "SELECT cl.Nombre, sec.PeriodoAcademico, sec.Aula, sec.Horario, sec.CupoMaximo
         FROM Seccion as sec
-        WHERE ClaseID = ?
+        LEFT JOIN Clase as cl
+        ON sec.ClaseID = cl.ClaseID
+        WHERE sec.ClaseID = ?
         AND PeriodoAcademico = ?
         ";
 
-        $result = $this->seccion->customQuery($sql, [$data['Asignatura'], $this->getPeriodo()]);
-
+        $result = $this->seccion->customQuery($sql, [$data['ClaseID'], $this->getPeriodo()]);
+        
         if ($result) {
             http_response_code(200);
             echo json_encode(["message" => "Secciones encontradas", "data" => $result]);
