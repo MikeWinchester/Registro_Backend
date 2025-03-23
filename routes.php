@@ -26,6 +26,7 @@ $router->addRoute("POST", "/login", "AuthController", "login");
 $router->addRoute("POST", "/docentes", "DocenteController", "createDocente");
 $router->addRoute("GET", "/docentes/{id}", "DocenteController", "getDocente");
 $router->addRoute("GET", "/docentes", "DocenteController", "getAllDocentes");
+$router->addRoute("GET", "/docentes/centroregional", "DocenteController", "getDocentesByCentro");
 $router->addRoute("POST", "/docentes/seccion", "DocenteController", "uploadVideo");
 
 //Routes for Secciones

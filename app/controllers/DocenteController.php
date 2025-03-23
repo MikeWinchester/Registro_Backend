@@ -136,6 +136,32 @@ class DocenteController {
     }
 
     /**
+     * Obtiene todos los docentes del centro regional
+     *
+     * @version 0.1.0
+     */
+    public function getDocentesByCentro(){
+
+        $data = json_decode(file_get_contents("php://input"), true);
+    
+        $sql = "SELECT usr.NombreCompleto
+        FROM Docente AS doc
+        INNER JOIN Usuario AS usr
+        ON doc.UsuarioID = usr.UsuarioID
+        WHERE doc.CentroRegionalID = ?";
+        
+        $result = $this->docente->customQuery($sql, [$data['CentroRegionalID']]);
+
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "Docentes obtenidos", "data" => $result]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "Docentes no obtenidos"]);
+        }
+    }
+
+    /**
      * Guardar video subido de la seccion correspondiente
      *
      * @param $idSeccion id de la seccion
