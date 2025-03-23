@@ -241,4 +241,17 @@ ADD CONSTRAINT FK_Seccion_Clase FOREIGN KEY (ClaseID) REFERENCES Clase(ClaseID);
 ALTER TABLE Seccion
 DROP COLUMN Asignatura;
 
+--Relacion de muchos a muchos con centro regional y carrera
+ALTER TABLE Carrera
+DROP FOREIGN KEY Carrera_ibfk_2,
+DROP COLUMN CentroRegionalID;
+
+CREATE TABLE CentroRegional_Carrera (
+    CentroRegionalID TINYINT UNSIGNED NOT NULL,
+    CarreraID TINYINT UNSIGNED NOT NULL,
+    PRIMARY KEY (CentroRegionalID, CarreraID),
+    FOREIGN KEY (CentroRegionalID) REFERENCES CentroRegional(CentroRegionalID),
+    FOREIGN KEY (CarreraID) REFERENCES Carrera(CarreraID)
+);
+
 
