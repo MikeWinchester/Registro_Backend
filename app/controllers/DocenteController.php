@@ -6,7 +6,6 @@ require_once __DIR__ . "/../core/Cors.php";
 
 class DocenteController {
     private $docente;
-    private $ruta;
 
     public function __construct() {
         $this->docente = new Docente();
@@ -78,6 +77,7 @@ class DocenteController {
             echo json_encode(["error" => "Error al crear Docente"]);
         }
     }
+
     
     /**
      * funcion para obtener al docente
@@ -113,12 +113,12 @@ class DocenteController {
     /**
      * Obtiene todos los docentes
      *
-     * @version 0.1.0
+     * @version 0.1.1
      */
     public function getAllDocentes(){
-        AuthMiddleware::authMiddleware();
+        #AuthMiddleware::authMiddleware();
 
-        $sql = "SELECT usr.NombreCompleto, doc.NumeroCuenta, cr.NombreCentro FROM Docente AS doc
+        $sql = "SELECT usr.NombreCompleto, usr.NumeroCuenta, cr.NombreCentro FROM Docente AS doc
         INNER JOIN Usuario AS usr
         ON doc.UsuarioID = usr.UsuarioID
         INNER JOIN CentroRegional AS cr
@@ -138,19 +138,27 @@ class DocenteController {
     /**
      * Obtiene todos los docentes del centro regional
      *
-     * @version 0.1.0
+     * @version 0.1.1
      */
     public function getDocentesByCentro(){
 
-        $data = json_decode(file_get_contents("php://input"), true);
+        $header = getallheaders();
+
+        if(!isset($header['CentroRegionalID'])){
+            http_response_code(400);
+            echo json_encode(["error" => "CentroRegionalID es requerido en el header"]);
+            return;
+        }
     
+        $centroID = $header['CentroRegionalID'];
+
         $sql = "SELECT usr.NombreCompleto
         FROM Docente AS doc
         INNER JOIN Usuario AS usr
         ON doc.UsuarioID = usr.UsuarioID
         WHERE doc.CentroRegionalID = ?";
         
-        $result = $this->docente->customQuery($sql, [$data['CentroRegionalID']]);
+        $result = $this->docente->customQuery($sql, [$centroID]);
 
         if ($result) {
             http_response_code(200);

@@ -17,14 +17,22 @@ class SeccionesController {
      *
      * 
      *
-     * @version 0.1.1
+     * @version 0.1.2
      */
     public function getSeccionesActuales(){
 
         #AuthMiddleware::authMiddleware();
 
-        $data = json_decode(file_get_contents("php://input"), true);
+        $header = getallheaders();
+
+        if(!isset($header['DocenteID'])){
+            http_response_code(404);
+            echo json_encode(["error" => "Campo DocenteID necestiado"]);
+            return;
+        }
         
+        $docenteid = $header['DocenteID'];
+
         $sql = "SELECT SeccionID, cl.Nombre ,PeriodoAcademico, Aula, Horario, CupoMaximo
         FROM Seccion as sec
         INNER JOIN Clase as cl
@@ -33,7 +41,7 @@ class SeccionesController {
         AND PeriodoAcademico = ?
         ";
 
-        $result = $this->seccion->customQuery($sql, [$data['DocenteID'], $this->getPeriodo()]);
+        $result = $this->seccion->customQuery($sql, [$docenteid, $this->getPeriodo()]);
 
         if ($result) {
             http_response_code(200);
@@ -45,7 +53,7 @@ class SeccionesController {
 
     }
 
-     /**
+    /**
      * Funcion para obtener las secciones de los docentes
      *
      *
@@ -56,7 +64,15 @@ class SeccionesController {
 
         #AuthMiddleware::authMiddleware();
 
-        $data = json_decode(file_get_contents("php://input"), true);
+        $header = getallheaders();
+
+        if(!isset($header['DocenteID'])){
+            http_response_code(404);
+            echo json_encode(["error" => "Campo DocenteID necestiado"]);
+            return;
+        }
+        
+        $docenteid = $header['DocenteID'];
         
         $sql = "SELECT SeccionID, cl.Nombre ,PeriodoAcademico, Aula, Horario, CupoMaximo
         FROM Seccion as sec
@@ -65,7 +81,7 @@ class SeccionesController {
         WHERE DocenteID = ?
         ";
 
-        $result = $this->seccion->customQuery($sql, [$data['DocenteID']]);
+        $result = $this->seccion->customQuery($sql, [$docenteid]);
 
         if ($result) {
             http_response_code(200);
@@ -82,11 +98,21 @@ class SeccionesController {
      * Obtiene informacion de una seccion en especifico
      *
      * @param $idSeccion id de la seccion
-     * @version 0.1.0
+     * @version 0.1.1
      */
-    public function getSeccion($idSeccion){
+    public function getSeccion(){
 
         #AuthMiddleware::authMiddleware();
+        $header = getallheaders();
+
+        if(!isset($header['SeccionID'])){
+            http_response_code(404);
+            echo json_encode(["error" => "Campo SeccionID necestiado"]);
+            return;
+        }
+        
+        $secID = $header['SeccionID'];
+        
 
         $sql = "SELECT cl.Nombre, sec.PeriodoAcademico, sec.Aula, sec.Horario, sec.CupoMaximo, usr.NombreCompleto, usr.Correo
         FROM Seccion as sec
@@ -99,7 +125,7 @@ class SeccionesController {
         WHERE sec.SeccionID = ?
         ";
 
-        $result = $this->seccion->customQuery($sql, [$idSeccion]);
+        $result = $this->seccion->customQuery($sql, [$secID]);
 
         if ($result) {
             http_response_code(200);
@@ -113,15 +139,23 @@ class SeccionesController {
     /**
      * Obtiene las secciones disponibles de una asignacion en especifica del periodo actual
      *
-     * @param json {'Asigntura' : 'Contabilidad'}
      *
-     * @version 0.1.0
+     *
+     * @version 0.1.1
      */
     public function getSeccionAsig(){
 
         #AuthMiddleware::authMiddleware();
 
-        $data = json_decode(file_get_contents("php://input"), true);
+        $header = getallheaders();
+
+        if(!isset($header['ClaseID'])){
+            http_response_code(404);
+            echo json_encode(["error" => "Campo ClaseID necestiado"]);
+            return;
+        }
+        
+        $ClaseID = $header['ClaseID'];
 
         $sql = "SELECT cl.Nombre, sec.PeriodoAcademico, sec.Aula, sec.Horario, sec.CupoMaximo
         FROM Seccion as sec
@@ -131,7 +165,7 @@ class SeccionesController {
         AND PeriodoAcademico = ?
         ";
 
-        $result = $this->seccion->customQuery($sql, [$data['ClaseID'], $this->getPeriodo()]);
+        $result = $this->seccion->customQuery($sql, [$ClaseID, $this->getPeriodo()]);
         
         if ($result) {
             http_response_code(200);
@@ -145,13 +179,22 @@ class SeccionesController {
     /**
      * Funcion para contar las secciones asignadas a un docente
      *
-     * @version 0.1.0
+     * @version 0.1.1
      */
     public function getSeccionCount(){
 
         #AuthMiddleware::authMiddleware();
 
-        $data = json_decode(file_get_contents("php://input"), true);
+        $header = getallheaders();
+
+        if(!isset($header['DocenteID'])){
+            http_response_code(404);
+            echo json_encode(["error" => "Campo DocenteID necestiado"]);
+            return;
+        }
+        
+        $docenteid = $header['DocenteID'];
+
 
         $sql = "SELECT count(1) as cantidad
         FROM Seccion
@@ -159,7 +202,7 @@ class SeccionesController {
         AND PeriodoAcademico = ?
         ";
 
-        $result = $this->seccion->customQuery($sql, [$data['DocenteID'], $this->getPeriodo()]);
+        $result = $this->seccion->customQuery($sql, [$docenteid, $this->getPeriodo()]);
 
         if ($result) {
             http_response_code(200);

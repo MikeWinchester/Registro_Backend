@@ -23,22 +23,22 @@ $router->addRoute("GET", "/profile", "UsuarioController", "getProfile");
 $router->addRoute("POST", "/login", "AuthController", "login");
 
 //Routes for Docentes
-$router->addRoute("POST", "/docentes", "DocenteController", "createDocente");
-$router->addRoute("GET", "/docentes/{id}", "DocenteController", "getDocente");
-$router->addRoute("GET", "/docentes", "DocenteController", "getAllDocentes");
-$router->addRoute("GET", "/docentes/centroregional", "DocenteController", "getDocentesByCentro");
-$router->addRoute("POST", "/docentes/seccion", "DocenteController", "uploadVideo");
+$router->addRoute("POST", "/docentes/create", "DocenteController", "createDocente");
+$router->addRoute("GET", "/docentes/get/{id}", "DocenteController", "getDocente");
+$router->addRoute("GET", "/docentes/all", "DocenteController", "getAllDocentes");
+$router->addRoute("POST", "/docentes/video", "DocenteController", "uploadVideo");
+$router->addRoute("GET", "/docentes/centro", "DocenteController", "getDocentesByCentro");
 
 //Routes for Secciones
 $router->addRoute("GET", "/secciones/docente/all", "SeccionesController", "getSecciones");
 $router->addRoute("GET", "/secciones/docente", "SeccionesController", "getSeccionesActuales");
-$router->addRoute("GET", "/secciones/{idSeccion}", "SeccionesController", "getSeccion");
+$router->addRoute("GET", "/secciones/get", "SeccionesController", "getSeccion");
 $router->addRoute("GET", "/secciones/matricula", "SeccionesController", "getSeccionAsig");
-$router->addRoute("GET", "/secciones/count", "SeccionesController", "getSeccionCount");
-$router->addRoute("POST", "/secciones", "SeccionesController", "createSeccion");
+$router->addRoute("POST", "/secciones/count", "SeccionesController", "getSeccionCount");
+$router->addRoute("POST", "/secciones/create", "SeccionesController", "createSeccion");
 
 //Routes for Estudiantes
-$router->addRoute("GET", "/matricula/estudiantes/{id}", "MatriculaController", "getEstudiantes");
+$router->addRoute("GET", "/matricula/estudiantes", "MatriculaController", "getEstudiantes");
 
 //Routes for Admisiones
 $router->addRoute("POST", "/admisiones", "AdmisionesController", "createAdmission");
@@ -54,6 +54,7 @@ $router->addRoute("GET", "/centros", "CentroController", "getAllCenters");
 
 //Routes for Clases
 $router->addRoute("GET", "/clases", "ClaseController", "getClasesByDepartment");
+$router->addRoute("GET", "/clases/prueba", "ClaseController", "prueba");
 $router->addRoute("POST", "/clases", "ClaseController", "createClases");
 
 //Routes
