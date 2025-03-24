@@ -234,6 +234,41 @@ class SeccionesController {
     }
 
     /**
+     * Obtiene las secciones de una clase
+     *
+     * @version 0.1.0
+     */
+    public function getSeccionesByClass(){
+        $header = getallheaders();
+
+        if(!isset($header)){
+            http_response_code(400);
+            echo json_encode(["error" => "Campo ClaseID necesario"]);
+        }
+
+        $sql = "SELECT sc.SeccionID, us.NombreCompleto, sc.Horario, sc.Aula, sc.CupoMaximo
+        FROM Seccion AS sc
+        INNER JOIN Docente AS dc
+        ON sc.DocenteID = dc.DocenteID
+        INNER JOIN Usuario AS us
+        on dc.UsuarioID = us.UsuarioID
+        WHERE sc.ClaseID = ?
+        AND sc.PeriodoAcademico = ?";
+
+        $claseID = $header['claseid'];
+
+        $result = $this->seccion->customQuery($sql, [$claseID, $this->getPeriodo()]);
+
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "Secciones encontradas", "data" => $result]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "Secciones no disponibles"]);
+        }
+    }
+
+    /**
      * Funcion para obtener el periodo acadmico actual
      *
      * @return "anio-trimestre" ejemplo: "2021-1"

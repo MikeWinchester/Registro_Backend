@@ -34,8 +34,10 @@ $router->addRoute("GET", "/secciones/docente/all", "SeccionesController", "getSe
 $router->addRoute("GET", "/secciones/docente", "SeccionesController", "getSeccionesActuales");
 $router->addRoute("GET", "/secciones/get", "SeccionesController", "getSeccion");
 $router->addRoute("GET", "/secciones/matricula", "SeccionesController", "getSeccionAsig");
+$router->addRoute("GET", "/secciones/get/clase", "SeccionesController", "getSeccionesByClass");
 $router->addRoute("POST", "/secciones/count", "SeccionesController", "getSeccionCount");
 $router->addRoute("POST", "/secciones/create", "SeccionesController", "createSeccion");
+
 
 //Routes for Estudiantes
 $router->addRoute("GET", "/matricula/estudiantes", "MatriculaController", "getEstudiantes");
