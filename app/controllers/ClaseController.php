@@ -9,7 +9,6 @@ class ClaseController {
 
     public function __construct() {
         $this->clase = new Clase();
-        header("Content-Type: application/json"); // Estandariza las respuestas como JSON
     }
 
 
@@ -22,15 +21,15 @@ class ClaseController {
 
         #AuthMiddleware::authMiddleware();
 
-        $header = getallheaders();
-
-        if(!isset($header['DepartamentoID'])){
+        $header = array_change_key_case(getallheaders(), CASE_LOWER);
+        if (!isset($header['departamentoid'])) {
             http_response_code(400);
-            echo json_encode(["error" => "CentroRegionalID es requerido en el header"]);
+            echo json_encode(["error" => "DepartamentoID es requerido en el header"]);
             return;
         }
-    
-        $depID = $header['DepartamentoID'];
+
+        $depID = $header['departamentoid']; // Accede en minúsculas
+
 
         $sql = "SELECT cl.ClaseID, cl.Nombre, cl.Codigo
         FROM Clase AS cl

@@ -262,6 +262,8 @@ ALTER TABLE Clase
 ADD COLUMN DepartamentoID INT UNSIGNED NOT NULL,
 ADD CONSTRAINT fk_clase_departamento FOREIGN KEY (DepartamentoID) REFERENCES Departamento(DepartamentoID);
 
-
+ALTER TABLE Docente 
+ADD COLUMN DepartamentoID INT UNSIGNED NOT NULL,
+ADD CONSTRAINT fk_docente_departamento FOREIGN KEY (DepartamentoID) REFERENCES Departamento(DepartamentoID);
 
 

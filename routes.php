@@ -27,7 +27,7 @@ $router->addRoute("POST", "/docentes/create", "DocenteController", "createDocent
 $router->addRoute("GET", "/docentes/get/{id}", "DocenteController", "getDocente");
 $router->addRoute("GET", "/docentes/all", "DocenteController", "getAllDocentes");
 $router->addRoute("POST", "/docentes/video", "DocenteController", "uploadVideo");
-$router->addRoute("GET", "/docentes/centro", "DocenteController", "getDocentesByCentro");
+$router->addRoute("GET", "/docentes/dep", "DocenteController", "getDocentesBydepartment");
 
 //Routes for Secciones
 $router->addRoute("GET", "/secciones/docente/all", "SeccionesController", "getSecciones");
@@ -54,7 +54,6 @@ $router->addRoute("GET", "/centros", "CentroController", "getAllCenters");
 
 //Routes for Clases
 $router->addRoute("GET", "/clases", "ClaseController", "getClasesByDepartment");
-$router->addRoute("GET", "/clases/prueba", "ClaseController", "prueba");
 $router->addRoute("POST", "/clases", "ClaseController", "createClases");
 
 //Routes

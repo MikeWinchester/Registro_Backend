@@ -140,23 +140,23 @@ class DocenteController {
      *
      * @version 0.1.1
      */
-    public function getDocentesByCentro(){
+    public function getDocentesBydepartment(){
 
         $header = getallheaders();
 
-        if(!isset($header['CentroRegionalID'])){
+        if(!isset($header['departamentoid'])){
             http_response_code(400);
-            echo json_encode(["error" => "CentroRegionalID es requerido en el header"]);
+            echo json_encode(["error" => "departamentoid es requerido en el header"]);
             return;
         }
     
-        $centroID = $header['CentroRegionalID'];
+        $centroID = $header['departamentoid'];
 
         $sql = "SELECT usr.NombreCompleto
         FROM Docente AS doc
         INNER JOIN Usuario AS usr
         ON doc.UsuarioID = usr.UsuarioID
-        WHERE doc.CentroRegionalID = ?";
+        WHERE doc.DepartamentoID = ?";
         
         $result = $this->docente->customQuery($sql, [$centroID]);
 
