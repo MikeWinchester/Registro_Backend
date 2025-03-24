@@ -225,6 +225,24 @@ ADD COLUMN codigo VARCHAR(20) NOT NULL;
 ALTER TABLE Solicitud
 ADD CONSTRAINT unique_codigo UNIQUE (codigo);
 
+--Trigger codigo solicitud
+
+DELIMITER $$
+
+CREATE TRIGGER after_solicitud_insert
+BEFORE INSERT ON solicitud
+FOR EACH ROW
+BEGIN
+    DECLARE random_letter CHAR(1);
+    DECLARE random_number VARCHAR(5);
+    DECLARE generated_code VARCHAR(6);
+    SET random_letter = CHAR(FLOOR(RAND() * 26) + 65);
+    SET random_number = LPAD(FLOOR(RAND() * 100000), 5, '0');
+    SET NEW.codigo = CONCAT(random_letter, random_number);
+END $$
+
+DELIMITER ;
+
 CREATE TABLE Clase (
     ClaseID SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     Nombre VARCHAR(100) NOT NULL,
@@ -265,5 +283,6 @@ ADD CONSTRAINT fk_clase_departamento FOREIGN KEY (DepartamentoID) REFERENCES Dep
 ALTER TABLE Docente 
 ADD COLUMN DepartamentoID INT UNSIGNED NOT NULL,
 ADD CONSTRAINT fk_docente_departamento FOREIGN KEY (DepartamentoID) REFERENCES Departamento(DepartamentoID);
+
 
 
