@@ -152,7 +152,7 @@ class DocenteController {
     
         $centroID = $header['departamentoid'];
 
-        $sql = "SELECT usr.DocenteID, usr.NombreCompleto
+        $sql = "SELECT doc.DocenteID, usr.NombreCompleto
         FROM Docente AS doc
         INNER JOIN Usuario AS usr
         ON doc.UsuarioID = usr.UsuarioID
