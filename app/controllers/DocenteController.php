@@ -143,19 +143,19 @@ class DocenteController {
 
         $header = getallheaders();
 
-        if(!isset($header['departamentoid'])){
+        if(!isset($header['carreraid'])){
             http_response_code(400);
-            echo json_encode(["error" => "departamentoid es requerido en el header"]);
+            echo json_encode(["error" => "carreraid es requerido en el header"]);
             return;
         }
     
-        $centroID = $header['departamentoid'];
+        $centroID = $header['carreraid'];
 
         $sql = "SELECT doc.docente_id, usr.nombre_completo
         FROM tbl_docente AS doc
         INNER JOIN tbl_usuario AS usr
         ON doc.usuario_id = usr.usuario_id
-        WHERE doc.departamento_id = ?";
+        WHERE doc.carreraid = ?";
         
         $result = $this->docente->customQuery($sql, [$centroID]);
 

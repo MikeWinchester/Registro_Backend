@@ -22,18 +22,18 @@ class ClaseController {
         #AuthMiddleware::authMiddleware();
 
         $header = array_change_key_case(getallheaders(), CASE_LOWER);
-        if (!isset($header['departamentoid'])) {
+        if (!isset($header['carreraid'])) {
             http_response_code(400);
-            echo json_encode(["error" => "DepartamentoID es requerido en el header"]);
+            echo json_encode(["error" => "carreraid es requerido en el header"]);
             return;
         }
 
-        $depID = $header['departamentoid']; // Accede en minúsculas
+        $depID = $header['carreraid']; // Accede en minúsculas
 
 
         $sql = "SELECT cl.clase_id, cl.nombre, cl.codigo, cl.UV
         FROM tbl_clase AS cl
-        WHERE cl.departamento_id = ?";
+        WHERE cl.carrera_id = ?";
 
         $result = $this->clase->customQuery($sql, [$depID]);
 

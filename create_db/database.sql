@@ -89,14 +89,6 @@ CREATE TABLE tbl_solicitud (
     FOREIGN KEY (solicitud_id) REFERENCES tbl_admision(admision_id) ON DELETE CASCADE
 );
 
-CREATE TABLE tbl_departamento (
-    departamento_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(50) NOT NULL,
-    facultad_id TINYINT UNSIGNED NOT NULL,
-    FOREIGN KEY (facultad_id) REFERENCES tbl_facultad(facultad_id),
-    INDEX idx_departamento (nombre)
-);
-
 -- Tabla Estudiante
 CREATE TABLE tbl_estudiante (
     estudiante_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -113,18 +105,24 @@ CREATE TABLE tbl_estudiante (
 CREATE TABLE tbl_docente (
     docente_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     usuario_id SMALLINT UNSIGNED UNIQUE,
-    departamento_id INT UNSIGNED NOT NULL,
     carrera_id TINYINT UNSIGNED NOT NULL,
     centro_regional_id TINYINT UNSIGNED NOT NULL,
     FOREIGN KEY (usuario_id) REFERENCES tbl_usuario(usuario_id),
     FOREIGN KEY (centro_regional_id) REFERENCES tbl_centro_regional(centro_regional_id),
-    FOREIGN KEY (carrera_id) REFERENCES tbl_carrera(carrera_id),
-    FOREIGN KEY (departamento_id) REFERENCES tbl_departamento(departamento_id)
+    FOREIGN KEY (carrera_id) REFERENCES tbl_carrera(carrera_id)
 );
 
 -- Tabla Coordinador
 CREATE TABLE tbl_coordinador (
     coordinador_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    docente_id SMALLINT UNSIGNED UNIQUE,
+    carrera_id TINYINT UNSIGNED NOT NULL,
+    FOREIGN KEY (docente_id) REFERENCES tbl_docente(docente_id),
+    FOREIGN KEY (carrera_id) REFERENCES tbl_carrera(carrera_id)
+);
+
+CREATE TABLE tbl_jefe(
+    jefe_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     docente_id SMALLINT UNSIGNED UNIQUE,
     carrera_id TINYINT UNSIGNED NOT NULL,
     FOREIGN KEY (docente_id) REFERENCES tbl_docente(docente_id),
@@ -160,12 +158,12 @@ CREATE TABLE tbl_edificio(
 CREATE TABLE tbl_clase (
     clase_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     edificio_id SMALLINT UNSIGNED NOT NULL,
-    departamento_id INT UNSIGNED NOT NULL,
+    carrera_id TINYINT UNSIGNED NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     codigo VARCHAR(20) UNIQUE NOT NULL,
     UV TINYINT UNSIGNED,
     FOREIGN KEY (edificio_id) REFERENCES tbl_edificio(edificio_id),
-    FOREIGN KEY (departamento_id) REFERENCES tbl_departamento(departamento_id)
+    FOREIGN KEY (carrera_id) REFERENCES tbl_carrera(carrera_id)
 );
 
 CREATE TABLE tbl_aula (
@@ -455,20 +453,15 @@ INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUE
 INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (58, 1);
 INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (59, 11);
 
-INSERT INTO tbl_departamento (nombre, facultad_id) VALUES
-("Derecho", 1),
-("Psicología", 2),
-("Ingeniería en sistemas", 3);
-
 -- Insertar en tbl_estudiante
 INSERT INTO tbl_estudiante (usuario_id, carrera_id, centro_regional_id, correo) VALUES
 (1, 1, 1, "miguelestudiante@gmail.com"),
 (2, 2, 2, "gabrielestudiante@gmail.com");
 
 -- Insertar en tbl_docente
-INSERT INTO tbl_docente (usuario_id, departamento_id, carrera_id, centro_regional_id) VALUES
-(2, 1, 1, 1),
-(3, 3, 1, 1);
+INSERT INTO tbl_docente (usuario_id, carrera_id, centro_regional_id) VALUES
+(2, 1, 1),
+(3, 1, 1);
 
 -- Coordinador
 INSERT INTO tbl_coordinador (docente_id, carrera_id) VALUES
@@ -485,7 +478,7 @@ INSERT INTO tbl_aula (aula, edificio_id) VALUES
 ("Aula 102", 2);
 
 -- Insertar en tbl_clase
-INSERT INTO tbl_clase (edificio_id, departamento_id, nombre, codigo, UV) VALUES
+INSERT INTO tbl_clase (edificio_id, carrera_id, nombre, codigo, UV) VALUES
 (1, 1, "Introducción al Derecho", "DERE001", 5),
 (2, 2, "Psicología General", "PSI001", 4);
 
