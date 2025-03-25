@@ -183,7 +183,7 @@ CREATE TABLE tbl_seccion (
     aula_id SMALLINT UNSIGNED NOT NULL,
     periodo_academico VARCHAR(20) NOT NULL,
     horario VARCHAR(50),
-    dias varchar(10),
+    dias varchar(20),
     cupo_maximo TINYINT UNSIGNED NOT NULL,
     FOREIGN KEY (docente_id) REFERENCES tbl_docente(docente_id),
     FOREIGN KEY (clase_id) REFERENCES tbl_clase(clase_id),
@@ -454,4 +454,47 @@ INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUE
 INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (57, 11);
 INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (58, 1);
 INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (59, 11);
+
+INSERT INTO tbl_departamento (nombre, facultad_id) VALUES
+("Derecho", 1),
+("Psicología", 2),
+("Ingeniería en sistemas", 3);
+
+-- Insertar en tbl_estudiante
+INSERT INTO tbl_estudiante (usuario_id, carrera_id, centro_regional_id, correo) VALUES
+(1, 1, 1, "miguelestudiante@gmail.com"),
+(2, 2, 2, "gabrielestudiante@gmail.com");
+
+-- Insertar en tbl_docente
+INSERT INTO tbl_docente (usuario_id, departamento_id, carrera_id, centro_regional_id) VALUES
+(2, 1, 1, 1),
+(3, 3, 1, 1);
+
+-- Coordinador
+INSERT INTO tbl_coordinador (docente_id, carrera_id) VALUES
+(2, 1);
+
+-- Edificio
+INSERT INTO tbl_edificio (facultad_id, centro_regional_id, edificio) VALUES
+(1, 1, "B2"),
+(2, 2, "A1");
+
+-- Insertar en tbl_aula
+INSERT INTO tbl_aula (aula, edificio_id) VALUES
+("Aula 101", 1),
+("Aula 102", 2);
+
+-- Insertar en tbl_clase
+INSERT INTO tbl_clase (edificio_id, departamento_id, nombre, codigo, UV) VALUES
+(1, 1, "Introducción al Derecho", "DERE001", 5),
+(2, 2, "Psicología General", "PSI001", 4);
+
+INSERT INTO tbl_seccion (clase_id, docente_id, aula_id, periodo_academico, horario, dias, cupo_maximo) VALUES
+(1, 2, 1, "2025-1", "08:00-10:00", "Lunes, Miércoles", 30),
+(2, 2, 2, "2025-1", "10:00-12:00", "Martes, Jueves", 25);
+
+-- Insertar en tbl_matricula
+INSERT INTO tbl_matricula (estudiante_id, seccion_id, fechaInscripcion) VALUES
+(1, 1, "2025-03-20"),
+(2, 2, "2025-03-22");
 
