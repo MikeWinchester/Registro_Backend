@@ -66,6 +66,33 @@ class ClaseController {
         }
     }
 
+    public function getEdidByClass(){
+
+        $header = array_change_key_case(getallheaders(), CASE_LOWER);
+        if (!isset($header['claseid'])) {
+            http_response_code(400);
+            echo json_encode(["error" => "Claseid es requerido en el header"]);
+            return;
+        }
+
+        $claseID = $header['claseid']; // Accede en minúsculas
+
+
+        $sql = "SELECT cl.EdificioID
+        FROM Clase AS cl
+        WHERE cl.ClaseID = ?";
+
+        $result = $this->clase->customQuery($sql, [$claseID]);
+
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "clases obtenidas", "data" => $result]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "Clases no obtenidas"]);
+        }
+
+    }
     
 }
 
