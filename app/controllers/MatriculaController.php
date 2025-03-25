@@ -16,13 +16,23 @@ class MatriculaController{
     /**
      * Funcion para obtener los estudiantes matriculados en una seccion
      *
-     * @param $idSeccion id de la seccion
+     * 
      *
-     * @version 0.1.0
+     * @version 0.1.1
      */
-    public function getEstudiantes($idSeccion){
+    public function getEstudiantes(){
 
         #AuthMiddleware::authMiddleware();
+
+        $header = getallheaders();
+
+        if(!isset($header['SeccionID'])){
+            http_response_code(400);
+            echo json_encode(["error" => "SeccionID es requerido en el header"]);
+            return;
+        }
+    
+        $secID = $header['SeccionID'];
 
         $sql = "SELECT est.EstudianteID, usr.NombreCompleto, est.NumeroCuenta, est.CorreoInstitucional 
         FROM Matricula as mat
@@ -33,7 +43,7 @@ class MatriculaController{
         where SeccionID = ?
         and EstadoMatricula = 'Activo'";
 
-        $result = $this->matricula->customQuery($sql, [$idSeccion]);
+        $result = $this->matricula->customQuery($sql, [$secID]);
 
         if ($result) {
             http_response_code(200);
