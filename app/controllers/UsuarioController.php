@@ -38,15 +38,15 @@ class UsuarioController {
 
     public function createUser() {
         $data = json_decode(file_get_contents("php://input"), true);
-        if (!isset($data["NombreCompleto"]) || !isset($data["Identidad"]) || !isset($data["Correo"]) ||
-            !isset($data["Pass"]) || !isset($data["Rol"]) || !isset($data["NumeroCuenta"])) {
+        if (!isset($data["nombre_completo"]) || !isset($data["identidad"]) || !isset($data["correo"]) ||
+            !isset($data["contrasenia"]) || !isset($data["numero_cuenta"]) || !isset($data["telefono"])) {
             http_response_code(400);
             echo json_encode(["error" => "Faltan datos requeridos"]);
             return;
         }
 
         // Hashear la contraseña
-        $data["Pass"] = password_hash($data["Pass"], PASSWORD_DEFAULT);
+        $data["contrasenia"] = password_hash($data["contrasenia"], PASSWORD_DEFAULT);
 
         if ($this->user->create($data)) {
             echo json_encode(["message" => "Usuario creado correctamente"]);

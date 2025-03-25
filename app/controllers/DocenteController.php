@@ -2,7 +2,6 @@
 
 require_once __DIR__ . "/../models/Docente.php";
 require_once __DIR__ . "/../core/AuthMiddleware.php";
-require_once __DIR__ . "/../core/Cors.php";
 
 class DocenteController {
     private $docente;

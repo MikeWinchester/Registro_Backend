@@ -9,6 +9,8 @@ require_once __DIR__ . "/app/controllers/MatriculaController.php";
 require_once __DIR__ . "/app/controllers/CarreraController.php";
 require_once __DIR__ . "/app/controllers/CentroController.php";
 require_once __DIR__ . "/app/controllers/NotasController.php";
+require_once __DIR__ . "/app/controllers/AuthController.php";
+
 
 $router = new Router;
 

@@ -3,10 +3,7 @@ class Database {
     private $conn;
 
     public function __construct() {
-        $config = require_once __DIR__ . "/../../config.php";
-
-        // Imprimir host para depuración en Azure (puedes quitarlo después)
-        error_log("DB_HOST: " . $config["DB_HOST"]);
+        $config = $GLOBALS['config'];
 
         $this->conn = new mysqli(
             $config["DB_HOST"],

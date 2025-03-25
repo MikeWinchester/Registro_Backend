@@ -1,9 +1,9 @@
 <?php
 require_once __DIR__ . "/../core/Model.php";
 
-class Centro extends Model {
+class Estudiante extends Model {
     public function __construct() {
-        parent::__construct("tbl_centro_regional");
+        parent::__construct("tbl_estudiante");
     }
 }
 ?>
