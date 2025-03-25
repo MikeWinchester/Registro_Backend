@@ -2,7 +2,6 @@
 
 require_once __DIR__ . "/../models/Matricula.php";
 require_once __DIR__ . "/../core/AuthMiddleware.php";
-require_once __DIR__ . "/../core/Cors.php";
 
 class MatriculaController{
 

@@ -1,236 +1,206 @@
-DROP DATABASE IF EXISTS BD_UNI;
-CREATE DATABASE BD_UNI;
-USE BD_UNI;
-
 -- Tabla Usuario
-CREATE TABLE Usuario (
-    UsuarioID SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    NombreCompleto VARCHAR(50) NOT NULL,
-    Identidad CHAR(13) UNIQUE NOT NULL,
-    Correo VARCHAR(100) UNIQUE NOT NULL,
-    Pass VARCHAR(50) NOT NULL,
-    Rol ENUM('Estudiante', 'Docente') NOT NULL,
-    NumeroCuenta VARCHAR(50) UNIQUE NOT NULL,
-    Telefono CHAR(8),
-    Es_Revisor TINYINT(1) NOT NULL,
-    INDEX idx_usuario_correo (Correo)
+CREATE TABLE tbl_usuario (
+    usuario_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre_completo VARCHAR(50) NOT NULL,
+    identidad CHAR(13) UNIQUE NOT NULL,
+    correo VARCHAR(100) UNIQUE NOT NULL,
+    numero_cuenta CHAR(11) UNIQUE NOT NULL,
+    contrasenia VARCHAR(255) NOT NULL,
+    telefono CHAR(8),
+    INDEX idx_usuario_correo (correo)
 );
 
 -- Tabla Facultad
-CREATE TABLE Facultad (
-    FacultadID TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    NombreFacultad VARCHAR(100) NOT NULL,
-    Decano SMALLINT UNSIGNED,
-    FOREIGN KEY (Decano) REFERENCES Usuario(UsuarioID),
-    INDEX idx_facultad_nombre (NombreFacultad)
+CREATE TABLE tbl_facultad (
+    facultad_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre_facultad VARCHAR(100) NOT NULL,
+    INDEX idx_facultad_nombre (nombre_facultad)
 );
 
 -- Tabla Centro Regional
-CREATE TABLE CentroRegional (
-    CentroRegionalID TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    NombreCentro VARCHAR(100) NOT NULL,
-    Ubicacion VARCHAR(255) NOT NULL,
-    Telefono CHAR(8),
-    Correo VARCHAR(100),
-    INDEX idx_centroregional_nombre (NombreCentro)
+CREATE TABLE tbl_centro_regional (
+    centro_regional_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre_centro VARCHAR(100) NOT NULL,
+    ubicacion VARCHAR(255) NOT NULL,
+    INDEX idx_centroregional_nombre (nombre_centro)
+);
+
+CREATE TABLE tbl_revisor (
+    revisor_id SMALLINT UNSIGNED PRIMARY KEY,
+    usuario_id SMALLINT UNSIGNED NOT NULL,
+    FOREIGN KEY (usuario_id) REFERENCES tbl_usuario(usuario_id) ON DELETE CASCADE
 );
 
 -- Tabla Carrera
-CREATE TABLE Carrera (
-    CarreraID TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    NombreCarrera VARCHAR(100) NOT NULL,
-    Duracion TINYINT UNSIGNED NOT NULL,
-    Nivel ENUM('Licenciatura', 'Ingeniería', 'Técnico') NOT NULL,
-    FacultadID TINYINT UNSIGNED NOT NULL,
-    CentroRegionalID TINYINT UNSIGNED NOT NULL,
-    FOREIGN KEY (FacultadID) REFERENCES Facultad(FacultadID),
-    FOREIGN KEY (CentroRegionalID) REFERENCES CentroRegional(CentroRegionalID),
-    INDEX idx_carrera_nombre (NombreCarrera)
+CREATE TABLE tbl_carrera (
+    carrera_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre_carrera VARCHAR(100) NOT NULL,
+    duracion DECIMAL(2,1) UNSIGNED NOT NULL,
+    grado ENUM('Licenciatura', 'Técnico Universitario', 'Maestría') NOT NULL,
+    facultad_id TINYINT UNSIGNED DEFAULT NULL, 
+    FOREIGN KEY (facultad_id) REFERENCES tbl_facultad(facultad_id),
+    INDEX idx_carrera_nombre (nombre_carrera)
+);
+
+CREATE TABLE tbl_carrera_x_centro_regional(
+    carrera_id TINYINT UNSIGNED NOT NULL,
+    centro_regional_id TINYINT UNSIGNED NOT NULL,
+    PRIMARY KEY (carrera_id, centro_regional_id),
+    FOREIGN KEY (carrera_id) REFERENCES tbl_carrera(carrera_id) ON DELETE CASCADE,
+    FOREIGN KEY (centro_regional_id) REFERENCES tbl_centro_regional(centro_regional_id) ON DELETE CASCADE
 );
 
 -- Tabla Admisión
-CREATE TABLE Admision (
-    ID SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    Primer_nombre VARCHAR(50) NOT NULL,
-    Segundo_nombre VARCHAR(50),
-    Primer_apellido VARCHAR(50) NOT NULL,
-    Pegundo_apellido VARCHAR(50),
-    Correo VARCHAR(100) UNIQUE NOT NULL,
-    Numero_identidad VARCHAR(20) UNIQUE NOT NULL,
-    Numero_telefono VARCHAR(20) NOT NULL,
-    Fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CarreraID TINYINT UNSIGNED NOT NULL,
-    CarreraAlternativaID TINYINT UNSIGNED,
-    CertificadoSecundaria TEXT,
-    FOREIGN KEY (CarreraID) REFERENCES Carrera(CarreraID),
-    FOREIGN KEY (CarreraAlternativaID) REFERENCES Carrera(CarreraID)
+CREATE TABLE tbl_admision (
+    admision_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    primer_nombre VARCHAR(50) NOT NULL,
+    segundo_nombre VARCHAR(50),
+    primer_apellido VARCHAR(50) NOT NULL,
+    segundo_apellido VARCHAR(50),
+    correo VARCHAR(100) UNIQUE NOT NULL,
+    numero_identidad VARCHAR(20) UNIQUE NOT NULL,
+    numero_telefono VARCHAR(20) NOT NULL,
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    carrera_id TINYINT UNSIGNED NOT NULL,
+    carrera_secundaria_id TINYINT UNSIGNED,
+    certificado_Secundaria VARCHAR(255),
+    FOREIGN KEY (carrera_id) REFERENCES tbl_carrera(carrera_id),
+    FOREIGN KEY (carrera_secundaria_id) REFERENCES tbl_carrera(carrera_id)
 );
 
-CREATE TABLE Solicitud (
-    ID SMALLINT UNSIGNED PRIMARY KEY,
-    Estado ENUM('Pendiente', 'Aprobada', 'Rechazada') NOT NULL DEFAULT 'Pendiente',
-    Observaciones TEXT,
-    FOREIGN KEY (ID) REFERENCES Admision(ID) ON DELETE CASCADE
+CREATE TABLE tbl_rol(
+    rol_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre_rol VARCHAR(20) UNIQUE NOT NULL	
+);
+
+CREATE TABLE tbl_usuario_x_rol(
+    usuario_id SMALLINT UNSIGNED NOT NULL,
+    rol_id SMALLINT UNSIGNED NOT NULL,
+    PRIMARY KEY (usuario_id, rol_id),
+    FOREIGN KEY (usuario_id) REFERENCES tbl_usuario(usuario_id) ON DELETE CASCADE,
+    FOREIGN KEY (rol_id) REFERENCES tbl_rol(rol_id) ON DELETE CASCADE
+);
+
+CREATE TABLE tbl_solicitud (
+    solicitud_id SMALLINT UNSIGNED PRIMARY KEY,
+    estado ENUM('Pendiente', 'Aprobada', 'Rechazada') NOT NULL DEFAULT 'Pendiente',
+    codigo VARCHAR(20) UNIQUE NOT NULL,
+    observaciones TEXT,
+    FOREIGN KEY (solicitud_id) REFERENCES tbl_admision(admision_id) ON DELETE CASCADE
+);
+
+CREATE TABLE tbl_departamento (
+    departamento_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    facultad_id TINYINT UNSIGNED NOT NULL,
+    FOREIGN KEY (facultad_id) REFERENCES tbl_facultad(facultad_id),
+    INDEX idx_departamento (nombre)
 );
 
 -- Tabla Estudiante
-CREATE TABLE Estudiante (
-    EstudianteID SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    UsuarioID SMALLINT UNSIGNED UNIQUE,
-    CarreraID TINYINT UNSIGNED NOT NULL,
-    CentroRegionalID TINYINT UNSIGNED NOT NULL,
-    CorreoInstitucional VARCHAR(100) UNIQUE NOT NULL,
-    NumeroCuenta CHAR(10) UNIQUE NOT NULL,
-    FOREIGN KEY (UsuarioID) REFERENCES Usuario(UsuarioID),
-    FOREIGN KEY (CarreraID) REFERENCES Carrera(CarreraID),
-    FOREIGN KEY (CentroRegionalID) REFERENCES CentroRegional(CentroRegionalID)
+CREATE TABLE tbl_estudiante (
+    estudiante_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    usuario_id SMALLINT UNSIGNED UNIQUE,
+    carrera_id TINYINT UNSIGNED NOT NULL,
+    centro_regional_id TINYINT UNSIGNED NOT NULL,
+    correo VARCHAR(100) UNIQUE NOT NULL,
+    FOREIGN KEY (usuario_id) REFERENCES tbl_usuario(usuario_id),
+    FOREIGN KEY (carrera_id) REFERENCES tbl_carrera(carrera_id),
+    FOREIGN KEY (centro_regional_id) REFERENCES tbl_centro_regional(centro_regional_id)
 );
 
 -- Tabla Docente
-CREATE TABLE Docente (
-    DocenteID SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    UsuarioID SMALLINT UNSIGNED UNIQUE,
-    CentroRegionalID TINYINT UNSIGNED NOT NULL,
-    FOREIGN KEY (UsuarioID) REFERENCES Usuario(UsuarioID),
-    FOREIGN KEY (CentroRegionalID) REFERENCES CentroRegional(CentroRegionalID)
+CREATE TABLE tbl_docente (
+    docente_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    usuario_id SMALLINT UNSIGNED UNIQUE,
+    carrera_id TINYINT UNSIGNED NOT NULL,
+    centro_regional_id TINYINT UNSIGNED NOT NULL,
+    FOREIGN KEY (usuario_id) REFERENCES tbl_usuario(usuario_id),
+    FOREIGN KEY (centro_regional_id) REFERENCES tbl_centro_regional(centro_regional_id),
+    FOREIGN KEY (carrera_id) REFERENCES tbl_carrera(carrera_id)
 );
 
 -- Tabla Coordinador
-CREATE TABLE Coordinador (
-    CoordinadorID TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    DocenteID SMALLINT UNSIGNED UNIQUE,
-    DepartamentoID TINYINT UNSIGNED NOT NULL,
-    FOREIGN KEY (DocenteID) REFERENCES Docente(DocenteID)
+CREATE TABLE tbl_coordinador (
+    coordinador_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    docente_id SMALLINT UNSIGNED UNIQUE,
+    carrera_id TINYINT UNSIGNED NOT NULL,
+    FOREIGN KEY (docente_id) REFERENCES tbl_docente(docente_id),
+    FOREIGN KEY (carrera_id) REFERENCES tbl_carrera(carrera_id)
 );
 
 -- Tabla Categoría Libro
-CREATE TABLE CategoriaLibro (
-    CategoriaID TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    Nombre VARCHAR(50) NOT NULL,
-    INDEX idx_categoria_nombre (Nombre)
+CREATE TABLE tbl_categoria_libro (
+    categoria_libro_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    INDEX idx_categoria_nombre (nombre)
 );
 
 -- Tabla Biblioteca
-CREATE TABLE Biblioteca (
-    LibroID SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    Titulo VARCHAR(150) NOT NULL,
-    Autor VARCHAR(100) NOT NULL,
-    CategoriaLibroID TINYINT UNSIGNED NOT NULL,
-    ArchivoPDF TEXT,
-    FOREIGN KEY (CategoriaLibroID) REFERENCES CategoriaLibro(CategoriaID)
+CREATE TABLE tbl_biblioteca (
+    libro_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(150) NOT NULL,
+    autor VARCHAR(100) NOT NULL,
+    categoria_libro_id TINYINT UNSIGNED NOT NULL,
+    archivo_PDF TEXT,
+    FOREIGN KEY (categoria_libro_id) REFERENCES tbl_categoria_libro(categoria_libro_id)
+);
+
+CREATE TABLE tbl_clase (
+    clase_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    codigo VARCHAR(20) UNIQUE NOT NULL,
+    UV TINYINT UNSIGNED
 );
 
 -- Tabla Sección
-CREATE TABLE Seccion (
-    SeccionID SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    Asignatura VARCHAR(100) NOT NULL,
-    DocenteID SMALLINT UNSIGNED NOT NULL,
-    PeriodoAcademico VARCHAR(20) NOT NULL,
-    Aula VARCHAR(20),
-    Horario VARCHAR(50),
-    CupoMaximo TINYINT UNSIGNED NOT NULL,
-    FOREIGN KEY (DocenteID) REFERENCES Docente(DocenteID)
+CREATE TABLE tbl_seccion (
+    seccion_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    clase_id SMALLINT UNSIGNED NOT NULL,
+    docente_id SMALLINT UNSIGNED NOT NULL,
+    periodo_academico VARCHAR(20) NOT NULL,
+    aula VARCHAR(20),
+    horario VARCHAR(50),
+    cupo_maximo TINYINT UNSIGNED NOT NULL,
+    FOREIGN KEY (docente_id) REFERENCES tbl_docente(docente_id),
+    FOREIGN KEY (clase_id) REFERENCES tbl_clase(clase_id)
 );
 
 -- Tabla Matrícula
-CREATE TABLE Matricula (
-    MatriculaID SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    EstudianteID SMALLINT UNSIGNED NOT NULL,
-    SeccionID SMALLINT UNSIGNED NOT NULL,
-    FechaInscripcion DATE NOT NULL,
-    EstadoMatricula ENUM('Activo', 'Inactivo') NOT NULL,
-    FOREIGN KEY (EstudianteID) REFERENCES Estudiante(EstudianteID),
-    FOREIGN KEY (SeccionID) REFERENCES Seccion(SeccionID)
+CREATE TABLE tbl_matricula (
+    matricula_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    estudiante_id SMALLINT UNSIGNED NOT NULL,
+    seccion_id SMALLINT UNSIGNED NOT NULL,
+    fechaInscripcion DATE NOT NULL,
+    FOREIGN KEY (estudiante_id) REFERENCES tbl_estudiante(estudiante_id),
+    FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
 );
 
--- Tabla Notas
-CREATE TABLE Notas (
-    NotaID SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    EstudianteID SMALLINT UNSIGNED NOT NULL,
-    SeccionID SMALLINT UNSIGNED NOT NULL,
-    Calificacion DECIMAL(4,2) NOT NULL,
-    FOREIGN KEY (EstudianteID) REFERENCES Estudiante(EstudianteID),
-    FOREIGN KEY (SeccionID) REFERENCES Seccion(SeccionID)
+CREATE TABLE tbl_notas (
+    nota_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    estudiante_id SMALLINT UNSIGNED NOT NULL,
+    seccion_id SMALLINT UNSIGNED NOT NULL,
+    calificacion DECIMAL(4,2) NOT NULL,
+    FOREIGN KEY (estudiante_id) REFERENCES tbl_estudiante(estudiante_id),
+    FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
 );
-
--- Inserts para Usuario
-INSERT INTO Usuario (NombreCompleto, Identidad, Correo, Pass,Es_Revisor,NumeroCuenta, Telefono) VALUES
-('Juan Pérez', '0801199901234', 'juan.perez@gmail.com', 'clave123',1, '123456789','98765432'),
-('María López', '0802199505678', 'maria.lopez@gmail.com', 'pass456',1,'987654321', '99887766');
-
--- Inserts para Centro Regional
-INSERT INTO CentroRegional (NombreCentro, Ubicacion, Telefono, Correo) VALUES
-('Centro Regional Tegucigalpa', 'Tegucigalpa, Honduras', '22334455', 'info@uniteg.hn');
-
--- Inserts para Facultad
--- Inserts para Facultad
-INSERT INTO Facultad (NombreFacultad, Decano) VALUES
-('Facultad de Ingeniería', 2),
-('Facultad de Ciencias Económicas', NULL),
-('Facultad de Ciencias de la Salud', NULL),
-('Facultad de Ciencias Sociales', NULL),
-('Facultad de Humanidades y Artes', NULL),
-('Facultad de Ciencias Jurídicas', NULL),
-('Facultad de Ciencias Exactas y Naturales', NULL);
-
--- Inserts para Carrera
-INSERT INTO Carrera (NombreCarrera, Duracion, Nivel, FacultadID, CentroRegionalID) VALUES
--- Ingeniería
-('Ingeniería en Sistemas', 5, 'Ingeniería', 1, 1),
-('Ingeniería Civil', 5, 'Ingeniería', 1, 1),
-('Ingeniería Industrial', 5, 'Ingeniería', 1, 1),
-('Ingeniería Mecánica', 5, 'Ingeniería', 1, 1),
-('Ingeniería Eléctrica', 5, 'Ingeniería', 1, 1),
-('Ingeniería Electrónica', 5, 'Ingeniería', 1, 1),
-('Administración de Empresas', 4, 'Licenciatura', 2, 1),
-('Contaduría Pública', 4, 'Licenciatura', 2, 1),
-('Economía', 4, 'Licenciatura', 2, 1),
-('Medicina', 7, 'Licenciatura', 3, 1),
-('Odontología', 5, 'Licenciatura', 3, 1),
-('Enfermería', 5, 'Licenciatura', 3, 1),
-('Psicología', 4, 'Licenciatura', 4, 1),
-('Trabajo Social', 4, 'Licenciatura', 4, 1),
-('Ciencias de la Educación', 4, 'Licenciatura', 5, 1),
-('Artes Plásticas', 4, 'Licenciatura', 5, 1),
-('Derecho', 5, 'Licenciatura', 6, 1),
-('Matemáticas', 4, 'Licenciatura', 7, 1),
-('Biología', 4, 'Licenciatura', 7, 1),
-('Física', 4, 'Licenciatura', 7, 1);
 
 DELIMITER $$
 
-CREATE TRIGGER after_admision_insert
-AFTER INSERT ON Admision
+CREATE TRIGGER trg_create_solicitud
+AFTER INSERT ON tbl_admision
 FOR EACH ROW
 BEGIN
-    INSERT INTO Solicitud (id, estado)
-    VALUES (NEW.id, 'Pendiente');
+    INSERT INTO tbl_solicitud (solicitud_id, estado)
+    VALUES (NEW.admision_id);
 END $$
 
 DELIMITER ;
 
-ALTER TABLE Usuario MODIFY Pass VARCHAR(255) NOT NULL;
-
-ALTER TABLE Docente 
-ADD COLUMN CodigoEmpleado CHAR(10) UNIQUE NOT NULL;
-
-ALTER TABLE Docente 
-ADD COLUMN CarreraID TINYINT UNSIGNED NOT NULL AFTER CentroRegionalID, 
-ADD FOREIGN KEY (CarreraID) REFERENCES Carrera(CarreraID);
-
-ALTER TABLE Solicitud
-ADD COLUMN nota SMALLINT NULL,
-ADD COLUMN codigo VARCHAR(20) NOT NULL;
-
-ALTER TABLE Solicitud
-ADD CONSTRAINT unique_codigo UNIQUE (codigo);
-
---Trigger codigo solicitud
-
 DELIMITER $$
 
-CREATE TRIGGER after_solicitud_insert
-BEFORE INSERT ON solicitud
+CREATE TRIGGER trg_create_codigo_solicitud
+BEFORE INSERT ON tbl_solicitud
 FOR EACH ROW
 BEGIN
     DECLARE random_letter CHAR(1);
@@ -243,46 +213,218 @@ END $$
 
 DELIMITER ;
 
-CREATE TABLE Clase (
-    ClaseID SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    Nombre VARCHAR(100) NOT NULL,
-    Codigo VARCHAR(20) UNIQUE NOT NULL
-);
+INSERT INTO tbl_usuario (nombre_completo, identidad, correo, numero_cuenta, contrasenia, telefono) VALUES ("Miguel Alejandro Sánchez Pavón", "0801200212345", "miguel@gmail.com", "20211002227", "12345", "87702024");
+INSERT INTO tbl_usuario (nombre_completo, identidad, correo, numero_cuenta, contrasenia, telefono) VALUES ("Gabriel Antonio Sánchez Pavón", "0801200212346", "gabriel@gmail.com", "20211002228", "12345", "87702025");
+INSERT INTO tbl_usuario (nombre_completo, identidad, correo, numero_cuenta, contrasenia, telefono) VALUES ("Yeymi Gabriela Sánchez Pavón", "0801200212347", "yeymi@gmail.com", "20211002229", "12345", "87702026");
+INSERT INTO tbl_usuario (nombre_completo, identidad, correo, numero_cuenta, contrasenia, telefono) VALUES ("Rafael Armando Sánchez Pavón", "0801200212348", "rafael@gmail.com", "20211002220", "12345", "87702027");
+INSERT INTO tbl_usuario (nombre_completo, identidad, correo, numero_cuenta, contrasenia, telefono) VALUES ("Carlos Fernando Sánchez Pavón", "0801200212349", "carlos30@gmail.com", "20211002221", "12345", "87702028");
 
-ALTER TABLE Seccion
-ADD COLUMN ClaseID SMALLINT UNSIGNED NOT NULL,
-ADD CONSTRAINT FK_Seccion_Clase FOREIGN KEY (ClaseID) REFERENCES Clase(ClaseID);
+INSERT INTO tbl_rol (nombre_rol) VALUES ("Estudiante");
+INSERT INTO tbl_rol (nombre_rol) VALUES ("Docente");
+INSERT INTO tbl_rol (nombre_rol) VALUES ("Jefe");
+INSERT INTO tbl_rol (nombre_rol) VALUES ("Coordinador");
+INSERT INTO tbl_rol (nombre_rol) VALUES ("Revisor");
 
-ALTER TABLE Seccion
-DROP COLUMN Asignatura;
+INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (1, 1);
+INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (1, 5);
+INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (2, 2);
+INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (2, 5);
 
-ALTER TABLE Carrera
-DROP FOREIGN KEY Carrera_ibfk_2,
-DROP COLUMN CentroRegionalID;
+INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Ciencias Jurídicas");
+INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Ciencias Sociales");
+INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Humanidades y Artes");
+INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Ingeniería");
+INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Ciencias Espaciales");
+INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Ciencias Médicas");
+INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Odontología");
+INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Ciencias");
+INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Química y Farmacia");
+INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Ciencias Económicas Administratias y Contables");
 
-CREATE TABLE CentroRegional_Carrera (
-    CentroRegionalID TINYINT UNSIGNED NOT NULL,
-    CarreraID TINYINT UNSIGNED NOT NULL,
-    PRIMARY KEY (CentroRegionalID, CarreraID),
-    FOREIGN KEY (CentroRegionalID) REFERENCES CentroRegional(CentroRegionalID),
-    FOREIGN KEY (CarreraID) REFERENCES Carrera(CarreraID)
-);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Derecho", 5.0, "Licenciatura", 1);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Antropología", 5.0, "Licenciatura", 2);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Periodismo", 4.0, "Licenciatura", 2);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Psicología", 4.5, "Licenciatura", 2);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Pedagogía", 5.0, "Licenciatura", 3);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Trabajo Social", 5.0, "Licenciatura", 2);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Historia", 5.0, "Licenciatura", 2);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Letras", 5.0, "Licenciatura", 3);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Filosofía", 5.0, "Licenciatura", 3);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Sociología", 5.0, "Licenciatura", 2);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Educación Física", 5.0, "Licenciatura", 3);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Lenguas Extranjeras con Orientación en Inglés y Francés", 5.5, "Licenciatura", 3);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Música", 5.0, "Licenciatura", 3);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Desarrollo Local", 5.0, "Licenciatura", 2);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Ingeniería Civil", 5.0, "Licenciatura", 4);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Ingeniería Mecánica Industrial", 5.0, "Licenciatura", 4);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Ingeniería Eléctrica Industrial", 5.0, "Licenciatura", 4);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Ingeniería Industrial", 5.0, "Licenciatura", 4);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Ingeniería en Sistemas", 5.0, "Licenciatura", 4);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Arquitectura", 5.0, "Licenciatura", 3);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Matemática", 4.0, "Licenciatura", 8);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Física", 4.0, "Licenciatura", 8);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Astronomía y Astrofísica", 5.0, "Licenciatura", 5);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Ciencia y Tecnologías de la Información Geográfica", 4.0, "Licenciatura", 5);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Medicina y Cirugía", 7.0, "Licenciatura", 6);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Odontología", 6.0, "Licenciatura", 7);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Nutrición", 5.0, "Licenciatura", 6);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Química y Farmacia", 5.0, "Licenciatura", 9);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Enfermería", 5.5, "Licenciatura", 6);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Microbiología", 5.0, "Licenciatura", 8);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Biología", 5.5, "Licenciatura", 8);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Fonoaudiología", 4.5, "Licenciatura", 6);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Administración y Generación de Empresas", 4.0, "Licenciatura", 10);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Administración Pública", 5.0, "Licenciatura", 10);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Economía", 5.0, "Licenciatura", 10);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Contaduría Pública y Finanzas", 5.0, "Licenciatura", 10);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Administración Aduanera", 4.5, "Licenciatura", 10);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Banca y Finanzas", 5.0, "Licenciatura", 10);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Comercio Internacional", 5.0, "Licenciatura", 10);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Informática Administrativa", 4.5, "Licenciatura", 10);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Mercadotecnia", 5.0, "Licenciatura", 10);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Ingeniería Agronómica", 5.0, "Licenciatura", 4);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Ingeniería Forestal", 5.0, "Licenciatura", 4);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Ingeniería Agroindustrial", 5.0, "Licenciatura", 4);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Ingeniería en Ciencias Acuícolas y Recursos Marinos Costeros", 5.0, "Licenciatura", 4);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Economía Agrícola", 5.0, "Licenciatura", 10);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Ecoturismo", 5.0, "Licenciatura", 10);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Comercio Internacional con Orientación en Agroindustria", 5.0, "Licenciatura", 10);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Técnico Universitario en Educación Básica para la Enseñanza del Español", 2.5, "Técnico Universitario", 3);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Técnico Universitario Metalurgia", 2.5, "Técnico Universitario", 8);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Técnico Universitario en Producción Agrícola", 2.5, "Técnico Universitario", 4);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Técnico Universitario en Terapia Funcional", 2.5, "Técnico Universitario", 6);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Técnico Universitario en Radiotecnologías (Radiología e Imágenes)", 2.5, "Técnico Universitario", 6);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Técnico Universitario en Microfinanzas", 2.5, "Técnico Universitario", 10);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Técnico Universitario en Alimentos y Bebidas", 2.5, "Técnico Universitario", 10);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Técnico Universitario en Control de Calidad del Café", 2.5, "Técnico Universitario", 4);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Técnico Universitario en Administración de Empresas Cafetaleras", 2.5, "Técnico Universitario", 10);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Técnico Universitario en Desarollo Municipal", 2.5, "Técnico Universitario", 2);
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Administración de Empresas Agropecuarias", 4.5, "Licenciatura", 10);
 
-CREATE TABLE Departamento (
-    DepartamentoID INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    Departamento VARCHAR(50) NOT NULL,
-    FacultadID TINYINT UNSIGNED NOT NULL,
-    CONSTRAINT fk_facultad FOREIGN KEY (FacultadID) REFERENCES Facultad(FacultadID),
-    INDEX idx_departamento (Departamento)
-);
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("UNAH Ciudad Universitaria", "Tegucigalpa");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("UNAH Cortés", "Cortés");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("UNAH Comayagua", "Comayagua");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("UNAH Atlántida", "Atlántida");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("UNAH Choluteca", "Choluteca");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("UNAH Copán", "Copán");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("UNAH Olancho", "Olancho");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("UNAH El Paraíso", "El Paraíso");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("UNAH Yoro", "Yoro");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("Instituto Tecnológico Superior Tela", "Atlántida");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("CRAED", "A distancia");
 
-ALTER TABLE Clase 
-ADD COLUMN DepartamentoID INT UNSIGNED NOT NULL,
-ADD CONSTRAINT fk_clase_departamento FOREIGN KEY (DepartamentoID) REFERENCES Departamento(DepartamentoID);
-
-ALTER TABLE Docente 
-ADD COLUMN DepartamentoID INT UNSIGNED NOT NULL,
-ADD CONSTRAINT fk_docente_departamento FOREIGN KEY (DepartamentoID) REFERENCES Departamento(DepartamentoID);
-
-
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (1, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (1, 2);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (2, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (3, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (3, 2);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (4, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (4, 2);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (5, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (5, 2);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (5, 11);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (6, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (7, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (8, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (8, 2);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (9, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (10, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (10, 2);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (11, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (12, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (13, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (14, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (14, 3);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (14, 6);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (14, 8);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (15, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (15, 2);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (16, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (16, 2);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (17, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (17, 2);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (18, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (18, 2);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (19, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (19, 2);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (19, 3);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (19, 5);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (19, 6);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (20, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (21, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (21, 2);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (22, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (23, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (24, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (25, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (25, 2);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (26, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (26, 2);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (27, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (28, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (29, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (29, 2);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (29, 4);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (29, 7);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (29, 8);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (30, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (31, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (32, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (33, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (33, 2);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (33, 3);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (33, 4);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (33, 5);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (33, 6);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (33, 7);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (33, 8);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (34, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (35, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (35, 2);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (36, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (36, 2);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (37, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (38, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (39, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (39, 2);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (40, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (40, 2);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (40, 8);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (40, 9);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (41, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (42, 4);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (43, 4);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (44, 3);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (44, 5);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (44, 6);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (44, 7);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (44, 8);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (44, 9);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (45, 5);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (46, 4);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (47, 4);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (48, 3);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (48, 5);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (48, 6);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (48, 7);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (49, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (50, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (51, 3);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (51, 6);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (52, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (53, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (54, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (54, 9);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (54, 10);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (54, 11);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (55, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (55, 10);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (56, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (57, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (57, 3);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (57, 6);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (57, 8);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (57, 11);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (58, 1);
+INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (59, 11);
 

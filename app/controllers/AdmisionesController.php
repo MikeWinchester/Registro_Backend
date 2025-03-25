@@ -1,7 +1,6 @@
 <?php
 
 require_once __DIR__ . "/../models/Admisiones.php";
-require_once __DIR__ . "/../core/Cors.php"; 
 
 class AdmisionesController {
     private $admision;

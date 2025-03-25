@@ -3,11 +3,10 @@ class AuthMiddleware {
     private static $secret_key;
 
     public static function init() {
-        $config = require_once __DIR__ . "/../../config.php";
+        $config = $GLOBALS['config'];
         self::$secret_key = $config["SECRET_KEY"];
     }
 
-    // Middleware para proteger APIs JSON
     public static function authMiddleware() {
         self::init();
 
@@ -30,7 +29,18 @@ class AuthMiddleware {
         return $user;
     }
 
-    // Verificar JWT
+    public static function checkRoleWithAuth($required_roles) {
+        $user = self::authMiddleware();
+
+        if (!array_intersect($user["Roles"], $required_roles)) {
+            http_response_code(403);
+            echo json_encode(["error" => "Acceso denegado, rol insuficiente"]);
+            exit();
+        }
+
+        return true;
+    }
+
     public static function verifyJWT($token) {
         self::init();
         
@@ -43,6 +53,8 @@ class AuthMiddleware {
         if ($valid_signature !== $signature) return null;
 
         $decoded_payload = json_decode(base64_decode($payload), true);
+        if (!$decoded_payload) return null;
+        if (!isset($decoded_payload["Roles"]) || !is_array($decoded_payload["Roles"])) return null;
         if ($decoded_payload["exp"] < time()) return null;
 
         return $decoded_payload;
