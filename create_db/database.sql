@@ -174,6 +174,7 @@ CREATE TABLE tbl_seccion (
     aula_id SMALLINT UNSIGNED NOT NULL,
     periodo_academico VARCHAR(20) NOT NULL,
     horario VARCHAR(50),
+    dias varchar(10),
     cupo_maximo TINYINT UNSIGNED NOT NULL,
     FOREIGN KEY (docente_id) REFERENCES tbl_docente(docente_id),
     FOREIGN KEY (clase_id) REFERENCES tbl_clase(clase_id),
