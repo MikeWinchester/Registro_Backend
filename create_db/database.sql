@@ -185,6 +185,20 @@ CREATE TABLE tbl_notas (
     FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
 );
 
+CREATE TABLE tbl_edificio(
+    edificio_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    edificio varchar(50),
+    facultad_id TINYINT UNSIGNED NOT NULL,
+    FOREIGN KEY (facultad_id) REFERENCES tbl_facultad(facultad_id)
+);
+
+CREATE TABLE tbl_aula (
+    aula_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    aula VARCHAR(20) NOT NULL,
+    edificio_id SMALLINT UNSIGNED NOT NULL,
+    FOREIGN KEY (edificio_id) REFERENCES tbl_edificio(edificio_id)
+);
+
 DELIMITER $$
 
 CREATE TRIGGER trg_create_solicitud
