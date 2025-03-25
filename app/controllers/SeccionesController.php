@@ -14,8 +14,6 @@ class SeccionesController {
     /**
      * Funcion para obtener las secciones de los docentes actuales
      *
-     * 
-     *
      * @version 0.1.2
      */
     public function getSeccionesActuales(){
@@ -24,20 +22,20 @@ class SeccionesController {
 
         $header = getallheaders();
 
-        if(!isset($header['DocenteID'])){
+        if(!isset($header['docenteid'])){
             http_response_code(404);
             echo json_encode(["error" => "Campo DocenteID necestiado"]);
             return;
         }
         
-        $docenteid = $header['DocenteID'];
+        $docenteid = $header['docenteid'];
 
-        $sql = "SELECT SeccionID, cl.Nombre ,PeriodoAcademico, Aula, Horario, CupoMaximo
-        FROM Seccion as sec
-        INNER JOIN Clase as cl
-        ON sec.ClaseID = cl.ClaseID
-        WHERE DocenteID = ?
-        AND PeriodoAcademico = ?
+        $sql = "SELECT seccion_id, cl.nombre ,periodo_academico, aula, horario, cupo_maximo
+        FROM tbl_seccion as sec
+        INNER JOIN tbl_clase as cl
+        ON sec.clase_id = cl.clase_id
+        WHERE docente_id = ?
+        AND periodo_academico = ?
         ";
 
         $result = $this->seccion->customQuery($sql, [$docenteid, $this->getPeriodo()]);
@@ -65,20 +63,19 @@ class SeccionesController {
 
         $header = getallheaders();
 
-        if(!isset($header['DocenteID'])){
+        if(!isset($header['docenteid'])){
             http_response_code(404);
             echo json_encode(["error" => "Campo DocenteID necestiado"]);
             return;
         }
         
-        $docenteid = $header['DocenteID'];
+        $docenteid = $header['docenteid'];
         
-        $sql = "SELECT SeccionID, cl.Nombre ,PeriodoAcademico, Aula, Horario, CupoMaximo
-        FROM Seccion as sec
-        INNER JOIN Clase as cl
-        ON sec.ClaseID = cl.ClaseID
-        WHERE DocenteID = ?
-        ";
+        $sql = "SELECT seccion_id, cl.nombre ,periodo_academico, aula, horario, cupo_maximo
+        FROM tbl_seccion as sec
+        INNER JOIN tbl_clase as cl
+        ON sec.clase_id = cl.clase_id
+        WHERE docente_id = ?";
 
         $result = $this->seccion->customQuery($sql, [$docenteid]);
 
@@ -104,24 +101,26 @@ class SeccionesController {
         #AuthMiddleware::authMiddleware();
         $header = getallheaders();
 
-        if(!isset($header['SeccionID'])){
+        if(!isset($header['seccionid'])){
             http_response_code(404);
             echo json_encode(["error" => "Campo SeccionID necestiado"]);
             return;
         }
         
-        $secID = $header['SeccionID'];
+        $secID = $header['seccionid'];
         
 
-        $sql = "SELECT cl.Nombre, sec.PeriodoAcademico, sec.Aula, sec.Horario, sec.CupoMaximo, usr.NombreCompleto, usr.Correo
-        FROM Seccion as sec
-        INNER JOIN Docente as doc
-        ON sec.DocenteID = doc.DocenteID
-        INNER JOIN Usuario as usr
-        ON doc.UsuarioID = usr.UsuarioID
-        INNER JOIN Clase as cl
-        ON sec.ClaseID = cl.ClaseID
-        WHERE sec.SeccionID = ?
+        $sql = "SELECT cl.nombre, sec.periodo_academico, al.aula, sec.horario, sec.cupo_maximo, usr.nombre_completo, usr.correo
+        FROM tbl_seccion as sec
+        INNER JOIN tbl_docente as doc
+        ON sec.docente_id = doc.docente_id
+        INNER JOIN tbl_usuario as usr
+        ON doc.usuario_id = usr.usuario_id
+        INNER JOIN tbl_clase as cl
+        ON sec.clase_id = cl.clase_id
+        INNER JOIN tbl_aula as al
+        ON sec.aula_id = al.aula_id
+        WHERE sec.seccion_id = ?
         ";
 
         $result = $this->seccion->customQuery($sql, [$secID]);
@@ -186,19 +185,19 @@ class SeccionesController {
 
         $header = getallheaders();
 
-        if(!isset($header['DocenteID'])){
+        if(!isset($header['docenteid'])){
             http_response_code(404);
             echo json_encode(["error" => "Campo DocenteID necestiado"]);
             return;
         }
         
-        $docenteid = $header['DocenteID'];
+        $docenteid = $header['docenteid'];
 
 
         $sql = "SELECT count(1) as cantidad
-        FROM Seccion
-        WHERE DocenteID = ?
-        AND PeriodoAcademico = ?
+        FROM tbl_seccion
+        WHERE docente_id = ?
+        AND periodo_academico = ?
         ";
 
         $result = $this->seccion->customQuery($sql, [$docenteid, $this->getPeriodo()]);
@@ -238,21 +237,24 @@ class SeccionesController {
      * @version 0.1.0
      */
     public function getSeccionesByClass(){
+
         $header = getallheaders();
 
-        if(!isset($header)){
+        if(!isset($header['claseid'])){
             http_response_code(400);
-            echo json_encode(["error" => "Campo ClaseID necesario"]);
+            echo json_encode(["error" => "Campo claseid necesario"]);
         }
 
-        $sql = "SELECT sc.SeccionID, us.NombreCompleto, sc.Horario, sc.Aula, sc.CupoMaximo
-        FROM Seccion AS sc
-        INNER JOIN Docente AS dc
-        ON sc.DocenteID = dc.DocenteID
-        INNER JOIN Usuario AS us
-        on dc.UsuarioID = us.UsuarioID
-        WHERE sc.ClaseID = ?
-        AND sc.PeriodoAcademico = ?";
+        $sql = "SELECT sc.seccion_id, us.nombre_completo, sc.horario, al.aula, sc.cupo_maximo
+        FROM tbl_seccion AS sc
+        INNER JOIN tbl_docente AS dc
+        ON sc.docente_id = dc.docente_id
+        INNER JOIN tbl_usuario AS us
+        on dc.usuario_id = us.usuario_id
+        INNER JOIN tbl_aula as al
+        ON sc.aula_id = al.aula_id
+        WHERE sc.clase_id = ?
+        AND sc.periodo_academico = ?";
 
         $claseID = $header['claseid'];
 

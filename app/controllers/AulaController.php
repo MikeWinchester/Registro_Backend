@@ -12,6 +12,11 @@ class AulaController {
         header("Content-Type: application/json"); // Estandariza las respuestas como JSON
     }
 
+    /**
+     * retorna las aulas de un edificio
+     * 
+     * @version 0.1.0
+     */
     public function getAulasByEdificio(){
 
         $header = getallheaders();
@@ -21,9 +26,9 @@ class AulaController {
             echo json_encode(['Error'=>'campo EdificioID necesario']);
         }
 
-        $sql = 'SELECT AulaID, Aula
-                FROM Aula
-                WHERE EdificioID = ?';
+        $sql = 'SELECT aula_id, aula
+                FROM tbl_aula
+                WHERE edificio_id = ?';
 
         $edificioID = $header['edificioid'];
 

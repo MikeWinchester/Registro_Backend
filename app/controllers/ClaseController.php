@@ -31,9 +31,9 @@ class ClaseController {
         $depID = $header['departamentoid']; // Accede en minúsculas
 
 
-        $sql = "SELECT cl.ClaseID, cl.Nombre, cl.Codigo
-        FROM Clase AS cl
-        WHERE cl.DepartamentoID = ?";
+        $sql = "SELECT cl.clase_id, cl.nombre, cl.codigo, cl.UV
+        FROM tbl_clase AS cl
+        WHERE cl.departamento_id = ?";
 
         $result = $this->clase->customQuery($sql, [$depID]);
 
@@ -66,6 +66,11 @@ class ClaseController {
         }
     }
 
+    /**
+     * retorna el id de un edificio por una clase
+     * 
+     * @version 0.1.0
+     */
     public function getEdidByClass(){
 
         $header = array_change_key_case(getallheaders(), CASE_LOWER);
@@ -78,9 +83,9 @@ class ClaseController {
         $claseID = $header['claseid']; // Accede en minúsculas
 
 
-        $sql = "SELECT cl.EdificioID
-        FROM Clase AS cl
-        WHERE cl.ClaseID = ?";
+        $sql = "SELECT cl.edificio_id
+        FROM tbl_clase AS cl
+        WHERE cl.clase_id = ?";
 
         $result = $this->clase->customQuery($sql, [$claseID]);
 

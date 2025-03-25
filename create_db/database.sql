@@ -113,11 +113,13 @@ CREATE TABLE tbl_estudiante (
 CREATE TABLE tbl_docente (
     docente_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     usuario_id SMALLINT UNSIGNED UNIQUE,
+    departamento_id INT UNSIGNED NOT NULL,
     carrera_id TINYINT UNSIGNED NOT NULL,
     centro_regional_id TINYINT UNSIGNED NOT NULL,
     FOREIGN KEY (usuario_id) REFERENCES tbl_usuario(usuario_id),
     FOREIGN KEY (centro_regional_id) REFERENCES tbl_centro_regional(centro_regional_id),
-    FOREIGN KEY (carrera_id) REFERENCES tbl_carrera(carrera_id)
+    FOREIGN KEY (carrera_id) REFERENCES tbl_carrera(carrera_id),
+    FOREIGN KEY (departamento_id) REFERENCES tbl_departamento(departamento_id)
 );
 
 -- Tabla Coordinador
@@ -146,11 +148,22 @@ CREATE TABLE tbl_biblioteca (
     FOREIGN KEY (categoria_libro_id) REFERENCES tbl_categoria_libro(categoria_libro_id)
 );
 
+CREATE TABLE tbl_edificio(
+    edificio_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    edificio varchar(50),
+    facultad_id TINYINT UNSIGNED NOT NULL,
+    FOREIGN KEY (facultad_id) REFERENCES tbl_facultad(facultad_id)
+);
+
 CREATE TABLE tbl_clase (
     clase_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    edificio_id SMALLINT UNSIGNED NOT NULL,
+    departamento_id INT UNSIGNED NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     codigo VARCHAR(20) UNIQUE NOT NULL,
-    UV TINYINT UNSIGNED
+    UV TINYINT UNSIGNED,
+    FOREIGN KEY (edificio_id) REFERENCES tbl_edificio(edificio_id),
+    FOREIGN KEY (departamento_id) REFERENCES tbl_departamento(departamento_id)
 );
 
 -- Tabla Sección
@@ -158,12 +171,13 @@ CREATE TABLE tbl_seccion (
     seccion_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     clase_id SMALLINT UNSIGNED NOT NULL,
     docente_id SMALLINT UNSIGNED NOT NULL,
+    aula_id SMALLINT UNSIGNED NOT NULL,
     periodo_academico VARCHAR(20) NOT NULL,
-    aula VARCHAR(20),
     horario VARCHAR(50),
     cupo_maximo TINYINT UNSIGNED NOT NULL,
     FOREIGN KEY (docente_id) REFERENCES tbl_docente(docente_id),
-    FOREIGN KEY (clase_id) REFERENCES tbl_clase(clase_id)
+    FOREIGN KEY (clase_id) REFERENCES tbl_clase(clase_id),
+    FOREIGN KEY (aula_id) REFERENCES tbl_aula(aula_id)
 );
 
 -- Tabla Matrícula
@@ -185,12 +199,6 @@ CREATE TABLE tbl_notas (
     FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
 );
 
-CREATE TABLE tbl_edificio(
-    edificio_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    edificio varchar(50),
-    facultad_id TINYINT UNSIGNED NOT NULL,
-    FOREIGN KEY (facultad_id) REFERENCES tbl_facultad(facultad_id)
-);
 
 CREATE TABLE tbl_aula (
     aula_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

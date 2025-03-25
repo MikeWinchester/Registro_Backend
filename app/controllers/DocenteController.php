@@ -14,45 +14,43 @@ class DocenteController {
     /**
      * Funcion para crear al docente y a su usuario
      *
-     * @version 0.1.0
+     * @version 0.1.1
      */
     public function createDocente() {
         $data = json_decode(file_get_contents("php://input"), true);
     
-        if (!isset($data["NombreCompleto"]) || !isset($data["Identidad"]) || !isset($data["Correo"]) ||
-            !isset($data["Pass"]) || !isset($data['ES_Revisor']) || !isset($data["NumeroCuenta"]) || 
-            !isset($data["CentroRegionalID"])) {
+        if (!isset($data["nombre_completo"]) || !isset($data["identidad"]) || !isset($data["correo"]) ||
+            !isset($data["contrasenia"]) ||  !isset($data["numero_cuenta"]) ||
+            !isset($data["centro_regional_id"])) {
             http_response_code(400);
             echo json_encode(["error" => "Faltan datos requeridos"]);
             return;
         }
     
         // Hashear la contraseña
-        $data["Pass"] = password_hash($data["Pass"], PASSWORD_DEFAULT);
+        $data["contrasenia"] = password_hash($data["contrasenia"], PASSWORD_DEFAULT);
     
         // Separar los datos de usuario y docente
         $data_usr = [
-            "NombreCompleto" => $data["NombreCompleto"],
-            "Identidad" => $data["Identidad"],
-            "Correo" => $data["Correo"],
-            "Pass" => $data["Pass"],
-            "Rol" => "Docente",
-            "NumeroCuenta" => $data["NumeroCuenta"],
-            "Telefono" => isset($data["Telefono"]) ? $data["Telefono"] : null,
-            "ES_Revisor" => $data["ES_Revisor"]
+            "nombre_completo" => $data["nombre_completo"],
+            "identidad" => $data["identidad"],
+            "correo" => $data["correo"],
+            "contrasenia" => $data["contrasenia"],
+            "numero_cuenta" => $data["numero_cuenta"],
+            "telefono" => isset($data["telefono"]) ? $data["telefono"] : null,
         ];
     
         // Insertar usuario
         $this->docente->customQueryInsert(
-            "INSERT INTO Usuario (NombreCompleto, Identidad, Correo, Pass, Rol, NumeroCuenta, Telefono, ES_Revisor)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO tbl_usuario (nombre_completo, identidad, correo, contrasenia, numero_cuenta, telefono)
+             VALUES (?, ?, ?, ?, ?, ?)",
             array_values($data_usr)
         );
     
         // Obtener el UsuarioID recién insertado
         $usuario = $this->docente->customQuery(
-            "SELECT UsuarioID FROM Usuario WHERE Correo=?",
-            [$data['Correo']]
+            "SELECT usuario_id FROM tbl_usuario WHERE correo=?",
+            [$data['correo']]
         );
     
         if (!$usuario || count($usuario) == 0) {
@@ -62,10 +60,9 @@ class DocenteController {
         }
     
         $data_doc = [
-            "UsuarioID" => $usuario[0]['UsuarioID'],
-            "CentroRegionalID" => $data["CentroRegionalID"],
-            "CarreraID" => $data["CarreraID"],
-            "CodigoEmpleado" => $data["CodigoEmpleado"]
+            "usuario_id" => $usuario[0]['usuario_id'],
+            "centro_regional_id" => $data["centro_regional_id"],
+            "carrera_id" => $data["carrera_id"],
         ];
     
         // Insertar docente
@@ -82,21 +79,21 @@ class DocenteController {
      * funcion para obtener al docente
      *
      * @param $idDocente id del docente seleccionado
-     * @version 0.1.0
+     * @version 0.1.1
      */
     public function getDocente($idDocente){
         
         #AuthMiddleware::authMiddleware();
 
-        $sql = "SELECT usr.NombreCompleto, usr.Correo, usr.NumeroCuenta, doc.CodigoEmpleado, cr.NombreCentro, crr.NombreCarrera
-        FROM Docente AS doc
-        INNER JOIN Usuario AS usr
-        ON doc.UsuarioID = usr.UsuarioID
-        INNER JOIN CentroRegional AS cr
-        ON doc.CentroRegionalID = cr.CentroRegionalID
-        INNER JOIN Carrera as crr
-        on doc.CarreraID = crr.CarreraID
-        WHERE DocenteID = ?";
+        $sql = "SELECT usr.nombre_completo, usr.correo, usr.numero_cuenta, cr.nombre_centro, crr.nombre_carrera
+        FROM tbl_docente AS doc
+        INNER JOIN tbl_usuario AS usr
+        ON doc.usuario_id = usr.usuario_id
+        INNER JOIN tbl_centro_regional AS cr
+        ON doc.centro_regional_id = cr.centro_regional_id
+        INNER JOIN tbl_carrera as crr
+        on doc.carrera_id = crr.carrera_id
+        WHERE docente_id = ?";
 
         $result = $this->docente->customQuery($sql, [$idDocente]);
 
@@ -112,16 +109,19 @@ class DocenteController {
     /**
      * Obtiene todos los docentes
      *
-     * @version 0.1.1
+     * @version 0.1.2
      */
     public function getAllDocentes(){
         #AuthMiddleware::authMiddleware();
 
-        $sql = "SELECT usr.NombreCompleto, usr.NumeroCuenta, cr.NombreCentro FROM Docente AS doc
-        INNER JOIN Usuario AS usr
-        ON doc.UsuarioID = usr.UsuarioID
-        INNER JOIN CentroRegional AS cr
-        ON doc.CentroRegionalID = cr.CentroRegionalID";
+        $sql = "SELECT usr.nombre_completo, usr.correo, usr.numero_cuenta, cr.nombre_centro, crr.nombre_carrera
+        FROM tbl_docente AS doc
+        INNER JOIN tbl_usuario AS usr
+        ON doc.usuario_id = usr.usuario_id
+        INNER JOIN tbl_centro_regional AS cr
+        ON doc.centro_regional_id = cr.centro_regional_id
+        INNER JOIN tbl_carrera as crr
+        on doc.carrera_id = crr.carrera_id";
 
         $result = $this->docente->customQuery($sql);
 
@@ -137,7 +137,7 @@ class DocenteController {
     /**
      * Obtiene todos los docentes del centro regional
      *
-     * @version 0.1.1
+     * @version 0.1.2
      */
     public function getDocentesBydepartment(){
 
@@ -151,11 +151,11 @@ class DocenteController {
     
         $centroID = $header['departamentoid'];
 
-        $sql = "SELECT doc.DocenteID, usr.NombreCompleto
-        FROM Docente AS doc
-        INNER JOIN Usuario AS usr
-        ON doc.UsuarioID = usr.UsuarioID
-        WHERE doc.DepartamentoID = ?";
+        $sql = "SELECT doc.docente_id, usr.nombre_completo
+        FROM tbl_docente AS doc
+        INNER JOIN tbl_usuario AS usr
+        ON doc.usuario_id = usr.usuario_id
+        WHERE doc.departamento_id = ?";
         
         $result = $this->docente->customQuery($sql, [$centroID]);
 
