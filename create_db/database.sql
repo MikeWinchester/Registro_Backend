@@ -150,8 +150,10 @@ CREATE TABLE tbl_biblioteca (
 
 CREATE TABLE tbl_edificio(
     edificio_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    edificio varchar(50),
     facultad_id TINYINT UNSIGNED NOT NULL,
+    centro_regional_id TINYINT UNSIGNED NOT NULL,
+    edificio varchar(50),
+    FOREIGN KEY (centro_regional_id) REFERENCES tbl_centro_regional(centro_regional_id),
     FOREIGN KEY (facultad_id) REFERENCES tbl_facultad(facultad_id)
 );
 
@@ -164,6 +166,13 @@ CREATE TABLE tbl_clase (
     UV TINYINT UNSIGNED,
     FOREIGN KEY (edificio_id) REFERENCES tbl_edificio(edificio_id),
     FOREIGN KEY (departamento_id) REFERENCES tbl_departamento(departamento_id)
+);
+
+CREATE TABLE tbl_aula (
+    aula_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    aula VARCHAR(20) NOT NULL,
+    edificio_id SMALLINT UNSIGNED NOT NULL,
+    FOREIGN KEY (edificio_id) REFERENCES tbl_edificio(edificio_id)
 );
 
 -- Tabla Sección
@@ -201,12 +210,7 @@ CREATE TABLE tbl_notas (
 );
 
 
-CREATE TABLE tbl_aula (
-    aula_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    aula VARCHAR(20) NOT NULL,
-    edificio_id SMALLINT UNSIGNED NOT NULL,
-    FOREIGN KEY (edificio_id) REFERENCES tbl_edificio(edificio_id)
-);
+
 
 DELIMITER $$
 
