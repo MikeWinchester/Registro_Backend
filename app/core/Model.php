@@ -133,6 +133,24 @@ class Model {
     
         return $result->fetch_all(MYSQLI_ASSOC);
     }
+
+    public function customQueryUpdate($sql, $params = []) {
+        $stmt = $this->conn->prepare($sql);
+        
+        if (!empty($params)) {
+            $types = str_repeat("s", count($params));  
+            $stmt->bind_param($types, ...$params);
+        }
+    
+        $stmt->execute();
+        
+        if ($stmt->affected_rows > 0) {
+            return true;  
+        } else {
+            return false; 
+        }
+    }
+    
     
 }
 ?>
