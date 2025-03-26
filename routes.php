@@ -14,6 +14,7 @@ require_once __DIR__ . "/app/controllers/AuthController.php";
 require_once __DIR__ . "/app/controllers/ClaseController.php";
 require_once __DIR__ . "/app/controllers/AulaController.php";
 require_once __DIR__ . "/app/controllers/JefeController.php";
+require_once __DIR__ . "/app/controllers/EstudianteController.php";
 
 $router = new Router;
 
@@ -43,8 +44,13 @@ $router->addRoute("GET", "/secciones/count", "SeccionesController", "getSeccionC
 $router->addRoute("POST", "/secciones/create", "SeccionesController", "createSeccion");
 
 
-//Routes for Estudiantes
+//Routes for Matricula
 $router->addRoute("GET", "/matricula/estudiantes", "MatriculaController", "getEstudiantes");
+$router->addRoute("GET", "/matricula/get", "MatriculaController", "getMatriculaEst");
+$router->addRoute("POST", "/matricula/set", "MatriculaController", "setMatricula");
+
+//Routes for Estudiante
+$router->addRoute("GET", "/estudiante/get", "EstudianteController", "getEstudiante");
 
 //Routes for Admisiones
 $router->addRoute("POST", "/admisiones", "AdmisionesController", "createAdmission");
