@@ -299,6 +299,7 @@ class SeccionesController {
                 
     
         return "$year-$trimestre";
+        
     }
 }
 

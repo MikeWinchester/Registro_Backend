@@ -21,18 +21,20 @@ class AulaController {
 
         $header = getallheaders();
 
-        if(!isset($header['edificioid'])){
+        if(!isset($header['centroid'])){
             http_response_code(400);
-            echo json_encode(['Error'=>'campo EdificioID necesario']);
+            echo json_encode(['Error'=>'campo centroid necesario']);
         }
 
-        $sql = 'SELECT aula_id, aula
-                FROM tbl_aula
-                WHERE edificio_id = ?';
+        $sql = 'SELECT aula_id, al.aula, ed.edificio
+                FROM tbl_aula as al
+                INNER JOIN tbl_edificio as ed
+                ON al.edificio_id = ed.edificio_id
+                WHERE ed.centro_regional_id = ?';
 
-        $edificioID = $header['edificioid'];
+        $centroId = $header['centroid'];
 
-        $result = $this->aula->customQuery($sql, [$edificioID]);
+        $result = $this->aula->customQuery($sql, [$centroId]);
 
         if ($result) {
             echo json_encode(["message" => "Aula obtenida correctamente", 'data' => $result]);
@@ -41,6 +43,7 @@ class AulaController {
             echo json_encode(["error" => "Error al obtener Aula"]);
         }
     }
+
 
 }
 ?>

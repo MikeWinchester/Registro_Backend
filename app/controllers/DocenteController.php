@@ -155,7 +155,7 @@ class DocenteController {
         FROM tbl_docente AS doc
         INNER JOIN tbl_usuario AS usr
         ON doc.usuario_id = usr.usuario_id
-        WHERE doc.carreraid = ?";
+        WHERE doc.carrera_id = ?";
         
         $result = $this->docente->customQuery($sql, [$centroID]);
 
