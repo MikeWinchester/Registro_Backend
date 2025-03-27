@@ -116,17 +116,13 @@ CREATE TABLE tbl_docente (
 CREATE TABLE tbl_coordinador (
     coordinador_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     docente_id SMALLINT UNSIGNED UNIQUE,
-    carrera_id TINYINT UNSIGNED NOT NULL,
-    FOREIGN KEY (docente_id) REFERENCES tbl_docente(docente_id),
-    FOREIGN KEY (carrera_id) REFERENCES tbl_carrera(carrera_id)
+    FOREIGN KEY (docente_id) REFERENCES tbl_docente(docente_id)
 );
 
 CREATE TABLE tbl_jefe(
     jefe_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     docente_id SMALLINT UNSIGNED UNIQUE,
-    carrera_id TINYINT UNSIGNED NOT NULL,
-    FOREIGN KEY (docente_id) REFERENCES tbl_docente(docente_id),
-    FOREIGN KEY (carrera_id) REFERENCES tbl_carrera(carrera_id)
+    FOREIGN KEY (docente_id) REFERENCES tbl_docente(docente_id)
 );
 
 -- Tabla Categoría Libro
@@ -207,6 +203,14 @@ CREATE TABLE tbl_notas (
     FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
 );
 
+CREATE TABLE tbl_lista_espera (
+    lista_espera_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    seccion_id SMALLINT UNSIGNED NOT NULL,
+    estudiante_id SMALLINT UNSIGNED NOT NULL,
+    cupo TINYINT UNSIGNED NOT NULL,
+    FOREIGN KEY (estudiante_id) REFERENCES tbl_estudiante(estudiante_id),
+    FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
+);
 
 
 
@@ -453,41 +457,80 @@ INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUE
 INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (58, 1);
 INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (59, 11);
 
--- Insertar en tbl_estudiante
-INSERT INTO tbl_estudiante (usuario_id, carrera_id, centro_regional_id, correo) VALUES
-(1, 1, 1, "miguelestudiante@gmail.com"),
-(2, 2, 2, "gabrielestudiante@gmail.com");
+INSERT INTO tbl_edificio (facultad_id, centro_regional_id, edificio)
+VALUES 
+(1, 1, 'B1'),
+(1, 1, 'B2'),
+(2, 1, 'C1'),
+(2, 1, 'C2'),
+(3, 2, 'E'),
+(3, 2, 'D'),
+(4, 1, 'C3'),
+(5, 4, '1843');
 
--- Insertar en tbl_docente
-INSERT INTO tbl_docente (usuario_id, carrera_id, centro_regional_id) VALUES
-(2, 1, 1),
-(3, 1, 1);
 
--- Coordinador
-INSERT INTO tbl_coordinador (docente_id, carrera_id) VALUES
-(2, 1);
+-- Inserciones para tbl_usuario
+INSERT INTO tbl_usuario (nombre_completo, identidad, correo, numero_cuenta, contrasenia, telefono)
+VALUES
+('Juan Pérez', '0801199001234', 'juan.perez@example.com', '20231234567', 'hashed_password1', '98765432'),
+('Ana Gómez', '0802199505678', 'ana.gomez@example.com', '20239876543', 'hashed_password2', '99887766'),
+('Carlos López', '0803199209876', 'carlos.lopez@example.com', '20234567891', 'hashed_password3', '97654321');
 
--- Edificio
-INSERT INTO tbl_edificio (facultad_id, centro_regional_id, edificio) VALUES
-(1, 1, "B2"),
-(2, 2, "A1");
+-- Inserciones para tbl_facultad
+INSERT INTO tbl_facultad (nombre_facultad)
+VALUES
+('Ingeniería'),
+('Ciencias Económicas'),
+('Humanidades y Artes');
 
--- Insertar en tbl_aula
-INSERT INTO tbl_aula (aula, edificio_id) VALUES
-("Aula 101", 1),
-("Aula 102", 2);
+-- Inserciones para tbl_centro_regional
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion)
+VALUES
+('Centro Regional Tegucigalpa', 'Tegucigalpa, Honduras'),
+('Centro Regional San Pedro Sula', 'San Pedro Sula, Honduras');
 
--- Insertar en tbl_clase
+-- Inserciones para tbl_carrera
+INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id)
+VALUES
+('Ingeniería en Sistemas', 5.0, 'Licenciatura', 1),
+('Administración de Empresas', 4.5, 'Licenciatura', 2),
+('Psicología', 5.0, 'Licenciatura', 3);
+
+-- Inserciones para tbl_estudiante
+INSERT INTO tbl_estudiante (usuario_id, carrera_id, centro_regional_id, correo)
+VALUES
+(1, 1, 1, 'juan.perez@example.com');
+
+-- Inserciones para tbl_docente
+INSERT INTO tbl_docente (usuario_id, carrera_id, centro_regional_id)
+VALUES
+(2, 1, 1);
+
 INSERT INTO tbl_clase (edificio_id, carrera_id, nombre, codigo, UV) VALUES
-(1, 1, "Introducción al Derecho", "DERE001", 5),
-(2, 2, "Psicología General", "PSI001", 4);
+(1, 1, 'Matemáticas Básicas', 'MAT101', 4),
+(1, 1, 'Álgebra Lineal', 'MAT201', 3),
+(2, 2, 'Programación I', 'PROG101', 4),
+(2, 2, 'Estructuras de Datos', 'PROG202', 3),
+(3, 3, 'Introducción a la Contabilidad', 'CONT101', 3),
+(3, 3, 'Contabilidad Financiera', 'CONT201', 3),
+(4, 4, 'Psicología General', 'PSIC101', 3),
+(4, 4, 'Neurociencia Cognitiva', 'PSIC301', 3),
+(5, 5, 'Derecho Constitucional', 'DER101', 3),
+(5, 5, 'Derecho Penal I', 'DER201', 4),
+(6, 6, 'Biología Celular', 'BIO101', 3),
+(6, 6, 'Genética', 'BIO201', 3);
 
-INSERT INTO tbl_seccion (clase_id, docente_id, aula_id, periodo_academico, horario, dias, cupo_maximo) VALUES
-(1, 2, 1, "2025-1", "08:00-10:00", "Lunes, Miércoles", 30),
-(2, 2, 2, "2025-1", "10:00-12:00", "Martes, Jueves", 25);
-
--- Insertar en tbl_matricula
-INSERT INTO tbl_matricula (estudiante_id, seccion_id, fechaInscripcion) VALUES
-(1, 1, "2025-03-20"),
-(2, 2, "2025-03-22");
+INSERT INTO tbl_aula (aula, edificio_id) VALUES
+('Aula 101', 1),
+('Aula 102', 1),
+('Aula 201', 2),
+('Aula 202', 2),
+('Aula 301', 3),
+('Aula 302', 3),
+('Aula 401', 4),
+('Aula 402', 4),
+('Aula 501', 5),
+('Aula 502', 5),
+('Aula 601', 6),
+('Aula 602', 6);
 

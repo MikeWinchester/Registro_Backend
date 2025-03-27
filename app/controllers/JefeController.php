@@ -21,7 +21,9 @@ class JefeController {
         }
 
         $sql = "SELECT carrera_id as carreraid
-        FROM tbl_jefe
+        FROM tbl_jefe as jf
+        INNER JOIN tbl_docente as dc
+        ON jf.docente_id = dc.docente_id
         WHERE jefe_id = ?";
 
         $jefeID = $header['jefeid'];

@@ -17,7 +17,7 @@ class EstudianteController {
      * 
      * @version 0.1.0
      */
-    public function getEstudiante(){
+    public function getEspEstudiante(){
         $header = getallheaders();
 
         if(!isset($header['estudianteid'])){
@@ -25,11 +25,15 @@ class EstudianteController {
             echo json_encode(["error" => "Campo estudianteid necesario"]);
         }
 
-        $sql = "SELECT usr.nombre_completo, usr.numero_cuenta, est.correo
-                FROM tbl_estudiante as est
-                INNER JOIN tbl_usuario as usr
-                ON est.usuario_id = usr.usuario_id
-                WHERE estudiante_id = ?";
+        $sql = "SELECT seccion_id, cl.nombre ,periodo_academico, aula, horario, cupo_maximo
+        FROM tbl_lista_espera as ep
+        INNER JOIN tbl_seccion as sec
+        ON ep.seccion_id = sec.seccion_id
+        INNER JOIN tbl_clase as cl
+        ON sec.clase_id = cl.clase_id
+        INNER JOIN tbl_edificio as ed
+        ON cl.edificio_id = ed.edificio_id
+        WHERE estudiante_id = ?";
 
         $estudiante = $header['estudianteid'];
 

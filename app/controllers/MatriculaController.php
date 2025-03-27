@@ -1,14 +1,17 @@
 <?php
 
 require_once __DIR__ . "/../models/Matricula.php";
+require_once __DIR__ . "/../models/Espera.php";
 require_once __DIR__ . "/../core/AuthMiddleware.php";
 
 class MatriculaController{
 
     private $matricula;
+    private $espera;
 
     public function __construct()
     {
+        $this->espera = new Espera();
         $this->matricula = new Matricula();
         header("Content-Type: application/json"); // Estandariza las respuestas como JSON
     }
@@ -85,6 +88,30 @@ class MatriculaController{
                 http_response_code(404);
                 echo json_encode(["error" => "No se logro crear matricular"]);
             }
+            }
+            else{
+                $seccionID = $data['seccion_id'];
+
+                $sumCupo = $this->espera->customQuery("SELECT cupo FROM tbl_lista_espera WHERE seccion_id = ?", [$data['seccion_id']]);
+                $data = ['seccion_id' => $data['seccion_id'], 'estudiante_id' => $data['estudiante_id']];
+
+                if (!empty($sumCupo)) {
+                    $data['cupo'] = $sumCupo[0]['cupo'];
+                } else {
+                    $data['cupo'] = 1;
+                }
+
+                echo $data['cupo'];
+
+                $result = $this->espera->create($data);
+
+                if ($result) {
+                    http_response_code(200);
+                    echo json_encode(["message" => "se agrego en espera", "data" => $data]);
+                } else {
+                    http_response_code(404);
+                    echo json_encode(["error" => "No se logro agregar en espera"]);
+                }
             }
     }
 

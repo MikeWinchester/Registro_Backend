@@ -15,6 +15,7 @@ require_once __DIR__ . "/app/controllers/ClaseController.php";
 require_once __DIR__ . "/app/controllers/AulaController.php";
 require_once __DIR__ . "/app/controllers/JefeController.php";
 require_once __DIR__ . "/app/controllers/EstudianteController.php";
+require_once __DIR__ . "/app/controllers/EsperaController.php";
 
 $router = new Router;
 
@@ -75,6 +76,10 @@ $router->addRoute("GET", "/aula/get", "AulaController", "getAulasByEdificio");
 
 //Jefe
 $router->addRoute("GET", "/jefe/getDep", "JefeController", "getDepByJefe");
+
+//Lista de espera
+$router->addRoute("GET", "/esp/estu", "EsperaController", "getEspByEstudiante");
+$router->addRoute("GET", "/esp/count", "EsperaController", "getCupoEsperaBySec");
 
 //Routes
 $router->addRoute("GET", "/solicitud/{id}/estado", "SolicitudController", "getSolicitudEstado");
