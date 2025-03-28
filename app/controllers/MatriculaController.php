@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . "/../models/Matricula.php";
+require_once __DIR__ . "/../controllers/CancelacionController.php";
 require_once __DIR__ . "/../models/Espera.php";
 require_once __DIR__ . "/../core/AuthMiddleware.php";
 
@@ -8,11 +9,13 @@ class MatriculaController{
 
     private $matricula;
     private $espera;
+    private $cancelacion;
 
     public function __construct()
     {
         $this->espera = new Espera();
         $this->matricula = new Matricula();
+        $this->cancelacion = new CancelacionController();
         header("Content-Type: application/json"); // Estandariza las respuestas como JSON
     }
 
@@ -65,54 +68,64 @@ class MatriculaController{
     public function setMatricula(){
         $data = json_decode(file_get_contents("php://input"), true);
 
-        $cupo = $this->matricula->customQuery("SELECT cupo_maximo from tbl_seccion where seccion_id = ?", [$data['seccion_id']]);
+        $result = $this->matricula->customQuery(
+            "SELECT COUNT(1) AS existe
+             FROM tbl_matricula AS mt
+             INNER JOIN tbl_lista_espera AS ep
+             ON mt.seccion_id = ep.seccion_id
+             INNER JOIN tbl_seccion as sc
+             ON mt.seccion_id = sc.seccion_id
+             WHERE (mt.estudiante_id = ? AND sc.clase_id = ?)
+             OR ep.estudiante_id = ?",
+            [$data['estudiante_id'], $data['clase_id'], $data['estudiante_id']]
+        );
+        
+        if ($result[0]['existe'] == 0) {
+            
+            $cupo = $this->matricula->customQuery("SELECT cupo_maximo from tbl_seccion where seccion_id = ?", [$data['seccion_id']]);
 
-        if (isset($cupo[0]['cupo_maximo']) && $cupo[0]['cupo_maximo'] > 0) {
             $seccionID = $data['seccion_id'];
 
-            $result = $this->matricula->create($data);
-            if (!$result){
-                http_response_code(404);
-                echo json_encode(["error" => "No se logro crear matricular"]);
-                return;
-            }
+            if (isset($cupo[0]['cupo_maximo']) && $cupo[0]['cupo_maximo'] > 0) {
+                
 
-            $restCupo = $this->matricula->customQueryUpdate("UPDATE tbl_seccion SET cupo_maximo = cupo_maximo - 1 WHERE seccion_id = ?", [$seccionID]);
-
-            echo $restCupo;
-
-            if ($restCupo) {
-                http_response_code(200);
-                echo json_encode(["message" => "matricula creada", "data" => $data]);
-            } else {
-                http_response_code(404);
-                echo json_encode(["error" => "No se logro crear matricular"]);
-            }
-            }
-            else{
-                $seccionID = $data['seccion_id'];
-
-                $sumCupo = $this->espera->customQuery("SELECT cupo FROM tbl_lista_espera WHERE seccion_id = ?", [$data['seccion_id']]);
-                $data = ['seccion_id' => $data['seccion_id'], 'estudiante_id' => $data['estudiante_id']];
-
-                if (!empty($sumCupo)) {
-                    $data['cupo'] = $sumCupo[0]['cupo'];
-                } else {
-                    $data['cupo'] = 1;
+                $result = $this->matricula->create($data);
+                if (!$result){
+                    http_response_code(404);
+                    echo json_encode(["error" => "No se logro crear matricular"]);
+                    return;
                 }
 
-                echo $data['cupo'];
+                $restCupo = $this->matricula->customQueryUpdate("UPDATE tbl_seccion SET cupo_maximo = cupo_maximo - 1 WHERE seccion_id = ?", [$seccionID]);
 
-                $result = $this->espera->create($data);
+                echo $restCupo;
 
-                if ($result) {
+                if ($restCupo) {
                     http_response_code(200);
-                    echo json_encode(["message" => "se agrego en espera", "data" => $data]);
+                    echo json_encode(["message" => "matricula creada", "data" => $data]);
                 } else {
                     http_response_code(404);
-                    echo json_encode(["error" => "No se logro agregar en espera"]);
+                    echo json_encode(["error" => "No se logro crear matricular"]);
                 }
-            }
+                }
+                else{
+
+                    $data = ['seccion_id' => $data['seccion_id'], 'estudiante_id' => $data['estudiante_id']];
+
+                    $result = $this->espera->create($data);
+
+                    if ($result) {
+                        http_response_code(200);
+                        echo json_encode(["message" => "se agrego en espera", "data" => $data]);
+                    } else {
+                        http_response_code(404);
+                        echo json_encode(["error" => "No se logro agregar en espera"]);
+                    }
+                }
+        }else{
+            http_response_code(200);
+            echo json_encode(["message" => "Ya tiene matriculo la clase", "data" => 'Clase Matriculada']);
+        }
     }
 
     /**
@@ -205,6 +218,7 @@ class MatriculaController{
         $sqlMat = "DELETE FROM tbl_matricula
                 WHERE estudiante_id = ?
                 AND seccion_id = ?";
+
 
         $sqlSec = "UPDATE tbl_seccion SET cupo_maximo = cupo_maximo + 1 WHERE seccion_id = ?";
 

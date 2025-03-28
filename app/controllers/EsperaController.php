@@ -51,6 +51,11 @@ class EsperaController {
     }
 
 
+    /**
+     * Obtener cupo en espera
+     * 
+     * @version 0.1.0
+     */
     public function getCupoEsperaBySec(){
         $header = getallheaders();
 
@@ -59,13 +64,43 @@ class EsperaController {
             echo json_encode(['Error'=>'campo seccionid necesario']);
         }
 
-        $sql = 'SELECT count(cupo) as en_espera
+        $sql = 'SELECT count(1) as en_espera
                 FROM tbl_lista_espera
                 WHERE seccion_id = ?';
 
         $seccionId = $header['seccionid'];
 
         $result = $this->espera->customQuery($sql, [$seccionId]);
+
+        if ($result) {
+            echo json_encode(["message" => "Secciones obtenidas correctamente", "data" => $result]);
+        } else {
+            echo json_encode(["message" => "Secciones en espera inicia", "data" => [['en_espera' => 0]]]);
+        }
+    }
+    
+    /**
+     * Eliminar de espera una seccion
+     * 
+     * @version 0.1.0
+     */
+    public function delEspera(){
+
+        $header = getallheaders();
+
+        if(!isset($header['seccionid']) || !isset($header['estudianteid'])){
+            http_response_code(400);
+            echo json_encode(['Error'=>'campo seccionid y estudianteid necesario']);
+        }
+
+        $sql = 'DELETE FROM tbl_lista_espera
+                WHERE seccion_id = ?
+                AND estudiante_id = ?';
+
+        $seccionId = $header['seccionid'];
+        $estudianteId = $header['estudianteid'];
+
+        $result = $this->espera->customQueryUpdate($sql, [$seccionId, $estudianteId]);
 
         if ($result) {
             echo json_encode(["message" => "Secciones obtenida correctamente", 'data' => $result]);

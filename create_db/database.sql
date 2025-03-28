@@ -207,7 +207,14 @@ CREATE TABLE tbl_lista_espera (
     lista_espera_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     seccion_id SMALLINT UNSIGNED NOT NULL,
     estudiante_id SMALLINT UNSIGNED NOT NULL,
-    cupo TINYINT UNSIGNED NOT NULL,
+    FOREIGN KEY (estudiante_id) REFERENCES tbl_estudiante(estudiante_id),
+    FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
+);
+
+CREATE TABLE tbl_lista_cancelacion(
+    lista_cancelacion_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    seccion_id SMALLINT UNSIGNED NOT NULL,
+    estudiante_id SMALLINT UNSIGNED NOT NULL,
     FOREIGN KEY (estudiante_id) REFERENCES tbl_estudiante(estudiante_id),
     FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
 );
@@ -496,10 +503,12 @@ VALUES
 ('Administración de Empresas', 4.5, 'Licenciatura', 2),
 ('Psicología', 5.0, 'Licenciatura', 3);
 
+
 -- Inserciones para tbl_estudiante
 INSERT INTO tbl_estudiante (usuario_id, carrera_id, centro_regional_id, correo)
 VALUES
-(1, 1, 1, 'juan.perez@example.com');
+(1, 1, 1, 'juan.perez@example.com'),
+(2,1,1,'prueba@example.com');
 
 -- Inserciones para tbl_docente
 INSERT INTO tbl_docente (usuario_id, carrera_id, centro_regional_id)
@@ -533,4 +542,6 @@ INSERT INTO tbl_aula (aula, edificio_id) VALUES
 ('Aula 502', 5),
 ('Aula 601', 6),
 ('Aula 602', 6);
+
+INSERT INTO tbl_jefe(docente_id) VALUES (1);
 
