@@ -15,7 +15,7 @@ class NotasController{
     /**
      * Asigna notas al estudiantes
      *
-     * @version 0.1.0
+     * @version 0.1.1
      */
     public function asigNotas() {
         $data = json_decode(file_get_contents("php://input"), true);
@@ -25,9 +25,9 @@ class NotasController{
             echo json_encode(["error" => "Datos JSON inválidos"]);
             return;
         }
-        
+
         foreach ($data as $key => $estudiante) {
-            if (!isset($estudiante["EstudianteId"]) || !isset($estudiante["SeccionId"]) || !isset($estudiante["Nota"])) {
+            if (!isset($estudiante["estudiante_id"]) || !isset($estudiante["seccion_id"]) || !isset($estudiante["nota"])) {
                 http_response_code(400);
                 echo json_encode(["error" => "Faltan datos requeridos en $key"]);
                 return;
@@ -35,9 +35,9 @@ class NotasController{
     
             
             $notas = [
-                "EstudianteID" => $estudiante["EstudianteId"],
-                "SeccionID"    => $estudiante["SeccionId"],
-                "Calificacion" => $estudiante["Nota"]
+                "estudiante_id" => $estudiante["estudiante_id"],
+                "seccion_id"    => $estudiante["seccion_id"],
+                "calificacion" => $estudiante["nota"]
             ];
 
             $result = $this->notas->create($notas);
@@ -53,8 +53,6 @@ class NotasController{
             echo json_encode(["error" => "No se pudieron asignar las notas"]);
         }
     }
-    
-
 
 }
 

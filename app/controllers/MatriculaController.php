@@ -32,22 +32,59 @@ class MatriculaController{
 
         $header = getallheaders();
 
-        if(!isset($header['SeccionID'])){
+        if(!isset($header['seccionid'])){
             http_response_code(400);
-            echo json_encode(["error" => "SeccionID es requerido en el header"]);
+            echo json_encode(["error" => "seccionid es requerido en el header"]);
             return;
         }
     
-        $secID = $header['SeccionID'];
+        $secID = $header['seccionid'];
 
-        $sql = "SELECT est.EstudianteID, usr.NombreCompleto, est.NumeroCuenta, est.CorreoInstitucional 
-        FROM Matricula as mat
-        left join Estudiante as est
-        on mat.EstudianteID = est.EstudianteID
-        left join Usuario as usr
-        on est.UsuarioId = usr.UsuarioID
-        where SeccionID = ?
-        and EstadoMatricula = 'Activo'";
+        $sql = "SELECT est.estudiante_id, usr.nombre_completo, usr.numero_cuenta, est.correo
+        FROM tbl_matricula as mat
+        left join tbl_estudiante as est
+        on mat.estudiante_id = est.estudiante_id
+        left join tbl_usuario as usr
+        on est.usuario_id = usr.usuario_id
+        where seccion_id = ?";
+
+        $result = $this->matricula->customQuery($sql, [$secID]);
+
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "Estudiantes encontradas", "data" => $result]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "Estudiantes no disponibles"]);
+        }
+
+
+    }
+
+    public function getEstudiantesNotas(){
+
+        #AuthMiddleware::authMiddleware();
+
+        $header = getallheaders();
+
+        if(!isset($header['seccionid'])){
+            http_response_code(400);
+            echo json_encode(["error" => "seccionid es requerido en el header"]);
+            return;
+        }
+    
+        $secID = $header['seccionid'];
+
+        $sql = "SELECT est.estudiante_id, usr.nombre_completo, usr.numero_cuenta, est.correo
+        FROM tbl_matricula as mat
+        left join tbl_estudiante as est
+        on mat.estudiante_id = est.estudiante_id
+        left join tbl_usuario as usr
+        on est.usuario_id = usr.usuario_id
+        LEFT JOIN tbl_notas as nt
+        on mat.estudiante_id = nt.estudiante_id
+        where mat.seccion_id = ?
+        AND nt.estudiante_id is null";
 
         $result = $this->matricula->customQuery($sql, [$secID]);
 

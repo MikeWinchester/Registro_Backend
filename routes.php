@@ -31,7 +31,7 @@ $router->addRoute("POST", "/login", "AuthController", "login");
 
 //Routes for Docentes
 $router->addRoute("POST", "/docentes/create", "DocenteController", "createDocente");
-$router->addRoute("GET", "/docentes/get/{id}", "DocenteController", "getDocente");
+$router->addRoute("GET", "/docentes/get", "DocenteController", "getDocente");
 $router->addRoute("GET", "/docentes/all", "DocenteController", "getAllDocentes");
 $router->addRoute("POST", "/docentes/video", "DocenteController", "uploadVideo");
 $router->addRoute("GET", "/docentes/dep", "DocenteController", "getDocentesBydepartment");
@@ -47,7 +47,7 @@ $router->addRoute("POST", "/secciones/create", "SeccionesController", "createSec
 
 
 //Routes for Matricula
-$router->addRoute("GET", "/matricula/estudiantes", "MatriculaController", "getEstudiantes");
+$router->addRoute("GET", "/matricula/estudiantes", "MatriculaController", "getEstudiantesNotas");
 $router->addRoute("GET", "/matricula/get", "MatriculaController", "getMatriculaEst");
 $router->addRoute("POST", "/matricula/set", "MatriculaController", "setMatricula");
 $router->addRoute("DELETE", "/matricula/delete", "MatriculaController", "delMat");

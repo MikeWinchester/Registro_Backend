@@ -30,10 +30,12 @@ class SeccionesController {
         
         $docenteid = $header['docenteid'];
 
-        $sql = "SELECT seccion_id, cl.nombre ,periodo_academico, aula, horario, cupo_maximo
+        $sql = "SELECT seccion_id, cl.nombre ,periodo_academico, al.aula, horario, cupo_maximo, cl.codigo
         FROM tbl_seccion as sec
         INNER JOIN tbl_clase as cl
         ON sec.clase_id = cl.clase_id
+        INNER JOIN tbl_aula as al
+        ON sec.aula_id = al.aula_id
         WHERE docente_id = ?
         AND periodo_academico = ?
         ";

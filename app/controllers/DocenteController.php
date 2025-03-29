@@ -81,9 +81,18 @@ class DocenteController {
      * @param $idDocente id del docente seleccionado
      * @version 0.1.1
      */
-    public function getDocente($idDocente){
+    public function getDocente(){
         
         #AuthMiddleware::authMiddleware();
+
+        $header = getallheaders();
+
+        if(!isset($header['docenteid'])){
+            echo "clabe docenteid necesria";
+            return;
+        }
+
+        $docenteid = $header['docenteid'];
 
         $sql = "SELECT usr.nombre_completo, usr.correo, usr.numero_cuenta, cr.nombre_centro, crr.nombre_carrera
         FROM tbl_docente AS doc
@@ -95,7 +104,7 @@ class DocenteController {
         on doc.carrera_id = crr.carrera_id
         WHERE docente_id = ?";
 
-        $result = $this->docente->customQuery($sql, [$idDocente]);
+        $result = $this->docente->customQuery($sql, [$docenteid]);
 
         if ($result) {
             http_response_code(200);
