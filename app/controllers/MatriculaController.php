@@ -68,6 +68,7 @@ class MatriculaController{
     public function setMatricula(){
         $data = json_decode(file_get_contents("php://input"), true);
 
+
         $result = $this->matricula->customQuery(
             "SELECT COUNT(1) AS existe
              FROM tbl_matricula AS mt
@@ -79,8 +80,8 @@ class MatriculaController{
              OR ep.estudiante_id = ?",
             [$data['estudiante_id'], $data['clase_id'], $data['estudiante_id']]
         );
-        
-        if ($result[0]['existe'] == 0) {
+
+        if (intval($result[0]['existe']) == 0) {
             
             $cupo = $this->matricula->customQuery("SELECT cupo_maximo from tbl_seccion where seccion_id = ?", [$data['seccion_id']]);
 
@@ -89,6 +90,7 @@ class MatriculaController{
             if (isset($cupo[0]['cupo_maximo']) && $cupo[0]['cupo_maximo'] > 0) {
                 
 
+                unset($data['clase_id']);
                 $result = $this->matricula->create($data);
                 if (!$result){
                     http_response_code(404);
@@ -111,6 +113,7 @@ class MatriculaController{
                 else{
 
                     $data = ['seccion_id' => $data['seccion_id'], 'estudiante_id' => $data['estudiante_id']];
+                    
 
                     $result = $this->espera->create($data);
 
@@ -226,6 +229,7 @@ class MatriculaController{
 
         if ($resultMAT) {
             $resultSec = $this->matricula->customQueryUpdate($sqlSec, [$secId]);
+            $this->cancelacion->createCancelacion(["seccion_id" => $secId, "estudiante_id" => $estId]);
             if($resultSec){
                 http_response_code(200);
                 echo json_encode(["message" => "Seccion cancelada"]);

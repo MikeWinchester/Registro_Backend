@@ -52,7 +52,6 @@ class CancelacionController {
 
 
     public function createCancelacion($data){
-        
 
         if(!isset($data['seccion_id']) || !isset($data['estudiante_id'])){
             http_response_code(400);
