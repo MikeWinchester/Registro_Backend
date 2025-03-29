@@ -26,7 +26,7 @@ class AulaController {
             echo json_encode(['Error'=>'campo centroid necesario']);
         }
 
-        $sql = 'SELECT aula_id, al.aula, ed.edificio
+        $sql = 'SELECT count(1) as existe
                 FROM tbl_aula as al
                 INNER JOIN tbl_edificio as ed
                 ON al.edificio_id = ed.edificio_id
@@ -34,13 +34,29 @@ class AulaController {
 
         $centroId = $header['centroid'];
 
-        $result = $this->aula->customQuery($sql, [$centroId]);
+        $resultExist = $this->aula->customQuery($sql, [$centroId]);
 
-        if ($result) {
-            echo json_encode(["message" => "Aula obtenida correctamente", 'data' => $result]);
-        } else {
-            http_response_code(500);
-            echo json_encode(["error" => "Error al obtener Aula"]);
+        if($resultExist[0]['existe'] > 0){
+            $sql = 'SELECT aula_id, al.aula, ed.edificio
+                FROM tbl_aula as al
+                INNER JOIN tbl_edificio as ed
+                ON al.edificio_id = ed.edificio_id
+                WHERE ed.centro_regional_id = ?';
+
+            
+
+            $result = $this->aula->customQuery($sql, [$centroId]);
+
+            if ($result) {
+                http_response_code(200);
+                echo json_encode(["message" => "Aula obtenida correctamente", 'data' => $result]);
+            } else {
+                http_response_code(500);
+                echo json_encode(["error" => "Error al obtener Aula"]);
+            }
+        }else{
+            http_response_code(200);
+            echo json_encode(["message" => "no hay aulas disponibles", 'data' => null]);
         }
     }
 
