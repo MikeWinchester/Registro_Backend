@@ -4,11 +4,15 @@ require_once __DIR__ . "/../models/Aula.php";
 require_once __DIR__ . "/../core/AuthMiddleware.php";
 require_once __DIR__ . "/../core/Cors.php";
 
+require_once __DIR__ . "/../controllers/JefeController.php";
+
 class AulaController {
     private $aula;
+    private $jefe;
 
     public function __construct() {
         $this->aula = new Aula();
+        $this->jefe = new JefeController();
         header("Content-Type: application/json"); // Estandariza las respuestas como JSON
     }
 
@@ -21,7 +25,7 @@ class AulaController {
 
         $header = getallheaders();
 
-        if(!isset($header['centroid'])){
+        if(!isset($header['centroid']) || !isset($header['facultadid'])){
             http_response_code(400);
             echo json_encode(['Error'=>'campo centroid necesario']);
         }
@@ -37,15 +41,17 @@ class AulaController {
         $resultExist = $this->aula->customQuery($sql, [$centroId]);
 
         if($resultExist[0]['existe'] > 0){
+
+            $facuId = $header['facultadid'];
+
             $sql = 'SELECT aula_id, al.aula, ed.edificio
                 FROM tbl_aula as al
                 INNER JOIN tbl_edificio as ed
                 ON al.edificio_id = ed.edificio_id
-                WHERE ed.centro_regional_id = ?';
+                WHERE ed.centro_regional_id = ?
+                AND ed.facultad_id = ?';
 
-            
-
-            $result = $this->aula->customQuery($sql, [$centroId]);
+            $result = $this->aula->customQuery($sql, [$centroId, $facuId]);
 
             if ($result) {
                 http_response_code(200);
@@ -59,7 +65,6 @@ class AulaController {
             echo json_encode(["message" => "no hay aulas disponibles", 'data' => null]);
         }
     }
-
 
 }
 ?>

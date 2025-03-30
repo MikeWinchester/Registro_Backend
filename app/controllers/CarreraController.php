@@ -14,6 +14,18 @@ class CarreraController{
     public function getAllCareers() {
         echo json_encode(["message" => "Lista de carreras", "data" => $this->career->getAll()]);
     }
+
+    public function getCarrera($estID){
+
+        $sql = "SELECT carrera_id
+        FROM tbl_estudiante
+        WHERE estudiante_id = ?";
+
+        $result = $this->career->customQuery($sql, [$estID]);
+
+        return intval($result);
+
+    }
 }
 
 

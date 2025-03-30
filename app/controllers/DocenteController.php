@@ -152,19 +152,19 @@ class DocenteController {
 
         $header = getallheaders();
 
-        if(!isset($header['carreraid'])){
+        if(!isset($header['areaid'])){
             http_response_code(400);
-            echo json_encode(["error" => "carreraid es requerido en el header"]);
+            echo json_encode(["error" => "areaid es requerido en el header"]);
             return;
         }
     
-        $centroID = $header['carreraid'];
+        $centroID = $header['areaid'];
 
         $sql = "SELECT doc.docente_id, usr.nombre_completo
         FROM tbl_docente AS doc
         INNER JOIN tbl_usuario AS usr
         ON doc.usuario_id = usr.usuario_id
-        WHERE doc.carrera_id = ?";
+        WHERE doc.departamento_id = ?";
         
         $result = $this->docente->customQuery($sql, [$centroID]);
 
@@ -176,6 +176,7 @@ class DocenteController {
             echo json_encode(["error" => "Docentes no obtenidos"]);
         }
     }
+
 
     /**
      * Guardar video subido de la seccion correspondiente

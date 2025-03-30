@@ -111,7 +111,7 @@ CREATE TABLE tbl_solicitud (
 );
 
 CREATE TABLE tbl_departamento (
-    departamento_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    departamento_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
     facultad_id TINYINT UNSIGNED NOT NULL,
     FOREIGN KEY (facultad_id) REFERENCES tbl_facultad(facultad_id),
@@ -135,9 +135,11 @@ CREATE TABLE tbl_docente (
     docente_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     usuario_id SMALLINT UNSIGNED UNIQUE,
     carrera_id TINYINT UNSIGNED NOT NULL,
+    departamento_id TINYINT UNSIGNED NOT NULL,
     centro_regional_id TINYINT UNSIGNED NOT NULL,
     FOREIGN KEY (usuario_id) REFERENCES tbl_usuario(usuario_id),
     FOREIGN KEY (centro_regional_id) REFERENCES tbl_centro_regional(centro_regional_id),
+    FOREIGN KEY (departamento_id) REFERENCES tbl_departamento(departamento_id),
     FOREIGN KEY (carrera_id) REFERENCES tbl_carrera(carrera_id)
 );
 
@@ -184,13 +186,22 @@ CREATE TABLE tbl_edificio(
 CREATE TABLE tbl_clase (
     clase_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     edificio_id SMALLINT UNSIGNED NOT NULL,
-    carrera_id TINYINT UNSIGNED NOT NULL,
+    departamento_id TINYINT UNSIGNED NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     codigo VARCHAR(20) UNIQUE NOT NULL,
     UV TINYINT UNSIGNED,
     FOREIGN KEY (edificio_id) REFERENCES tbl_edificio(edificio_id),
-    FOREIGN KEY (carrera_id) REFERENCES tbl_carrera(carrera_id)
+    FOREIGN KEY (departamento_id) REFERENCES tbl_departamento(departamento_id)
 );
+
+CREATE TABLE tbl_clase_carrera (
+    clase_id SMALLINT UNSIGNED NOT NULL,
+    carrera_id TINYINT UNSIGNED NOT NULL,
+    PRIMARY KEY (clase_id, carrera_id), 
+    FOREIGN KEY (carrera_id) REFERENCES tbl_carrera(carrera_id),
+    FOREIGN KEY (clase_id) REFERENCES tbl_clase(clase_id)
+);
+
 
 CREATE TABLE tbl_aula (
     aula_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -204,11 +215,13 @@ CREATE TABLE tbl_seccion (
     seccion_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     clase_id SMALLINT UNSIGNED NOT NULL,
     docente_id SMALLINT UNSIGNED NOT NULL,
+    aula_id SMALLINT UNSIGNED NOT NULL,
     periodo_academico VARCHAR(20) NOT NULL,
-    aula VARCHAR(20),
     horario VARCHAR(50),
+    dias VARCHAR(50),
     cupo_maximo TINYINT UNSIGNED NOT NULL,
     FOREIGN KEY (docente_id) REFERENCES tbl_docente(docente_id),
+    FOREIGN KEY (aula_id) REFERENCES tbl_aula(aula_id),
     FOREIGN KEY (clase_id) REFERENCES tbl_clase(clase_id)
 );
 
@@ -257,6 +270,16 @@ CREATE TABLE tbl_lista_cancelacion(
     FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
 );
 
+CREATE TABLE tbl_clase_requisito (
+    clase_id SMALLINT UNSIGNED NOT NULL,
+    requisito_clase_id SMALLINT UNSIGNED NOT NULL,
+    PRIMARY KEY (clase_id, requisito_clase_id),
+    FOREIGN KEY (clase_id) REFERENCES tbl_clase(clase_id) ON DELETE CASCADE,
+    FOREIGN KEY (requisito_clase_id) REFERENCES tbl_clase(clase_id) ON DELETE CASCADE
+);
+
+alter table tbl_matricula
+add column EstadoMatricula ENUM('Activo', 'Inactivo') NOT NULL;
 
 
 DELIMITER $$
@@ -320,6 +343,7 @@ INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Odontología");
 INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Ciencias");
 INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Química y Farmacia");
 INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Ciencias Económicas Administratias y Contables");
+INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Matematicas");
 
 INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("DEREC", "Licenciatura en Derecho", 5.0, "Licenciatura", 1);
 INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("ANTRO", "Licenciatura en Antropología", 5.0, "Licenciatura", 2);
@@ -508,37 +532,37 @@ INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUE
 INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (58, 1);
 INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (59, 11);
 
-CREATE TABLE tbl_area (
-    area_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) UNIQUE NOT NULL
-);
 
-ALTER TABLE tbl_clase 
-ADD COLUMN area_id TINYINT UNSIGNED NOT NULL,
-ADD FOREIGN KEY (area_id) REFERENCES tbl_area(area_id);
+INSERT INTO tbl_edificio(facultad_id, centro_regional_id, edificio) VALUES (4,1, 'B1'), (4,1, 'B2'), (1,1, 'C2'), (1,1, 'C3');
 
-CREATE TABLE tbl_clase_requisito (
-    clase_id SMALLINT UNSIGNED NOT NULL,
-    requisito_clase_id SMALLINT UNSIGNED NOT NULL,
-    PRIMARY KEY (clase_id, requisito_clase_id),
-    FOREIGN KEY (clase_id) REFERENCES tbl_clase(clase_id) ON DELETE CASCADE,
-    FOREIGN KEY (requisito_clase_id) REFERENCES tbl_clase(clase_id) ON DELETE CASCADE
-);
 
-alter table tbl_matricula
-add column EstadoMatricula ENUM('Activo', 'Inactivo') NOT NULL;
+INSERT INTO tbl_departamento(nombre, facultad_id) VALUES 
+('Matemáticas', 11), 
+('Lenguas Extranjeras', 1), 
+('Ciencias', 2),
+('Ingenieria en sistemas', 4),
+('Ingenieria civil', 4);
 
-INSERT INTO tbl_area (nombre) VALUES 
-('Matemáticas'), 
-('Lenguas Extranjeras'), 
-('Ciencias');
+INSERT INTO tbl_clase (edificio_id,departamento_id, nombre, codigo, UV) VALUES 
+(1, 1,'Matemáticas 1', 'MAT101', 4),
+(1, 1,'Trigonometría', 'MAT102', 4),
+(2, 2,'Inglés Básico', 'LEN101', 3),
+(3, 1,'Física 1', 'CIE101', 4),
+(1, 1,'Cálculo', 'MAT201', 5);
 
-INSERT INTO tbl_clase (edificio_id, carrera_id, area_id, nombre, codigo, UV) VALUES 
-(1, 1, 1, 'Matemáticas 1', 'MAT101', 4),
-(1, 1, 1, 'Trigonometría', 'MAT102', 4),
-(2, 2, 2, 'Inglés Básico', 'LEN101', 3),
-(3, 3, 3, 'Física 1', 'CIE101', 4),
-(1, 1, 1, 'Cálculo', 'MAT201', 5);
+INSERT INTO tbl_clase_carrera values
+(1, 19),
+(1, 1),
+(4, 19),
+(4, 1),
+(2, 1),
+(2, 2),
+(2, 3),
+(2, 19);
+
+INSERT INTO tbl_clase_requisito values
+(1,2),
+(2, 5);
 
 INSERT INTO tbl_clase_requisito (clase_id, requisito_clase_id) VALUES 
 ((SELECT clase_id FROM tbl_clase WHERE nombre = 'Cálculo'), 
@@ -551,6 +575,15 @@ INSERT INTO tbl_clase_requisito (clase_id, requisito_clase_id) VALUES
  (SELECT clase_id FROM tbl_clase WHERE nombre = 'Matemáticas 1'));
 
 
+
+insert into tbl_estudiante(usuario_id, carrera_id, centro_regional_id, correo) values (1,19, 1, 'prueba@example.com');
+insert into tbl_estudiante(usuario_id, carrera_id, centro_regional_id, correo) values (2,19, 2, 'prueba2@example.com');
+
+insert into tbl_docente(usuario_id, carrera_id, departamento_id, centro_regional_id) values (3,19,4,2);
+insert into tbl_docente(usuario_id, carrera_id, departamento_id, centro_regional_id) values (4,1,2,1);
+
+
+insert into tbl_jefe(docente_id) values (1);
 
 
 

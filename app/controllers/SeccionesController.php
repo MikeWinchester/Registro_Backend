@@ -176,6 +176,7 @@ class SeccionesController {
         }
     }
     
+    
     /**
      * Funcion para contar las secciones asignadas a un docente
      *

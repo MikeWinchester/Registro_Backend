@@ -17,6 +17,7 @@ require_once __DIR__ . "/app/controllers/JefeController.php";
 require_once __DIR__ . "/app/controllers/EstudianteController.php";
 require_once __DIR__ . "/app/controllers/EsperaController.php";
 require_once __DIR__ . "/app/controllers/CancelacionController.php";
+require_once __DIR__ . "/app/controllers/DepartamentoController.php";
 
 $router = new Router;
 
@@ -68,7 +69,8 @@ $router->addRoute("GET", "/carreras", "CarreraController", "getAllCareers");
 $router->addRoute("GET", "/centros", "CentroController", "getAllCenters");
 
 //Routes for Clases
-$router->addRoute("GET", "/clases", "ClaseController", "getClasesByDepartment");
+$router->addRoute("GET", "/clases", "ClaseController", "getClasesByArea");
+$router->addRoute("GET", "/clases/estu", "ClaseController", "getClasesByAreaEstu");
 $router->addRoute("GET", "/clases/getEdid", 'ClaseController', "getEdidByClass");
 $router->addRoute("POST", "/clases", "ClaseController", "createClases");
 
@@ -77,6 +79,7 @@ $router->addRoute("GET", "/aula/get", "AulaController", "getAulasByEdificio");
 
 //Jefe
 $router->addRoute("GET", "/jefe/getDep", "JefeController", "getDepByJefe");
+$router->addRoute("GET", "/jefe/getFac", "JefeController", "getFacByJefe");
 
 //Lista de espera
 $router->addRoute("GET", "/esp/estu", "EsperaController", "getEspByEstudiante");
@@ -86,6 +89,9 @@ $router->addRoute("DELETE", "/esp/eliminar", "EsperaController", "delEspera");
 //Lista cancelacion
 $router->addRoute("GET", "/can/estu", "CancelacionController", "getCanByEstudiante");
 $router->addRoute("POST", "/can/estu", "CancelacionController", "createCancelacion");
+
+//Departamentos
+$router->addRoute("GET", "/departamentos/get", "DepartamentoController", "detDeps");
 
 //Routes
 $router->addRoute("GET", "/solicitud/{id}/estado", "SolicitudController", "getSolicitudEstado");

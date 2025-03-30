@@ -12,6 +12,11 @@ class JefeController {
     }
 
 
+    /**
+     * Obtener el departamento por el jefe
+     * 
+     * @version 0.1.0
+     */
     public function getDepByJefe(){
         $header = getallheaders();
 
@@ -20,7 +25,7 @@ class JefeController {
             echo json_encode(["error" => "Campo jefeid necesario"]);
         }
 
-        $sql = "SELECT carrera_id as carreraid
+        $sql = "SELECT departamento_id as departamentoid
         FROM tbl_jefe as jf
         INNER JOIN tbl_docente as dc
         ON jf.docente_id = dc.docente_id
@@ -37,6 +42,38 @@ class JefeController {
             http_response_code(404);
             echo json_encode(["error" => "Secciones no disponibles"]);
         }
+    }
+
+
+    public function getFacByJefe(){
+
+        $header = getallheaders();
+
+        if(!isset($header['jefeid'])){
+            http_response_code(400);
+            echo json_encode(["error" => "Campo jefeid necesario"]);
+        }
+
+        $sql = "SELECT facultad_id as facultadid
+        FROM tbl_jefe as jf
+        INNER JOIN tbl_docente as dc
+        ON jf.docente_id = dc.docente_id
+        INNER JOIN tbl_facultada as ft
+        ON dc.departamento_id = ft.departamento_id
+        WHERE jefe_id = ?";
+
+        $jefeID = $header['jefeid'];
+
+        $result = $this->jefe->customQuery($sql, [$jefeID]);
+
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "Secciones encontradas", "data" => $result]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "Secciones no disponibles"]);
+        }
+
     }
 }
 ?>
