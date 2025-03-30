@@ -1,3 +1,7 @@
+DROP DATABASE IF EXISTS bd_registro;
+CREATE DATABASE bd_registro;
+USE bd_registro;
+
 -- Tabla Usuario
 CREATE TABLE tbl_usuario (
     usuario_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -8,6 +12,18 @@ CREATE TABLE tbl_usuario (
     contrasenia VARCHAR(255) NOT NULL,
     telefono CHAR(8),
     INDEX idx_usuario_correo (correo)
+);
+
+CREATE TABLE tbl_tipo_documento(
+    tipo_documento_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    descripcion VARCHAR(10) NOT NULL 
+);
+
+CREATE TABLE tbl_documento(
+    documento_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    numero_documento VARCHAR(13) UNIQUE NOT NULL,
+    tipo_documento_id TINYINT UNSIGNED NOT NULL,
+    FOREIGN KEY (tipo_documento_id) REFERENCES tbl_tipo_documento(tipo_documento_id) 
 );
 
 -- Tabla Facultad
@@ -22,11 +38,12 @@ CREATE TABLE tbl_centro_regional (
     centro_regional_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nombre_centro VARCHAR(100) NOT NULL,
     ubicacion VARCHAR(255) NOT NULL,
-    INDEX idx_centroregional_nombre (nombre_centro)
+    codigo_centro VARCHAR(10) NOT NULL,
+    INDEX idx_centroregional_codigo (codigo_centro)
 );
 
 CREATE TABLE tbl_revisor (
-    revisor_id SMALLINT UNSIGNED PRIMARY KEY,
+    revisor_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     usuario_id SMALLINT UNSIGNED NOT NULL,
     FOREIGN KEY (usuario_id) REFERENCES tbl_usuario(usuario_id) ON DELETE CASCADE
 );
@@ -34,6 +51,7 @@ CREATE TABLE tbl_revisor (
 -- Tabla Carrera
 CREATE TABLE tbl_carrera (
     carrera_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    codigo_carrera VARCHAR(5) UNIQUE NOT NULL,
     nombre_carrera VARCHAR(100) NOT NULL,
     duracion DECIMAL(2,1) UNSIGNED NOT NULL,
     grado ENUM('Licenciatura', 'Técnico Universitario', 'Maestría') NOT NULL,
@@ -58,12 +76,15 @@ CREATE TABLE tbl_admision (
     primer_apellido VARCHAR(50) NOT NULL,
     segundo_apellido VARCHAR(50),
     correo VARCHAR(100) UNIQUE NOT NULL,
-    numero_identidad VARCHAR(20) UNIQUE NOT NULL,
-    numero_telefono VARCHAR(20) NOT NULL,
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    numero_telefono VARCHAR(15) UNIQUE NOT NULL,
+    documento_id TINYINT UNSIGNED NOT NULL,
+    centro_regional_id TINYINT UNSIGNED NOT NULL,
     carrera_id TINYINT UNSIGNED NOT NULL,
-    carrera_secundaria_id TINYINT UNSIGNED,
-    certificado_Secundaria VARCHAR(255),
+    carrera_secundaria_id TINYINT UNSIGNED NOT NULL,
+    certificado_secundaria TEXT NOT NULL,
+    FOREIGN KEY (documento_id) REFERENCES tbl_documento(documento_id),
+    FOREIGN KEY (centro_regional_id) REFERENCES tbl_centro_regional(centro_regional_id),
     FOREIGN KEY (carrera_id) REFERENCES tbl_carrera(carrera_id),
     FOREIGN KEY (carrera_secundaria_id) REFERENCES tbl_carrera(carrera_id)
 );
@@ -85,8 +106,16 @@ CREATE TABLE tbl_solicitud (
     solicitud_id SMALLINT UNSIGNED PRIMARY KEY,
     estado ENUM('Pendiente', 'Aprobada', 'Rechazada') NOT NULL DEFAULT 'Pendiente',
     codigo VARCHAR(20) UNIQUE NOT NULL,
-    observaciones TEXT,
+    observaciones TEXT DEFAULT NULL,
     FOREIGN KEY (solicitud_id) REFERENCES tbl_admision(admision_id) ON DELETE CASCADE
+);
+
+CREATE TABLE tbl_departamento (
+    departamento_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    facultad_id TINYINT UNSIGNED NOT NULL,
+    FOREIGN KEY (facultad_id) REFERENCES tbl_facultad(facultad_id),
+    INDEX idx_departamento (nombre)
 );
 
 -- Tabla Estudiante
@@ -124,6 +153,7 @@ CREATE TABLE tbl_jefe(
     docente_id SMALLINT UNSIGNED UNIQUE,
     FOREIGN KEY (docente_id) REFERENCES tbl_docente(docente_id)
 );
+
 
 -- Tabla Categoría Libro
 CREATE TABLE tbl_categoria_libro (
@@ -174,14 +204,12 @@ CREATE TABLE tbl_seccion (
     seccion_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     clase_id SMALLINT UNSIGNED NOT NULL,
     docente_id SMALLINT UNSIGNED NOT NULL,
-    aula_id SMALLINT UNSIGNED NOT NULL,
     periodo_academico VARCHAR(20) NOT NULL,
+    aula VARCHAR(20),
     horario VARCHAR(50),
-    dias varchar(30),
     cupo_maximo TINYINT UNSIGNED NOT NULL,
     FOREIGN KEY (docente_id) REFERENCES tbl_docente(docente_id),
-    FOREIGN KEY (clase_id) REFERENCES tbl_clase(clase_id),
-    FOREIGN KEY (aula_id) REFERENCES tbl_aula(aula_id)
+    FOREIGN KEY (clase_id) REFERENCES tbl_clase(clase_id)
 );
 
 -- Tabla Matrícula
@@ -201,6 +229,16 @@ CREATE TABLE tbl_notas (
     calificacion DECIMAL(4,2) NOT NULL,
     FOREIGN KEY (estudiante_id) REFERENCES tbl_estudiante(estudiante_id),
     FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
+);
+
+CREATE TABLE tbl_asignacion_revisor (
+    asignacion_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    solicitud_id SMALLINT UNSIGNED NOT NULL,
+    revisor_id SMALLINT UNSIGNED NOT NULL,
+    fecha_asignacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (solicitud_id) REFERENCES tbl_solicitud(solicitud_id) ON DELETE CASCADE,
+    FOREIGN KEY (revisor_id) REFERENCES tbl_revisor(revisor_id) ON DELETE CASCADE,
+    UNIQUE KEY (solicitud_id, revisor_id)
 );
 
 CREATE TABLE tbl_lista_espera (
@@ -228,7 +266,7 @@ AFTER INSERT ON tbl_admision
 FOR EACH ROW
 BEGIN
     INSERT INTO tbl_solicitud (solicitud_id, estado)
-    VALUES (NEW.admision_id);
+    VALUES (NEW.admision_id, 'Pendiente');
 END $$
 
 DELIMITER ;
@@ -249,11 +287,17 @@ END $$
 
 DELIMITER ;
 
+INSERT INTO tbl_tipo_documento (descripcion) VALUES ("Identidad");
+INSERT INTO tbl_tipo_documento (descripcion) VALUES ("Pasaporte");
+
 INSERT INTO tbl_usuario (nombre_completo, identidad, correo, numero_cuenta, contrasenia, telefono) VALUES ("Miguel Alejandro Sánchez Pavón", "0801200212345", "miguel@gmail.com", "20211002227", "12345", "87702024");
 INSERT INTO tbl_usuario (nombre_completo, identidad, correo, numero_cuenta, contrasenia, telefono) VALUES ("Gabriel Antonio Sánchez Pavón", "0801200212346", "gabriel@gmail.com", "20211002228", "12345", "87702025");
 INSERT INTO tbl_usuario (nombre_completo, identidad, correo, numero_cuenta, contrasenia, telefono) VALUES ("Yeymi Gabriela Sánchez Pavón", "0801200212347", "yeymi@gmail.com", "20211002229", "12345", "87702026");
 INSERT INTO tbl_usuario (nombre_completo, identidad, correo, numero_cuenta, contrasenia, telefono) VALUES ("Rafael Armando Sánchez Pavón", "0801200212348", "rafael@gmail.com", "20211002220", "12345", "87702027");
 INSERT INTO tbl_usuario (nombre_completo, identidad, correo, numero_cuenta, contrasenia, telefono) VALUES ("Carlos Fernando Sánchez Pavón", "0801200212349", "carlos30@gmail.com", "20211002221", "12345", "87702028");
+
+INSERT INTO tbl_revisor (usuario_id) VALUES (1);
+INSERT INTO tbl_revisor (usuario_id) VALUES (2);
 
 INSERT INTO tbl_rol (nombre_rol) VALUES ("Estudiante");
 INSERT INTO tbl_rol (nombre_rol) VALUES ("Docente");
@@ -277,77 +321,77 @@ INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Ciencias");
 INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Química y Farmacia");
 INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Ciencias Económicas Administratias y Contables");
 
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Derecho", 5.0, "Licenciatura", 1);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Antropología", 5.0, "Licenciatura", 2);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Periodismo", 4.0, "Licenciatura", 2);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Psicología", 4.5, "Licenciatura", 2);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Pedagogía", 5.0, "Licenciatura", 3);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Trabajo Social", 5.0, "Licenciatura", 2);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Historia", 5.0, "Licenciatura", 2);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Letras", 5.0, "Licenciatura", 3);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Filosofía", 5.0, "Licenciatura", 3);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Sociología", 5.0, "Licenciatura", 2);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Educación Física", 5.0, "Licenciatura", 3);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Lenguas Extranjeras con Orientación en Inglés y Francés", 5.5, "Licenciatura", 3);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Música", 5.0, "Licenciatura", 3);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Desarrollo Local", 5.0, "Licenciatura", 2);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Ingeniería Civil", 5.0, "Licenciatura", 4);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Ingeniería Mecánica Industrial", 5.0, "Licenciatura", 4);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Ingeniería Eléctrica Industrial", 5.0, "Licenciatura", 4);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Ingeniería Industrial", 5.0, "Licenciatura", 4);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Ingeniería en Sistemas", 5.0, "Licenciatura", 4);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Arquitectura", 5.0, "Licenciatura", 3);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Matemática", 4.0, "Licenciatura", 8);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Física", 4.0, "Licenciatura", 8);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Astronomía y Astrofísica", 5.0, "Licenciatura", 5);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Ciencia y Tecnologías de la Información Geográfica", 4.0, "Licenciatura", 5);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Medicina y Cirugía", 7.0, "Licenciatura", 6);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Odontología", 6.0, "Licenciatura", 7);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Nutrición", 5.0, "Licenciatura", 6);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Química y Farmacia", 5.0, "Licenciatura", 9);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Enfermería", 5.5, "Licenciatura", 6);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Microbiología", 5.0, "Licenciatura", 8);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Biología", 5.5, "Licenciatura", 8);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Fonoaudiología", 4.5, "Licenciatura", 6);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Administración y Generación de Empresas", 4.0, "Licenciatura", 10);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Administración Pública", 5.0, "Licenciatura", 10);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Economía", 5.0, "Licenciatura", 10);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Contaduría Pública y Finanzas", 5.0, "Licenciatura", 10);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Administración Aduanera", 4.5, "Licenciatura", 10);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Banca y Finanzas", 5.0, "Licenciatura", 10);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Comercio Internacional", 5.0, "Licenciatura", 10);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Informática Administrativa", 4.5, "Licenciatura", 10);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Mercadotecnia", 5.0, "Licenciatura", 10);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Ingeniería Agronómica", 5.0, "Licenciatura", 4);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Ingeniería Forestal", 5.0, "Licenciatura", 4);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Ingeniería Agroindustrial", 5.0, "Licenciatura", 4);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Ingeniería en Ciencias Acuícolas y Recursos Marinos Costeros", 5.0, "Licenciatura", 4);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Economía Agrícola", 5.0, "Licenciatura", 10);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Ecoturismo", 5.0, "Licenciatura", 10);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Comercio Internacional con Orientación en Agroindustria", 5.0, "Licenciatura", 10);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Técnico Universitario en Educación Básica para la Enseñanza del Español", 2.5, "Técnico Universitario", 3);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Técnico Universitario Metalurgia", 2.5, "Técnico Universitario", 8);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Técnico Universitario en Producción Agrícola", 2.5, "Técnico Universitario", 4);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Técnico Universitario en Terapia Funcional", 2.5, "Técnico Universitario", 6);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Técnico Universitario en Radiotecnologías (Radiología e Imágenes)", 2.5, "Técnico Universitario", 6);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Técnico Universitario en Microfinanzas", 2.5, "Técnico Universitario", 10);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Técnico Universitario en Alimentos y Bebidas", 2.5, "Técnico Universitario", 10);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Técnico Universitario en Control de Calidad del Café", 2.5, "Técnico Universitario", 4);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Técnico Universitario en Administración de Empresas Cafetaleras", 2.5, "Técnico Universitario", 10);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Técnico Universitario en Desarollo Municipal", 2.5, "Técnico Universitario", 2);
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id) VALUES("Licenciatura en Administración de Empresas Agropecuarias", 4.5, "Licenciatura", 10);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("DEREC", "Licenciatura en Derecho", 5.0, "Licenciatura", 1);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("ANTRO", "Licenciatura en Antropología", 5.0, "Licenciatura", 2);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("PERIO", "Licenciatura en Periodismo", 4.0, "Licenciatura", 2);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("PSICO", "Licenciatura en Psicología", 4.5, "Licenciatura", 2);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("PEDAG", "Licenciatura en Pedagogía", 5.0, "Licenciatura", 3);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("TRSOC", "Licenciatura en Trabajo Social", 5.0, "Licenciatura", 2);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("HISTO", "Licenciatura en Historia", 5.0, "Licenciatura", 2);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("LETRA", "Licenciatura en Letras", 5.0, "Licenciatura", 3);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("FILOS", "Licenciatura en Filosofía", 5.0, "Licenciatura", 3);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("SOCIO", "Licenciatura en Sociología", 5.0, "Licenciatura", 2);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("EDFIS", "Licenciatura en Educación Física", 5.0, "Licenciatura", 3);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("LENEX", "Licenciatura en Lenguas Extranjeras con Orientación en Inglés y Francés", 5.5, "Licenciatura", 3);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("MUSIC", "Licenciatura en Música", 5.0, "Licenciatura", 3);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("DESLO", "Licenciatura en Desarrollo Local", 5.0, "Licenciatura", 2);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("INGCI", "Ingeniería Civil", 5.0, "Licenciatura", 4);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("INGMI", "Ingeniería Mecánica Industrial", 5.0, "Licenciatura", 4);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("INGEI", "Ingeniería Eléctrica Industrial", 5.0, "Licenciatura", 4);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("INGIN", "Ingeniería Industrial", 5.0, "Licenciatura", 4);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("INGSI", "Ingeniería en Sistemas", 5.0, "Licenciatura", 4);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("ARQ", "Arquitectura", 5.0, "Licenciatura", 3);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("MATEM", "Licenciatura en Matemática", 4.0, "Licenciatura", 8);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("FISIC", "Licenciatura en Física", 4.0, "Licenciatura", 8);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("ASTRO", "Licenciatura en Astronomía y Astrofísica", 5.0, "Licenciatura", 5);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("CTIG", "Licenciatura en Ciencia y Tecnologías de la Información Geográfica", 4.0, "Licenciatura", 5);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("MEDIC", "Medicina y Cirugía", 7.0, "Licenciatura", 6);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("ODONT", "Odontología", 6.0, "Licenciatura", 7);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("NUTRI", "Licenciatura en Nutrición", 5.0, "Licenciatura", 6);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("QUIFA", "Licenciatura en Química y Farmacia", 5.0, "Licenciatura", 9);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("ENFER", "Licenciatura en Enfermería", 5.5, "Licenciatura", 6);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("MICRO", "Licenciatura en Microbiología", 5.0, "Licenciatura", 8);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("BIOLO", "Licenciatura en Biología", 5.5, "Licenciatura", 8);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("FONOA", "Licenciatura en Fonoaudiología", 4.5, "Licenciatura", 6);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("ADGEM", "Licenciatura en Administración y Generación de Empresas", 4.0, "Licenciatura", 10);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("ADPUB", "Licenciatura en Administración Pública", 5.0, "Licenciatura", 10);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("ECONO", "Licenciatura en Economía", 5.0, "Licenciatura", 10);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("CONFI", "Licenciatura en Contaduría Pública y Finanzas", 5.0, "Licenciatura", 10);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("ADADU", "Licenciatura en Administración Aduanera", 4.5, "Licenciatura", 10);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("BANFI", "Licenciatura en Banca y Finanzas", 5.0, "Licenciatura", 10);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("COMEX", "Licenciatura en Comercio Internacional", 5.0, "Licenciatura", 10);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("INFAD", "Licenciatura en Informática Administrativa", 4.5, "Licenciatura", 10);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("MERCA", "Licenciatura en Mercadotecnia", 5.0, "Licenciatura", 10);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("AGRON", "Ingeniería Agronómica", 5.0, "Licenciatura", 4);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("FORES", "Ingeniería Forestal", 5.0, "Licenciatura", 4);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("AGROI", "Ingeniería Agroindustrial", 5.0, "Licenciatura", 4);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("ACUIC", "Ingeniería en Ciencias Acuícolas y Recursos Marinos Costeros", 5.0, "Licenciatura", 4);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("ECOAG", "Licenciatura en Economía Agrícola", 5.0, "Licenciatura", 10);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("ECOTU", "Licenciatura en Ecoturismo", 5.0, "Licenciatura", 10);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("COMAG", "Licenciatura en Comercio Internacional con Orientación en Agroindustria", 5.0, "Licenciatura", 10);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("TUEBE", "Técnico Universitario en Educación Básica para la Enseñanza del Español", 2.5, "Técnico Universitario", 3);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("TUMME", "Técnico Universitario Metalurgia", 2.5, "Técnico Universitario", 8);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("TUPA", "Técnico Universitario en Producción Agrícola", 2.5, "Técnico Universitario", 4);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("TUTF", "Técnico Universitario en Terapia Funcional", 2.5, "Técnico Universitario", 6);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("TURI", "Técnico Universitario en Radiotecnologías (Radiología e Imágenes)", 2.5, "Técnico Universitario", 6);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("TUMF", "Técnico Universitario en Microfinanzas", 2.5, "Técnico Universitario", 10);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("TUAB", "Técnico Universitario en Alimentos y Bebidas", 2.5, "Técnico Universitario", 10);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("TUCC", "Técnico Universitario en Control de Calidad del Café", 2.5, "Técnico Universitario", 4);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("TUEC", "Técnico Universitario en Administración de Empresas Cafetaleras", 2.5, "Técnico Universitario", 10);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("TUDM", "Técnico Universitario en Desarollo Municipal", 2.5, "Técnico Universitario", 2);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("ADAEM", "Licenciatura en Administración de Empresas Agropecuarias", 4.5, "Licenciatura", 10);
 
-INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("UNAH Ciudad Universitaria", "Tegucigalpa");
-INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("UNAH Cortés", "Cortés");
-INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("UNAH Comayagua", "Comayagua");
-INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("UNAH Atlántida", "Atlántida");
-INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("UNAH Choluteca", "Choluteca");
-INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("UNAH Copán", "Copán");
-INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("UNAH Olancho", "Olancho");
-INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("UNAH El Paraíso", "El Paraíso");
-INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("UNAH Yoro", "Yoro");
-INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("Instituto Tecnológico Superior Tela", "Atlántida");
-INSERT INTO tbl_centro_regional (nombre_centro, ubicacion) VALUES ("CRAED", "A distancia");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion, codigo_centro) VALUES ("UNAH Ciudad Universitaria", "Tegucigalpa", "unah_cu");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion, codigo_centro) VALUES ("UNAH Cortés", "Cortés", "unah_vs");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion, codigo_centro) VALUES ("UNAH Comayagua", "Comayagua", "unah_cmyg");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion, codigo_centro) VALUES ("UNAH Atlántida", "Atlántida", "unah_atl");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion, codigo_centro) VALUES ("UNAH Choluteca", "Choluteca", "unah_chltc");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion, codigo_centro) VALUES ("UNAH Copán", "Copán", "unah_cpn");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion, codigo_centro) VALUES ("UNAH Olancho", "Olancho", "unah_olnch");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion, codigo_centro) VALUES ("UNAH El Paraíso", "El Paraíso", "unah_prs");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion, codigo_centro) VALUES ("UNAH Yoro", "Yoro", "unah_yoro");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion, codigo_centro) VALUES ("Instituto Tecnológico Superior Tela", "Atlántida", "itst");
+INSERT INTO tbl_centro_regional (nombre_centro, ubicacion, codigo_centro) VALUES ("CRAED", "A distancia", "craed");
 
 INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (1, 1);
 INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (1, 2);
@@ -464,84 +508,49 @@ INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUE
 INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (58, 1);
 INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (59, 11);
 
-INSERT INTO tbl_edificio (facultad_id, centro_regional_id, edificio)
-VALUES 
-(1, 1, 'B1'),
-(1, 1, 'B2'),
-(2, 1, 'C1'),
-(2, 1, 'C2'),
-(3, 2, 'E'),
-(3, 2, 'D'),
-(4, 1, 'C3'),
-(5, 4, '1843');
+CREATE TABLE tbl_area (
+    area_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) UNIQUE NOT NULL
+);
+
+ALTER TABLE tbl_clase 
+ADD COLUMN area_id TINYINT UNSIGNED NOT NULL,
+ADD FOREIGN KEY (area_id) REFERENCES tbl_area(area_id);
+
+CREATE TABLE tbl_clase_requisito (
+    clase_id SMALLINT UNSIGNED NOT NULL,
+    requisito_clase_id SMALLINT UNSIGNED NOT NULL,
+    PRIMARY KEY (clase_id, requisito_clase_id),
+    FOREIGN KEY (clase_id) REFERENCES tbl_clase(clase_id) ON DELETE CASCADE,
+    FOREIGN KEY (requisito_clase_id) REFERENCES tbl_clase(clase_id) ON DELETE CASCADE
+);
+
+alter table tbl_matricula
+add column EstadoMatricula ENUM('Activo', 'Inactivo') NOT NULL;
+
+INSERT INTO tbl_area (nombre) VALUES 
+('Matemáticas'), 
+('Lenguas Extranjeras'), 
+('Ciencias');
+
+INSERT INTO tbl_clase (edificio_id, carrera_id, area_id, nombre, codigo, UV) VALUES 
+(1, 1, 1, 'Matemáticas 1', 'MAT101', 4),
+(1, 1, 1, 'Trigonometría', 'MAT102', 4),
+(2, 2, 2, 'Inglés Básico', 'LEN101', 3),
+(3, 3, 3, 'Física 1', 'CIE101', 4),
+(1, 1, 1, 'Cálculo', 'MAT201', 5);
+
+INSERT INTO tbl_clase_requisito (clase_id, requisito_clase_id) VALUES 
+((SELECT clase_id FROM tbl_clase WHERE nombre = 'Cálculo'), 
+ (SELECT clase_id FROM tbl_clase WHERE nombre = 'Matemáticas 1')),
+
+((SELECT clase_id FROM tbl_clase WHERE nombre = 'Cálculo'), 
+ (SELECT clase_id FROM tbl_clase WHERE nombre = 'Trigonometría')),
+
+((SELECT clase_id FROM tbl_clase WHERE nombre = 'Física 1'), 
+ (SELECT clase_id FROM tbl_clase WHERE nombre = 'Matemáticas 1'));
 
 
--- Inserciones para tbl_usuario
-INSERT INTO tbl_usuario (nombre_completo, identidad, correo, numero_cuenta, contrasenia, telefono)
-VALUES
-('Juan Pérez', '0801199001234', 'juan.perez@example.com', '20231234567', 'hashed_password1', '98765432'),
-('Ana Gómez', '0802199505678', 'ana.gomez@example.com', '20239876543', 'hashed_password2', '99887766'),
-('Carlos López', '0803199209876', 'carlos.lopez@example.com', '20234567891', 'hashed_password3', '97654321');
-
--- Inserciones para tbl_facultad
-INSERT INTO tbl_facultad (nombre_facultad)
-VALUES
-('Ingeniería'),
-('Ciencias Económicas'),
-('Humanidades y Artes');
-
--- Inserciones para tbl_centro_regional
-INSERT INTO tbl_centro_regional (nombre_centro, ubicacion)
-VALUES
-('Centro Regional Tegucigalpa', 'Tegucigalpa, Honduras'),
-('Centro Regional San Pedro Sula', 'San Pedro Sula, Honduras');
-
--- Inserciones para tbl_carrera
-INSERT INTO tbl_carrera (nombre_carrera, duracion, grado, facultad_id)
-VALUES
-('Ingeniería en Sistemas', 5.0, 'Licenciatura', 1),
-('Administración de Empresas', 4.5, 'Licenciatura', 2),
-('Psicología', 5.0, 'Licenciatura', 3);
 
 
--- Inserciones para tbl_estudiante
-INSERT INTO tbl_estudiante (usuario_id, carrera_id, centro_regional_id, correo)
-VALUES
-(1, 1, 1, 'juan.perez@example.com'),
-(2,1,1,'prueba@example.com');
-
--- Inserciones para tbl_docente
-INSERT INTO tbl_docente (usuario_id, carrera_id, centro_regional_id)
-VALUES
-(2, 1, 1);
-
-INSERT INTO tbl_clase (edificio_id, carrera_id, nombre, codigo, UV) VALUES
-(1, 1, 'Matemáticas Básicas', 'MAT101', 4),
-(1, 1, 'Álgebra Lineal', 'MAT201', 3),
-(2, 2, 'Programación I', 'PROG101', 4),
-(2, 2, 'Estructuras de Datos', 'PROG202', 3),
-(3, 3, 'Introducción a la Contabilidad', 'CONT101', 3),
-(3, 3, 'Contabilidad Financiera', 'CONT201', 3),
-(4, 4, 'Psicología General', 'PSIC101', 3),
-(4, 4, 'Neurociencia Cognitiva', 'PSIC301', 3),
-(5, 5, 'Derecho Constitucional', 'DER101', 3),
-(5, 5, 'Derecho Penal I', 'DER201', 4),
-(6, 6, 'Biología Celular', 'BIO101', 3),
-(6, 6, 'Genética', 'BIO201', 3);
-
-INSERT INTO tbl_aula (aula, edificio_id) VALUES
-('Aula 101', 1),
-('Aula 102', 1),
-('Aula 201', 2),
-('Aula 202', 2),
-('Aula 301', 3),
-('Aula 302', 3),
-('Aula 401', 4),
-('Aula 402', 4),
-('Aula 501', 5),
-('Aula 502', 5),
-('Aula 601', 6),
-('Aula 602', 6);
-
-INSERT INTO tbl_jefe(docente_id) VALUES (1);
 
