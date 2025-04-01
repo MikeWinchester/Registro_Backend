@@ -239,7 +239,7 @@ CREATE TABLE tbl_notas (
     nota_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     estudiante_id SMALLINT UNSIGNED NOT NULL,
     seccion_id SMALLINT UNSIGNED NOT NULL,
-    calificacion DECIMAL(4,2) NOT NULL,
+    calificacion DECIMAL(5,2) NOT NULL,
     FOREIGN KEY (estudiante_id) REFERENCES tbl_estudiante(estudiante_id),
     FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
 );
@@ -280,6 +280,19 @@ CREATE TABLE tbl_clase_requisito (
 
 alter table tbl_matricula
 add column EstadoMatricula ENUM('Activo', 'Inactivo') NOT NULL;
+
+CREATE TABLE tbl_mensajes (
+    mensaje_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    remitente_id SMALLINT UNSIGNED NOT NULL,
+    destinatario_id SMALLINT UNSIGNED NOT NULL,
+    mensaje TEXT NOT NULL,
+    fecha_envio DATETIME NOT NULL,
+    leido BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (remitente_id) REFERENCES tbl_usuario(usuario_id) ON DELETE CASCADE,
+    FOREIGN KEY (destinatario_id) REFERENCES tbl_usuario(usuario_id) ON DELETE CASCADE,
+    INDEX (remitente_id, destinatario_id),
+    INDEX (fecha_envio)
+);
 
 
 DELIMITER $$
