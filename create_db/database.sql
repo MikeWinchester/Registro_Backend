@@ -235,13 +235,20 @@ CREATE TABLE tbl_matricula (
     FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
 );
 
+CREATE TABLE tbl_observacion(
+    observacion_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    observacion VARCHAR(3)
+);
+
 CREATE TABLE tbl_notas (
     nota_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     estudiante_id SMALLINT UNSIGNED NOT NULL,
     seccion_id SMALLINT UNSIGNED NOT NULL,
     calificacion DECIMAL(5,2) NOT NULL,
+    observacion_id TINYINT UNSIGNED NOT NULL,
     FOREIGN KEY (estudiante_id) REFERENCES tbl_estudiante(estudiante_id),
-    FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
+    FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id),
+    FOREIGN KEY (observacion_id) REFERENCES tbl_observacion(observacion_id)
 );
 
 CREATE TABLE tbl_asignacion_revisor (

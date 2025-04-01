@@ -18,6 +18,7 @@ require_once __DIR__ . "/app/controllers/EstudianteController.php";
 require_once __DIR__ . "/app/controllers/EsperaController.php";
 require_once __DIR__ . "/app/controllers/CancelacionController.php";
 require_once __DIR__ . "/app/controllers/DepartamentoController.php";
+require_once __DIR__ . "/app/controllers/MensajesController.php";
 
 $router = new Router;
 
@@ -95,6 +96,11 @@ $router->addRoute("POST", "/can/estu", "CancelacionController", "createCancelaci
 //Departamentos
 $router->addRoute("GET", "/departamentos/get", "DepartamentoController", "detDeps");
 
+//Mensajes
+$router->addRoute("POST", "/mensaje/set", "MensajesController", "setMensaje");
+$router->addRoute("GET", "/mensaje/get", "MensajesController", "getMensaje");
+$router->addRoute("GET", "/mensaje/sinleer", "MensajesController", "getMensajesLeido");
+$router->addRoute("PUT", "/mensaje/leer", "MensajesController", "leerMensaje");
 //Routes
 $router->addRoute("GET", "/solicitud/{id}/estado", "SolicitudController", "getSolicitudEstado");
 
