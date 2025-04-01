@@ -279,31 +279,21 @@ class SeccionesController {
      * 
      * @version 0.1.1
      */
-    private function getPeriodo(){
-
+    private function getPeriodo() {
         $year = date("Y");
         $mon = date("n");
-
-        $trimestre = ceil($mon / 3);
-
-        switch($trimestre){
-            case 1:
-                $trimestre = "I";
-                break;
-                case 2:
-                    $trimestre = "II";
-                    break;
-                    case 3:
-                        $trimestre = "III";
-                        break;
-                    default:
-                    $trimestre;
+    
+        if ($mon >= 1 && $mon <= 4) {
+            $trimestre = "I";
+        } elseif ($mon >= 5 && $mon <= 8) {
+            $trimestre = "II";
+        } else {
+            $trimestre = "III";
         }
-                
     
         return "$year-$trimestre";
-        
     }
+    
 }
 
 ?>

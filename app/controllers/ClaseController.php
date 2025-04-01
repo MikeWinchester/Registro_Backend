@@ -145,6 +145,39 @@ class ClaseController {
         }
 
     }
+
+    /**
+     * Retorna las clases asignada al docente
+     * 
+     * @version 0.1.0
+     */
+    public function getClasesAsigDoc(){
+        $header = array_change_key_case(getallheaders(), CASE_LOWER);
+        if (!isset($header['docenteid'])) {
+            http_response_code(400);
+            echo json_encode(["error" => "docenteid es requerido en el header"]);
+            return;
+        }
+
+        $claseID = $header['docenteid'];
+
+
+        $sql = "SELECT DISTINCT cl.clase_id, cl.nombre, cl.codigo, sc.periodo_academico
+                FROM tbl_clase as cl
+                INNER JOIN tbl_seccion as sc
+                ON cl.clase_id = sc.clase_id
+                WHERE sc.docente_id = ?";
+
+        $result = $this->clase->customQuery($sql, [$claseID]);
+
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "clases obtenidas", "data" => $result]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "Clases no obtenidas"]);
+        }
+    }
  
     /**
      * Funcion para obtener el periodo acadmico actual
