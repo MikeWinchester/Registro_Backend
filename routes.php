@@ -19,6 +19,7 @@ require_once __DIR__ . "/app/controllers/EsperaController.php";
 require_once __DIR__ . "/app/controllers/CancelacionController.php";
 require_once __DIR__ . "/app/controllers/DepartamentoController.php";
 require_once __DIR__ . "/app/controllers/MensajesController.php";
+require_once __DIR__ . "/app/controllers/ObservacionesController.php";
 
 $router = new Router;
 
@@ -101,6 +102,10 @@ $router->addRoute("POST", "/mensaje/set", "MensajesController", "setMensaje");
 $router->addRoute("GET", "/mensaje/get", "MensajesController", "getMensaje");
 $router->addRoute("GET", "/mensaje/sinleer", "MensajesController", "getMensajesLeido");
 $router->addRoute("PUT", "/mensaje/leer", "MensajesController", "leerMensaje");
+
+//Observaciones
+$router->addRoute("GET", "/observacion/get", "ObservacionesController", "getObservacion");
+
 //Routes
 $router->addRoute("GET", "/solicitud/{id}/estado", "SolicitudController", "getSolicitudEstado");
 

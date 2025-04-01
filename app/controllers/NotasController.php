@@ -27,7 +27,7 @@ class NotasController{
         }
 
         foreach ($data as $key => $estudiante) {
-            if (!isset($estudiante["estudiante_id"]) || !isset($estudiante["seccion_id"]) || !isset($estudiante["nota"])) {
+            if (!isset($estudiante["estudiante_id"]) || !isset($estudiante["seccion_id"]) || !isset($estudiante["nota"]) || !isset($estudiante["observacion_id"])) {
                 http_response_code(400);
                 echo json_encode(["error" => "Faltan datos requeridos en $key"]);
                 return;
@@ -37,7 +37,8 @@ class NotasController{
             $notas = [
                 "estudiante_id" => $estudiante["estudiante_id"],
                 "seccion_id"    => $estudiante["seccion_id"],
-                "calificacion" => $estudiante["nota"]
+                "calificacion" => $estudiante["nota"],
+                "observacion_id" => $estudiante['observacion_id']
             ];
 
             $result = $this->notas->create($notas);

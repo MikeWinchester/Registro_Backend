@@ -65,11 +65,14 @@ class ClaseController {
         $carID = $this->carrera->getCarrera($est);
 
         $sql = "WITH tbl_clases_mat AS (
-            SELECT DISTINCT mt.seccion_id, mt.estudiante_id, cl.clase_id
+            SELECT DISTINCT mt.seccion_id, mt.estudiante_id, cl.clase_id, nt.observacion_id
             FROM tbl_matricula AS mt
             INNER JOIN tbl_seccion AS sc ON mt.seccion_id = sc.seccion_id
             INNER JOIN tbl_clase AS cl ON sc.clase_id = cl.clase_id
-            WHERE mt.estudiante_id = ?
+            LEFT JOIN tbl_notas as nt ON sc.seccion_id = nt.seccion_id
+            WHERE mt.estudiante_id = 2
+            AND nt.observacion_id = 1
+            
         )
         SELECT cl.clase_id, cl.nombre, cl.codigo, cl.UV
         FROM tbl_clase AS cl
@@ -93,6 +96,7 @@ class ClaseController {
         }
     }
 
+    
     /**
      * Crea una clase
      *
@@ -186,31 +190,21 @@ class ClaseController {
      * 
      * @version 0.1.1
      */
-    private function getPeriodo(){
-
+    private function getPeriodo() {
         $year = date("Y");
         $mon = date("n");
-
-        $trimestre = ceil($mon / 3);
-
-        switch($trimestre){
-            case 1:
-                $trimestre = "I";
-                break;
-                case 2:
-                    $trimestre = "II";
-                    break;
-                    case 3:
-                        $trimestre = "III";
-                        break;
-                    default:
-                    $trimestre;
+    
+        if ($mon >= 1 && $mon <= 4) {
+            $trimestre = "I";
+        } elseif ($mon >= 5 && $mon <= 8) {
+            $trimestre = "II";
+        } else {
+            $trimestre = "III";
         }
-                
     
         return "$year-$trimestre";
-        
     }
+
 
 }
 
