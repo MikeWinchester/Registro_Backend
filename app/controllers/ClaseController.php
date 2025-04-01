@@ -64,17 +64,25 @@ class ClaseController {
 
         $carID = $this->carrera->getCarrera($est);
 
-        $sql = "SELECT cl.clase_id, cl.nombre, cl.codigo, cl.UV
-                FROM tbl_clase AS cl
-                LEFT JOIN tbl_seccion AS sc ON sc.clase_id = cl.clase_id
-                LEFT JOIN tbl_matricula AS mt ON sc.seccion_id = mt.seccion_id
-                INNER JOIN tbl_clase_carrera AS cc ON cl.clase_id = cc.clase_id
-                WHERE cl.departamento_id = ?
-                AND cc.carrera_id = ?
-                AND (mt.estudiante_id IS NULL OR sc.seccion_id IS NULL);
-";
+        $sql = "WITH tbl_clases_mat AS (
+            SELECT DISTINCT mt.seccion_id, mt.estudiante_id, cl.clase_id
+            FROM tbl_matricula AS mt
+            INNER JOIN tbl_seccion AS sc ON mt.seccion_id = sc.seccion_id
+            INNER JOIN tbl_clase AS cl ON sc.clase_id = cl.clase_id
+            WHERE mt.estudiante_id = ?
+        )
+        SELECT cl.clase_id, cl.nombre, cl.codigo, cl.UV
+        FROM tbl_clase AS cl
+        LEFT JOIN tbl_clases_mat AS cm
+        ON cl.clase_id = cm.clase_id
+        INNER JOIN tbl_clase_carrera AS cc
+        ON cl.clase_id = cc.clase_id
+        WHERE cm.estudiante_id IS NULL
+        AND cl.departamento_id = ?
+        AND cc.carrera_id = ?;
+    ";
 
-        $result = $this->clase->customQuery($sql, [$depID, $carID]);
+        $result = $this->clase->customQuery($sql, [$est, $depID, $carID[0]["carrera"]]);
 
         if ($result) {
             http_response_code(200);
@@ -137,7 +145,40 @@ class ClaseController {
         }
 
     }
+ 
+    /**
+     * Funcion para obtener el periodo acadmico actual
+     *
+     * @return "anio-trimestre" ejemplo: "2021-1"
+     * 
+     * @version 0.1.1
+     */
+    private function getPeriodo(){
+
+        $year = date("Y");
+        $mon = date("n");
+
+        $trimestre = ceil($mon / 3);
+
+        switch($trimestre){
+            case 1:
+                $trimestre = "I";
+                break;
+                case 2:
+                    $trimestre = "II";
+                    break;
+                    case 3:
+                        $trimestre = "III";
+                        break;
+                    default:
+                    $trimestre;
+        }
+                
     
+        return "$year-$trimestre";
+        
+    }
+
 }
 
 ?>

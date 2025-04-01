@@ -41,17 +41,17 @@ class NotasController{
             ];
 
             $result = $this->notas->create($notas);
+
+            if ($result) {
+                http_response_code(200);
+                echo json_encode(["message" => "Notas asignadas correctamente", "data" => $result]);
+            } else {
+                http_response_code(500);
+                echo json_encode(["error" => "No se pudieron asignar las notas"]);
+            }
         }
     
         
-    
-        if ($result) {
-            http_response_code(200);
-            echo json_encode(["message" => "Notas asignadas correctamente", "data" => $result]);
-        } else {
-            http_response_code(500);
-            echo json_encode(["error" => "No se pudieron asignar las notas"]);
-        }
     }
 
 }

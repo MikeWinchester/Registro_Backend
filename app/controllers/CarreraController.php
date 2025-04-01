@@ -17,13 +17,13 @@ class CarreraController{
 
     public function getCarrera($estID){
 
-        $sql = "SELECT carrera_id
+        $sql = "SELECT carrera_id as carrera
         FROM tbl_estudiante
         WHERE estudiante_id = ?";
 
         $result = $this->career->customQuery($sql, [$estID]);
 
-        return intval($result);
+        return $result;
 
     }
 }
