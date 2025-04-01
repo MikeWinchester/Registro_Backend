@@ -70,7 +70,7 @@ class ClaseController {
             INNER JOIN tbl_seccion AS sc ON mt.seccion_id = sc.seccion_id
             INNER JOIN tbl_clase AS cl ON sc.clase_id = cl.clase_id
             LEFT JOIN tbl_notas as nt ON sc.seccion_id = nt.seccion_id
-            WHERE mt.estudiante_id = 2
+            WHERE mt.estudiante_id = ?
             AND nt.observacion_id = 1
             
         )
