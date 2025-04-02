@@ -158,6 +158,62 @@ class MatriculaController{
         }
     }
     
+    /**
+     * Revisa que cumpla los requisitos para matricular
+     * 
+     * @version 0.1.0
+     */
+    public function cumpleRequisito(){
+        $header = getallheaders();
+
+        if(!isset($header['estudianteid']) || !isset($header['claseid'])){
+            http_response_code(400);
+            echo json_encode(["error" => "estudianteid y claseid necesario"]);
+            return;
+        }
+
+        $est = $header['estudianteid'];
+        $cla = $header['claseid'];
+
+        $sql = "WITH tbl_apr AS (
+                    SELECT sc.clase_id
+                    FROM tbl_notas AS nt
+                    INNER JOIN tbl_seccion AS sc
+                    ON nt.seccion_id = sc.seccion_id
+                    WHERE nt.estudiante_id = ?
+                    AND nt.observacion_id = 1
+                ),
+                requisitos AS (
+                    SELECT count(1) AS requisitos
+                    FROM tbl_clase_requisito AS cr
+                    WHERE cr.clase_id = ?
+                )
+                SELECT
+                    CASE
+                        WHEN r.requisitos = 0 THEN 1
+                        ELSE (
+                            SELECT count(1)
+                            FROM tbl_clase_requisito AS cr
+                            INNER JOIN tbl_apr AS ap
+                            ON cr.requisito_clase_id = ap.clase_id
+                            WHERE cr.clase_id = ?
+                        )
+                    END AS cumple
+                FROM requisitos r;
+";
+
+        $result = $this->matricula->customQuery($sql, [$est, $cla, $cla]);
+
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "Cumple los requisitos", "data" => $result]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "No cumple los requisitos"]);
+        }
+
+        
+    }
 
     /**
      * Obtener matricula del estudiante

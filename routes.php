@@ -53,6 +53,7 @@ $router->addRoute("POST", "/secciones/create", "SeccionesController", "createSec
 $router->addRoute("GET", "/matricula/estudiantes", "MatriculaController", "getEstudiantesNotas");
 $router->addRoute("GET", "/matricula/estudiantes/seccion", "MatriculaController", "getEstudiantes");
 $router->addRoute("GET", "/matricula/get", "MatriculaController", "getMatriculaEst");
+$router->addRoute("GET", "/matricula/check", "MatriculaController", "cumpleRequisito");
 $router->addRoute("POST", "/matricula/set", "MatriculaController", "setMatricula");
 $router->addRoute("DELETE", "/matricula/delete", "MatriculaController", "delMat");
 

@@ -54,12 +54,14 @@ class JefeController {
             echo json_encode(["error" => "Campo jefeid necesario"]);
         }
 
-        $sql = "SELECT facultad_id as facultadid
+        $sql = "SELECT ft.facultad_id as facultadid
         FROM tbl_jefe as jf
         INNER JOIN tbl_docente as dc
         ON jf.docente_id = dc.docente_id
-        INNER JOIN tbl_facultada as ft
-        ON dc.departamento_id = ft.departamento_id
+        INNER JOIN tbl_departamento as dep
+        ON dep.departamento_id = dc.departamento_id
+        INNER JOIN tbl_facultad as ft
+        ON dep.facultad_id = ft.facultad_id
         WHERE jefe_id = ?";
 
         $jefeID = $header['jefeid'];

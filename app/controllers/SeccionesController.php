@@ -224,7 +224,7 @@ class SeccionesController {
     
         $data = json_decode(file_get_contents("php://input"), true);
     
-        if ($this->validateSec($data)) {
+        if ($this->validateSec($data) == 0) {
             if ($this->seccion->create($data)) {
                 echo json_encode(["message" => "Seccion creada", "data" => $data]);
                 http_response_code(200);
@@ -261,7 +261,7 @@ class SeccionesController {
 
         $result = $this->seccion->customQuery($sql, [$data['docente_id'], $data['horario'], $data['periodo_academico'], $data['dias']]);
 
-        echo $result[0]['existe'];
+        return $result[0]['existe'];
     }
 
     /**

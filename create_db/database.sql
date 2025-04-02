@@ -333,11 +333,38 @@ DELIMITER ;
 INSERT INTO tbl_tipo_documento (descripcion) VALUES ("Identidad");
 INSERT INTO tbl_tipo_documento (descripcion) VALUES ("Pasaporte");
 
-INSERT INTO tbl_usuario (nombre_completo, identidad, correo, numero_cuenta, contrasenia, telefono) VALUES ("Miguel Alejandro Sánchez Pavón", "0801200212345", "miguel@gmail.com", "20211002227", "12345", "87702024");
-INSERT INTO tbl_usuario (nombre_completo, identidad, correo, numero_cuenta, contrasenia, telefono) VALUES ("Gabriel Antonio Sánchez Pavón", "0801200212346", "gabriel@gmail.com", "20211002228", "12345", "87702025");
-INSERT INTO tbl_usuario (nombre_completo, identidad, correo, numero_cuenta, contrasenia, telefono) VALUES ("Yeymi Gabriela Sánchez Pavón", "0801200212347", "yeymi@gmail.com", "20211002229", "12345", "87702026");
-INSERT INTO tbl_usuario (nombre_completo, identidad, correo, numero_cuenta, contrasenia, telefono) VALUES ("Rafael Armando Sánchez Pavón", "0801200212348", "rafael@gmail.com", "20211002220", "12345", "87702027");
-INSERT INTO tbl_usuario (nombre_completo, identidad, correo, numero_cuenta, contrasenia, telefono) VALUES ("Carlos Fernando Sánchez Pavón", "0801200212349", "carlos30@gmail.com", "20211002221", "12345", "87702028");
+INSERT INTO tbl_usuario (nombre_completo, identidad, correo, numero_cuenta, contrasenia, telefono) VALUES 
+("Sofía Gabriela Mendoza Castro", "0801200412340", "sofia.mendoza@gmail.com", "20211002240", "12345", "87702039"),
+("Carlos Alberto Jiménez Fuentes", "0801200412341", "carlos.jimenez@gmail.com", "20211002241", "12345", "87702040"),
+("Isabella Fernanda López Núñez", "0801200412342", "isabella.lopez@gmail.com", "20211002242", "12345", "87702041"),
+("Diego Alejandro Rodríguez Mejía", "0801200412343", "diego.rodriguez@gmail.com", "20211002243", "12345", "87702042"),
+("Luciana Valeria Torres Pineda", "0801200412344", "luciana.torres@gmail.com", "20211002244", "12345", "87702043"),
+("Mateo Andrés Ramírez Vargas", "0801200412345", "mateo.ramirez@gmail.com", "20211002245", "12345", "87702044"),
+("Mariana Alejandra Castillo Cruz", "0801200412346", "mariana.castillo@gmail.com", "20211002246", "12345", "87702045"),
+("Emiliano Daniel Fernández Soto", "0801200412347", "emiliano.fernandez@gmail.com", "20211002247", "12345", "87702046"),
+("Victoria Natalia Herrera Peña", "0801200412348", "victoria.herrera@gmail.com", "20211002248", "12345", "87702047"),
+("Samuel Leonardo Morales García", "0801200412349", "samuel.morales@gmail.com", "20211002249", "12345", "87702048"),
+("Renata Camila Pérez Vásquez", "0801200512340", "renata.perez@gmail.com", "20211002250", "12345", "87702049"),
+("Joaquín Antonio Díaz Espinoza", "0801200512341", "joaquin.diaz@gmail.com", "20211002251", "12345", "87702050"),
+("Ximena Valeria Chávez Herrera", "0801200512342", "ximena.chavez@gmail.com", "20211002252", "12345", "87702051"),
+("Sebastián Esteban Guzmán Rivas", "0801200512343", "sebastian.guzman@gmail.com", "20211002253", "12345", "87702052"),
+("Regina Isabella Ortega Salinas", "0801200512344", "regina.ortega@gmail.com", "20211002254", "12345", "87702053"),
+("Maximiliano David Méndez Fuentes", "0801200512345", "maximiliano.mendez@gmail.com", "20211002255", "12345", "87702054"),
+("Valentina Sofía Espinoza Cárdenas", "0801200512346", "valentina.espinoza@gmail.com", "20211002256", "12345", "87702055"),
+("Leonardo Gabriel Ruiz Figueroa", "0801200512347", "leonardo.ruiz@gmail.com", "20211002257", "12345", "87702056"),
+("Camila Antonella Silva Reyes", "0801200512348", "camila.silva@gmail.com", "20211002258", "12345", "87702057"),
+("Dylan Matías Ríos Palacios", "0801200512349", "dylan.rios@gmail.com", "20211002259", "12345", "87702058"),
+("Mía Fernanda Calderón Soto", "0801200612340", "mia.calderon@gmail.com", "20211002260", "12345", "87702059"),
+("Alexander Emilio Peña Vargas", "0801200612341", "alexander.pena@gmail.com", "20211002261", "12345", "87702060"),
+("Paulina Isabella Navarro Guzmán", "0801200612342", "paulina.navarro@gmail.com", "20211002262", "12345", "87702061"),
+("Nicolás Esteban Herrera León", "0801200612343", "nicolas.herrera@gmail.com", "20211002263", "12345", "87702062"),
+("Valeria Andrea Álvarez Rosales", "0801200612344", "valeria.alvarez@gmail.com", "20211002264", "12345", "87702063"),
+("Luis Santiago Rojas Méndez", "0801200612345", "luis.rojas@gmail.com", "20211002265", "12345", "87702064"),
+("Andrea Camila Fuentes Navarro", "0801200612346", "andrea.fuentes@gmail.com", "20211002266", "12345", "87702065"),
+("Gabriel Emmanuel Vargas Torres", "0801200612347", "gabriel.vargas@gmail.com", "20211002267", "12345", "87702066"),
+("Martina Alejandra Castillo Ramírez", "0801200612348", "martina.castillo@gmail.com", "20211002268", "12345", "87702067"),
+("Benjamín Nicolás Sánchez Reyes", "0801200612349", "benjamin.sanchez@gmail.com", "20211002269", "12345", "87702068");
+
 
 INSERT INTO tbl_revisor (usuario_id) VALUES (1);
 INSERT INTO tbl_revisor (usuario_id) VALUES (2);
@@ -363,7 +390,8 @@ INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Odontología");
 INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Ciencias");
 INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Química y Farmacia");
 INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Ciencias Económicas Administratias y Contables");
-INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Matematicas");
+INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Matematicas Aplicada");
+INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Matematicas Condensada");
 
 INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("DEREC", "Licenciatura en Derecho", 5.0, "Licenciatura", 1);
 INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("ANTRO", "Licenciatura en Antropología", 5.0, "Licenciatura", 2);
@@ -553,57 +581,232 @@ INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUE
 INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (59, 11);
 
 
-INSERT INTO tbl_edificio(facultad_id, centro_regional_id, edificio) VALUES (4,1, 'B1'), (4,1, 'B2'), (1,1, 'C2'), (1,1, 'C3');
+INSERT INTO tbl_edificio(facultad_id, centro_regional_id, edificio) VALUES 
+(4,1, 'B1'), 
+(4,1, 'B2'), 
+(10,1, 'C1'),
+(3,1, 'C2'),
+(3,1, 'C3'),
+(11,1, 'D1'),
+(11,1, 'F1'),
+(12,1, 'E1'),
+(1,1, 'A1'),
+(1,1, 'A2'),
+(3,1, '1843'),
+(2,1, 'J1'),
+(9,1, 'G1'),
+(6,1, 'L1'),
+(5,1, 'K1'),
+(5,1, 'K2');
 
 
+-- Insertando más departamentos
 INSERT INTO tbl_departamento(nombre, facultad_id) VALUES 
-('Matemáticas', 11), 
-('Lenguas Extranjeras', 1), 
-('Ciencias', 2),
-('Ingenieria en sistemas', 4),
-('Ingenieria civil', 4);
+('Matemáticas Aplicadas', 11), 
+('Lenguas y Literatura', 3), 
+('Ciencias Naturales', 8),
+('Ingeniería de Software', 4),
+('Ingeniería Mecánica', 4),
+('Ingeniería Eléctrica', 4),
+('Química', 9),
+('Medicina General', 6),
+('Biotecnología', 8),
+('Astronomía', 5),
+('Economía', 10),
+('Contaduría Pública', 10);
 
-INSERT INTO tbl_clase (edificio_id,departamento_id, nombre, codigo, UV) VALUES 
-(1, 1,'Matemáticas 1', 'MAT101', 4),
-(1, 1,'Trigonometría', 'MAT102', 4),
-(2, 2,'Inglés Básico', 'LEN101', 3),
-(3, 1,'Física 1', 'CIE101', 4),
-(1, 1,'Cálculo', 'MAT201', 5);
+-- Insertando más clases
+INSERT INTO tbl_clase (edificio_id, departamento_id, nombre, codigo, UV) VALUES 
+(1, 1, 'Álgebra Lineal', 'MAT103', 4),
+(2, 2, 'Literatura Clásica', 'LEN102', 3),
+(3, 3, 'Química General', 'CIE102', 4),
+(4, 4, 'Algoritmos y Estructuras de Datos', 'IS200', 5),
+(5, 5, 'Mecánica de Fluidos', 'ME200', 4),
+(6, 6, 'Electromagnetismo', 'EE300', 5),
+(7, 7, 'Química Orgánica', 'QF201', 4),
+(8, 8, 'Anatomía Humana', 'MED300', 5),
+(9, 9, 'Biología Molecular', 'BIO101', 4),
+(10, 10, 'Astrofísica', 'AST400', 5),
+(11, 11, 'Microeconomía', 'ECO101', 3),
+(12, 12, 'Contabilidad Avanzada', 'CON200', 4),
+(1, 1, 'Geometría Analítica', 'MAT104', 4),
+(2, 2, 'Lingüística Aplicada', 'LEN201', 3),
+(3, 3, 'Física Cuántica', 'CIE300', 5),
+(4, 4, 'Bases de Datos', 'IS300', 4),
+(5, 5, 'Termodinámica', 'ME201', 4),
+(6, 6, 'Circuitos Eléctricos', 'EE200', 4),
+(7, 7, 'Bioquímica', 'QF301', 4),
+(8, 8, 'Fisiología Humana', 'MED400', 5),
+(9, 9, 'Genética', 'BIO200', 4),
+(10, 10, 'Mecánica Celeste', 'AST500', 5),
+(11, 11, 'Macroeconomía', 'ECO102', 3),
+(12, 12, 'Auditoría', 'CON300', 4),
+(1, 1, 'Cálculo Diferencial', 'MAT105', 4),
+(1, 1, 'Cálculo Integral', 'MAT106', 4),
+(2, 2, 'Teoría Literaria', 'LEN202', 3),
+(2, 2, 'Redacción Académica', 'LEN203', 3),
+(3, 3, 'Biofísica', 'CIE201', 4),
+(3, 3, 'Ecología General', 'CIE202', 4),
+(4, 4, 'Programación Orientada a Objetos', 'IS201', 5),
+(4, 4, 'Desarrollo Web', 'IS202', 4),
+(5, 5, 'Dinámica de Fluidos', 'ME202', 4),
+(5, 5, 'Resistencia de Materiales', 'ME203', 4),
+(6, 6, 'Máquinas Eléctricas', 'EE301', 5),
+(6, 6, 'Electrónica Digital', 'EE302', 4),
+(7, 7, 'Farmacología', 'QF302', 4),
+(7, 7, 'Química Analítica', 'QF303', 4),
+(8, 8, 'Patología General', 'MED401', 5),
+(8, 8, 'Neuroanatomía', 'MED402', 5),
+(9, 9, 'Biotecnología', 'BIO300', 4),
+(9, 9, 'Microbiología', 'BIO301', 4),
+(10, 10, 'Cosmología', 'AST600', 5),
+(10, 10, 'Ondas Gravitacionales', 'AST601', 5),
+(11, 11, 'Econometría', 'ECO201', 3),
+(11, 11, 'Historia del Pensamiento Económico', 'ECO202', 3),
+(12, 12, 'Finanzas Corporativas', 'CON301', 4),
+(12, 12, 'Gestión de Riesgos', 'CON302', 4);
 
-INSERT INTO tbl_clase_carrera values
-(1, 19),
-(1, 1),
-(4, 19),
-(4, 1),
-(2, 1),
-(2, 2),
-(2, 3),
-(2, 19);
 
-INSERT INTO tbl_clase_requisito values
-(1,2),
-(2, 5);
+INSERT INTO tbl_clase_carrera VALUES
+(3, 2),
+(3, 3),
+(4, 3),
+(31, 4),
+(32, 4),
+(1, 4),
+(16, 4),
+(5, 4),
+(6, 5),
+(7, 6),
+(8, 7),
+(9, 8),
+(10, 9),
+(11, 10),
+(12, 11),
+(13, 12),
+(14, 1),
+(15, 2),
+(16, 3),
+(17, 4),
+(18, 5),
+(19, 6),
+(20, 7),
+(21, 8),
+(22, 9),
+(23, 10),
+(24, 11),
+(25, 12),
+(26, 1),
+(27, 2),
+(28, 3),
+(29, 4),
+(30, 5),
+(31, 6),
+(32, 7),
+(33, 8),
+(34, 9),
+(35, 10),
+(36, 11),
+(37, 12),
+(38, 1),
+(39, 2),
+(40, 3),
+(41, 4),
+(42, 5),
+(43, 6),
+(44, 7),
+(45, 8),
+(46, 9),
+(47, 10),
+(48, 11);
 
-INSERT INTO tbl_clase_requisito (clase_id, requisito_clase_id) VALUES 
-((SELECT clase_id FROM tbl_clase WHERE nombre = 'Cálculo'), 
- (SELECT clase_id FROM tbl_clase WHERE nombre = 'Matemáticas 1')),
 
-((SELECT clase_id FROM tbl_clase WHERE nombre = 'Cálculo'), 
- (SELECT clase_id FROM tbl_clase WHERE nombre = 'Trigonometría')),
+INSERT INTO tbl_clase_requisito  VALUES
+(4, 1),  -- Algoritmos y Estructuras de Datos requiere Álgebra Lineal
+(16, 4), -- Bases de Datos requiere Algoritmos y Estructuras de Datos
+(32, 16), -- Desarrollo Web requiere Bases de Datos
 
-((SELECT clase_id FROM tbl_clase WHERE nombre = 'Física 1'), 
- (SELECT clase_id FROM tbl_clase WHERE nombre = 'Matemáticas 1'));
+(26, 25), -- Cálculo Integral requiere Cálculo Diferencial
+(13, 1), -- Geometría Analítica requiere Álgebra Lineal
+(25, 13), -- Cálculo Diferencial requiere Geometría Analítica
+
+(18, 6),  -- Circuitos Eléctricos requiere Electromagnetismo
+(36, 18), -- Electrónica Digital requiere Circuitos Eléctricos
+(35, 18), -- Máquinas Eléctricas requiere Circuitos Eléctricos
+
+(19, 7),  -- Bioquímica requiere Química Orgánica
+(38, 19), -- Farmacología requiere Bioquímica
+
+(24, 10), -- Mecánica Celeste requiere Astrofísica
+(44, 24), -- Cosmología requiere Mecánica Celeste
+(45, 24), -- Ondas Gravitacionales requiere Mecánica Celeste
+
+(30, 3),  -- Biofísica requiere Química General
+(40, 30), -- Biotecnología requiere Biofísica
+(41, 30), -- Microbiología requiere Biofísica
+
+(47, 11), -- Econometría requiere Microeconomía
+(48, 47); -- Historia del Pensamiento Económico requiere Econometría
 
 
 
-insert into tbl_estudiante(usuario_id, carrera_id, centro_regional_id, correo) values (1,19, 1, 'prueba@example.com');
-insert into tbl_estudiante(usuario_id, carrera_id, centro_regional_id, correo) values (2,19, 2, 'prueba2@example.com');
+-- Insertando 15 estudiantes
+INSERT INTO tbl_estudiante (usuario_id, carrera_id, centro_regional_id, correo) VALUES
+(1, 5, 1, 'estudiante1@example.com'),
+(2, 3, 1, 'estudiante2@example.com'),
+(3, 7, 1, 'estudiante3@example.com'),
+(4, 19, 3, 'estudiante4@example.com'),
+(5, 19, 1, 'estudiante5@example.com'),
+(6, 8, 2, 'estudiante6@example.com'),
+(7, 4, 3, 'estudiante7@example.com'),
+(8, 9, 1, 'estudiante8@example.com'),
+(9, 11, 2, 'estudiante9@example.com'),
+(10, 14, 3, 'estudiante10@example.com'),
+(11, 1, 1, 'estudiante11@example.com'),
+(12, 2, 2, 'estudiante12@example.com'),
+(13, 10, 3, 'estudiante13@example.com'),
+(14, 13, 1, 'estudiante14@example.com'),
+(15, 15, 2, 'estudiante15@example.com');
 
-insert into tbl_docente(usuario_id, carrera_id, departamento_id, centro_regional_id) values (3,19,4,2);
-insert into tbl_docente(usuario_id, carrera_id, departamento_id, centro_regional_id) values (4,1,2,1);
+-- Insertando 15 docentes
+INSERT INTO tbl_docente (usuario_id, carrera_id, departamento_id, centro_regional_id) VALUES
+(16, 5, 1, 1),
+(17, 3, 2, 2),
+(18, 7, 3, 1),
+(19, 19, 4, 3),
+(20, 6, 5, 1),
+(21, 8, 6, 2),
+(22, 4, 7, 3),
+(23, 9, 8, 1),
+(24, 11, 9, 2),
+(25, 14, 10, 3),
+(26, 1, 11, 1),
+(27, 2, 12, 2),
+(28, 10, 3, 3),
+(29, 13, 5, 1),
+(30, 15, 7, 2);
+
 
 
 insert into tbl_jefe(docente_id) values (1);
+insert into tbl_jefe(docente_id) values (2);
+insert into tbl_jefe(docente_id) values (7);
+insert into tbl_jefe(docente_id) values (4);
 
-
+insert into tbl_aula(aula, edificio_id) values
+("Lab1", 1),
+("Lab2", 1),
+("Lab3", 1),
+("202", 5),
+("203", 5),
+("404", 2),
+("302", 4),
+("302", 7),
+("102", 5),
+("103", 5),
+("105", 8),
+("200", 1),
+("201", 4),
+("202", 1),
+("203", 2);
 

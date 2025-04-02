@@ -70,8 +70,8 @@ class ClaseController {
             INNER JOIN tbl_seccion AS sc ON mt.seccion_id = sc.seccion_id
             INNER JOIN tbl_clase AS cl ON sc.clase_id = cl.clase_id
             LEFT JOIN tbl_notas as nt ON sc.seccion_id = nt.seccion_id
-            WHERE mt.estudiante_id = ?
-            AND nt.observacion_id = 1
+            WHERE (mt.estudiante_id = ? AND sc.periodo_academico = ?)
+            OR (nt.estudiante_id = ? AND nt.observacion_id = 1)
             
         )
         SELECT cl.clase_id, cl.nombre, cl.codigo, cl.UV
@@ -85,7 +85,7 @@ class ClaseController {
         AND cc.carrera_id = ?;
     ";
 
-        $result = $this->clase->customQuery($sql, [$est, $depID, $carID[0]["carrera"]]);
+        $result = $this->clase->customQuery($sql, [$est, $this->getPeriodo(), $est, $depID, $carID[0]["carrera"]]);
 
         if ($result) {
             http_response_code(200);
