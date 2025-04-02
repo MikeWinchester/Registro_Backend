@@ -99,74 +99,65 @@ class MatriculaController{
 
     }
 
-    /** 
+    /**
      * Crear la matricula de un estudiante
      */
-    public function setMatricula(){
+    public function setMatricula() {
         $data = json_decode(file_get_contents("php://input"), true);
-
-
+        
         $result = $this->matricula->customQuery(
             "SELECT COUNT(1) AS existe
              FROM tbl_matricula AS mt
-             INNER JOIN tbl_lista_espera AS ep
-             ON mt.seccion_id = ep.seccion_id
-             INNER JOIN tbl_seccion as sc
-             ON mt.seccion_id = sc.seccion_id
+             INNER JOIN tbl_lista_espera AS ep ON mt.seccion_id = ep.seccion_id
+             INNER JOIN tbl_seccion as sc ON mt.seccion_id = sc.seccion_id
              WHERE (mt.estudiante_id = ? AND sc.clase_id = ?)
              OR ep.estudiante_id = ?",
             [$data['estudiante_id'], $data['clase_id'], $data['estudiante_id']]
         );
-
+    
+        
         if (intval($result[0]['existe']) == 0) {
-            
-            $cupo = $this->matricula->customQuery("SELECT cupo_maximo from tbl_seccion where seccion_id = ?", [$data['seccion_id']]);
-
+            $cupo = $this->matricula->customQuery("SELECT cupo_maximo FROM tbl_seccion WHERE seccion_id = ?", [$data['seccion_id']]);
             $seccionID = $data['seccion_id'];
-
+    
             if (isset($cupo[0]['cupo_maximo']) && $cupo[0]['cupo_maximo'] > 0) {
-                
-
                 unset($data['clase_id']);
                 $result = $this->matricula->create($data);
-                if (!$result){
-                    http_response_code(404);
-                    echo json_encode(["error" => "No se logro crear matricular"]);
+    
+                if (!$result) {
+                    http_response_code(400);
+                    echo json_encode(["error" => "No se logró matricular"]);
                     return;
                 }
-
+    
                 $restCupo = $this->matricula->customQueryUpdate("UPDATE tbl_seccion SET cupo_maximo = cupo_maximo - 1 WHERE seccion_id = ?", [$seccionID]);
-
-                echo $restCupo;
-
+    
                 if ($restCupo) {
                     http_response_code(200);
-                    echo json_encode(["message" => "matricula creada", "data" => $data]);
+                    echo json_encode(["message" => "Matrícula creada", "data" => $data]);
                 } else {
-                    http_response_code(404);
-                    echo json_encode(["error" => "No se logro crear matricular"]);
+                    http_response_code(400);
+                    echo json_encode(["error" => "No se logró actualizar el cupo"]);
                 }
+            } else {
+                
+                $esperaData = ['seccion_id' => $data['seccion_id'], 'estudiante_id' => $data['estudiante_id']];
+                $result = $this->espera->create($esperaData);
+    
+                if ($result) {
+                    http_response_code(200);
+                    echo json_encode(["message" => "Se agregó a lista de espera", "data" => $esperaData]);
+                } else {
+                    http_response_code(400);
+                    echo json_encode(["error" => "No se logró agregar en espera"]);
                 }
-                else{
-
-                    $data = ['seccion_id' => $data['seccion_id'], 'estudiante_id' => $data['estudiante_id']];
-                    
-
-                    $result = $this->espera->create($data);
-
-                    if ($result) {
-                        http_response_code(200);
-                        echo json_encode(["message" => "se agrego en espera", "data" => $data]);
-                    } else {
-                        http_response_code(404);
-                        echo json_encode(["error" => "No se logro agregar en espera"]);
-                    }
-                }
-        }else{
+            }
+        } else {
             http_response_code(200);
-            echo json_encode(["message" => "Ya tiene matriculo la clase", "data" => 'Clase Matriculada']);
+            echo json_encode(["message" => "El estudiante ya está matriculado", "data" => 'Clase Matriculada']);
         }
     }
+    
 
     /**
      * Obtener matricula del estudiante

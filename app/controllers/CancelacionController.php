@@ -26,7 +26,7 @@ class CancelacionController {
             echo json_encode(['Error'=>'campo estudianteid necesario']);
         }
 
-        $sql = 'SELECT cn.seccion_id, cl.nombre ,periodo_academico, aula, horario, cupo_maximo, ed.edificio, cl.codigo, sec.dias
+        $sql = 'SELECT DISTINCT cn.seccion_id, cl.nombre ,periodo_academico, aula, horario, cupo_maximo, ed.edificio, cl.codigo, sec.dias
         FROM tbl_lista_cancelacion as cn
         INNER JOIN tbl_seccion as sec
         ON cn.seccion_id = sec.seccion_id

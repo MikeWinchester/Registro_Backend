@@ -225,13 +225,40 @@ class SeccionesController {
 
         $data = json_decode(file_get_contents("php://input"), true);
 
-        if ($this->seccion->create($data)) {
-            http_response_code(200);
-            echo json_encode(["message" => "Seccion creada", "data" => $data]);
-        } else {
+        if($this->validateSec($data)){
+            if ($this->seccion->create($data)) {
+                http_response_code(200);
+                echo json_encode(["message" => "Seccion creada", "data" => $data]);
+            } else {
+                http_response_code(404);
+                echo json_encode(["error" => "No se logro crear la seccion"]);
+            }
+        }else{
             http_response_code(404);
-            echo json_encode(["error" => "No se logro crear la seccion"]);
+            echo json_encode(["error" => "Docente ocupado en el mismo horario"]);
         }
+    }
+
+    /**
+     * Revisa si ya existe una seccion dentro de los parametros de un docente
+     * 
+     * @version 0.1.0
+     */
+    private function validateSec($data){
+
+        $sql = "SELECT COUNT(1) AS existe
+                FROM tbl_seccion
+                WHERE docente_id = ?
+                AND horario = ?
+                AND periodo_academico = ?
+                AND (
+                    dias LIKE CONCAT('%', ?, '%')
+                )
+                ";
+
+        $result = $this->seccion->customQuery($sql, [$data['docente_id'], $data['horario'], $data['periodo_academico'], $data['dias']]);
+
+        echo $result[0]['existe'];
     }
 
     /**
