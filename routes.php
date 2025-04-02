@@ -89,6 +89,7 @@ $router->addRoute("GET", "/jefe/getFac", "JefeController", "getFacByJefe");
 //Lista de espera
 $router->addRoute("GET", "/esp/estu", "EsperaController", "getEspByEstudiante");
 $router->addRoute("GET", "/esp/count", "EsperaController", "getCupoEsperaBySec");
+$router->addRoute("GET", "/esp/dep", "EsperaController", "getEstEsperaDep");
 $router->addRoute("DELETE", "/esp/eliminar", "EsperaController", "delEspera");
 
 //Lista cancelacion

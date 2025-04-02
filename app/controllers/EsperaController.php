@@ -109,5 +109,46 @@ class EsperaController {
             echo json_encode(["error" => "Error al obtener Secciones"]);
         }
     }
+
+    /**
+     * obtiene estudiantes en espera segun departamento
+     * 
+     * @version 0.1.0
+     */
+    public function getEstEsperaDep(){
+        $header = getallheaders();
+
+        if(!isset($header['departamentoid'])){
+            http_response_code(400);
+            echo json_encode(['Error'=>'campo departamentoid necesario']);
+        }
+
+        $sql = 'SELECT cl.codigo, cl.nombre, sc.horario, est.estudiante_id, al.aula, ed.edificio, us.numero_cuenta, sc.periodo_academico, sc.seccion_id
+                FROM tbl_lista_espera as lep
+                INNER JOIN tbl_seccion as sc
+                ON lep.seccion_id = sc.seccion_id
+                INNER JOIN tbl_clase as cl
+                ON sc.clase_id = cl.clase_id
+                INNER JOIN tbl_aula as al
+                ON sc.aula_id = al.aula_id
+                INNER JOIN tbl_edificio as ed
+                ON al.edificio_id = ed.edificio_id
+                INNER JOIN tbl_estudiante as est
+                ON lep.estudiante_id = est.estudiante_id
+                INNER JOIN tbl_usuario as us
+                ON est.usuario_id = us.usuario_id
+                WHERE cl.departamento_id = ?';
+
+        $departamentoid = $header['departamentoid'];
+
+        $result = $this->espera->customQuery($sql, [$departamentoid]);
+
+        if ($result) {
+            echo json_encode(["message" => "Lista de espera obtenida correctamente", "data" => $result]);
+        } else {
+            echo json_encode(["message" => "Lista de espera no obtenida"]);
+        }
+    }
+    
 }
 ?>
