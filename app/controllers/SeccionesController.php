@@ -219,25 +219,28 @@ class SeccionesController {
      *
      * @version 0.1.0
      */
-    public function createSeccion(){
-
-        #AuthMiddleware::authMiddleware();
-
+    public function createSeccion() {
+        header('Content-Type: application/json'); 
+    
         $data = json_decode(file_get_contents("php://input"), true);
-
-        if($this->validateSec($data)){
+    
+        if ($this->validateSec($data)) {
             if ($this->seccion->create($data)) {
-                http_response_code(200);
                 echo json_encode(["message" => "Seccion creada", "data" => $data]);
+                http_response_code(200);
+                exit(); 
             } else {
-                http_response_code(404);
-                echo json_encode(["error" => "No se logro crear la seccion"]);
+                http_response_code(400);
+                echo json_encode(["error" => "No se logró crear la sección"]);
+                exit();
             }
-        }else{
-            http_response_code(404);
+        } else {
+            http_response_code(400);
             echo json_encode(["error" => "Docente ocupado en el mismo horario"]);
+            exit();
         }
     }
+    
 
     /**
      * Revisa si ya existe una seccion dentro de los parametros de un docente
