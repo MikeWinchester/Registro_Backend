@@ -101,11 +101,51 @@ class MatriculaController{
 
     /**
      * Crear la matricula de un estudiante
+     * 
+     * @version 0.1.2
      */
     public function setMatricula() {
         $data = json_decode(file_get_contents("php://input"), true);
+
+        $result = $this->checkClase($data);
+    
         
-        $result = $this->matricula->customQuery(
+        if (intval($result[0]['existe']) == 0) {
+
+            $result = $this->cumpleHorario($data);
+            
+            if(intval($result[0]['existe'] == 0)){
+
+                if ($this->revisionCupos($data)) {
+                    unset($data['clase_id']);
+                    $result = $this->matricula->create($data);
+
+                    if ($result) {
+                        http_response_code(200);
+                        echo json_encode(["message" => "Se ha matriculado la clase", "data" => 'Clase Matriculada']);
+                    } else {
+                        http_response_code(400);
+                        echo json_encode(["error" => "No se logró actualizar el cupo"]);
+                    }
+
+                } else {
+                    
+                    $this->matricularEspera($data);
+                }
+            }else{
+                http_response_code(200);
+                echo json_encode(["message" => "Conflicto de horario"]);
+            }
+
+        } else {
+            http_response_code(200);
+            echo json_encode(["message" => "El estudiante ya está en espera", "data" => 'Clase Matriculada']);
+        }
+    }
+
+    private function checkClase($data){
+
+        return $this->matricula->customQuery(
             "SELECT COUNT(1) AS existe
              FROM tbl_matricula AS mt
              INNER JOIN tbl_lista_espera AS ep ON mt.seccion_id = ep.seccion_id
@@ -114,47 +154,50 @@ class MatriculaController{
              OR ep.estudiante_id = ?",
             [$data['estudiante_id'], $data['clase_id'], $data['estudiante_id']]
         );
-    
+    }
+
+    private function cumpleHorario($data){
         
-        if (intval($result[0]['existe']) == 0) {
-            $cupo = $this->matricula->customQuery("SELECT cupo_maximo FROM tbl_seccion WHERE seccion_id = ?", [$data['seccion_id']]);
-            $seccionID = $data['seccion_id'];
-    
-            if (isset($cupo[0]['cupo_maximo']) && $cupo[0]['cupo_maximo'] > 0) {
-                unset($data['clase_id']);
-                $result = $this->matricula->create($data);
-    
-                if (!$result) {
-                    http_response_code(400);
-                    echo json_encode(["error" => "No se logró matricular"]);
-                    return;
-                }
-    
-                $restCupo = $this->matricula->customQueryUpdate("UPDATE tbl_seccion SET cupo_maximo = cupo_maximo - 1 WHERE seccion_id = ?", [$seccionID]);
-    
-                if ($restCupo) {
-                    http_response_code(200);
-                    echo json_encode(["message" => "Matrícula creada", "data" => $data]);
-                } else {
-                    http_response_code(400);
-                    echo json_encode(["error" => "No se logró actualizar el cupo"]);
-                }
-            } else {
-                
-                $esperaData = ['seccion_id' => $data['seccion_id'], 'estudiante_id' => $data['estudiante_id']];
-                $result = $this->espera->create($esperaData);
-    
-                if ($result) {
-                    http_response_code(200);
-                    echo json_encode(["message" => "Se agregó a lista de espera", "data" => $esperaData]);
-                } else {
-                    http_response_code(400);
-                    echo json_encode(["error" => "No se logró agregar en espera"]);
-                }
-            }
-        } else {
+        $sql = "WITH tbl_horario AS (
+            SELECT horario, dias
+            FROM tbl_seccion 
+            WHERE seccion_id = ?
+        )
+        SELECT COUNT(1) AS existe
+        FROM tbl_matricula AS mat
+        INNER JOIN tbl_seccion AS sec
+            ON mat.seccion_id = sec.seccion_id
+        INNER JOIN tbl_horario AS hr
+            ON sec.horario = hr.horario 
+            AND sec.dias LIKE CONCAT('%', hr.dias, '%') 
+        WHERE mat.estudiante_id = ?
+            AND sec.periodo_academico = ?";
+
+        return $this->matricula->customQuery($sql, [$data['seccion_id'], $data['estudiante_id'], $this->getPeriodo()]);
+    }
+
+    private function revisionCupos($data){
+        $cupo_ocupados = $this->matricula->customQuery("SELECT count(1) as estudiantes FROM tbl_matricula WHERE seccion_id = ?", [$data['seccion_id']]);
+        $cupo_seccion = $this->matricula->customQuery("SELECT cupo_maximo FROM tbl_seccion WHERE seccion_id = ?", [$data['seccion_id']]);
+
+        $cupos_disponibles = (intval($cupo_seccion[0]['cupo_maximo']) - intval($cupo_ocupados[0]['estudiantes']));
+        
+        if($cupos_disponibles > 0){
+            return true;
+        }
+        return false;
+    }
+
+    private function matricularEspera($data){
+        $esperaData = ['seccion_id' => $data['seccion_id'], 'estudiante_id' => $data['estudiante_id']];
+        $result = $this->espera->create($esperaData);
+
+        if ($result) {
             http_response_code(200);
-            echo json_encode(["message" => "El estudiante ya está matriculado", "data" => 'Clase Matriculada']);
+            echo json_encode(["message" => "Se ha agregado a lista de espera"]);
+        } else {
+            http_response_code(400);
+            echo json_encode(["error" => "No se logró agregar en espera"]);
         }
     }
     
@@ -200,7 +243,7 @@ class MatriculaController{
                         )
                     END AS cumple
                 FROM requisitos r;
-";
+                ";
 
         $result = $this->matricula->customQuery($sql, [$est, $cla, $cla]);
 
@@ -323,6 +366,7 @@ class MatriculaController{
             echo json_encode(["error" => "No se completo la cancelacion"]);
         }
     }
+    
 
     /**
      * Funcion para obtener el periodo acadmico actual
@@ -345,7 +389,9 @@ class MatriculaController{
     
         return "$year-$trimestre";
     }
-    
+
 }
+
+
 
 ?>

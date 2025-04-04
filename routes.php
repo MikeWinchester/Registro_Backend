@@ -54,6 +54,7 @@ $router->addRoute("GET", "/matricula/estudiantes", "MatriculaController", "getEs
 $router->addRoute("GET", "/matricula/estudiantes/seccion", "MatriculaController", "getEstudiantes");
 $router->addRoute("GET", "/matricula/get", "MatriculaController", "getMatriculaEst");
 $router->addRoute("GET", "/matricula/check", "MatriculaController", "cumpleRequisito");
+$router->addRoute("GET", "/matricula/horario", "MatriculaController", "cumpleHorario");
 $router->addRoute("POST", "/matricula/set", "MatriculaController", "setMatricula");
 $router->addRoute("DELETE", "/matricula/delete", "MatriculaController", "delMat");
 

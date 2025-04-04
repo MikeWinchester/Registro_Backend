@@ -267,7 +267,7 @@ class SeccionesController {
     /**
      * Obtiene las secciones de una clase
      *
-     * @version 0.1.0
+     * @version 0.1.1
      */
     public function getSeccionesByClass(){
 
@@ -292,6 +292,12 @@ class SeccionesController {
         $claseID = $header['claseid'];
 
         $result = $this->seccion->customQuery($sql, [$claseID, $this->getPeriodo()]);
+        
+        $index = 0;
+        foreach ($result as $seccion) {
+            $result[$index]['cupo_maximo'] = $this->getCupos($seccion['seccion_id']);
+            $index += 1;
+        }
 
         if ($result) {
             http_response_code(200);
@@ -300,6 +306,13 @@ class SeccionesController {
             http_response_code(404);
             echo json_encode(["error" => "Secciones no disponibles"]);
         }
+    }
+
+    private function getCupos($seccionid){
+        $cupo_ocupados = $this->seccion->customQuery("SELECT count(1) as estudiantes FROM tbl_matricula WHERE seccion_id = ?", [$seccionid]);
+        $cupo_seccion = $this->seccion->customQuery("SELECT cupo_maximo FROM tbl_seccion WHERE seccion_id = ?", [$seccionid]);
+
+        return intval($cupo_seccion[0]['cupo_maximo']) - intval($cupo_ocupados[0]['estudiantes']);
     }
 
     /**

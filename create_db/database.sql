@@ -231,6 +231,7 @@ CREATE TABLE tbl_matricula (
     estudiante_id SMALLINT UNSIGNED NOT NULL,
     seccion_id SMALLINT UNSIGNED NOT NULL,
     fechaInscripcion DATE NOT NULL,
+    EstadoMatricula ENUM('Activo', 'Inactivo') NOT NULL,
     FOREIGN KEY (estudiante_id) REFERENCES tbl_estudiante(estudiante_id),
     FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
 );
@@ -285,8 +286,6 @@ CREATE TABLE tbl_clase_requisito (
     FOREIGN KEY (requisito_clase_id) REFERENCES tbl_clase(clase_id) ON DELETE CASCADE
 );
 
-alter table tbl_matricula
-add column EstadoMatricula ENUM('Activo', 'Inactivo') NOT NULL;
 
 CREATE TABLE tbl_mensajes (
     mensaje_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -413,7 +412,7 @@ INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facult
 INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("INGIN", "Ingeniería Industrial", 5.0, "Licenciatura", 4);
 INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("INGSI", "Ingeniería en Sistemas", 5.0, "Licenciatura", 4);
 INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("ARQ", "Arquitectura", 5.0, "Licenciatura", 3);
-INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("MATEM", "Licenciatura en Matemática", 4.0, "Licenciatura", 8);
+INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("MATEM", "Licenciatura en Matemática", 4.0, "Licenciatura", 11);
 INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("FISIC", "Licenciatura en Física", 4.0, "Licenciatura", 8);
 INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("ASTRO", "Licenciatura en Astronomía y Astrofísica", 5.0, "Licenciatura", 5);
 INSERT INTO tbl_carrera (codigo_carrera, nombre_carrera, duracion, grado, facultad_id) VALUES("CTIG", "Licenciatura en Ciencia y Tecnologías de la Información Geográfica", 4.0, "Licenciatura", 5);
@@ -580,7 +579,24 @@ INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUE
 INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (58, 1);
 INSERT INTO tbl_carrera_x_centro_regional (carrera_id, centro_regional_id) VALUES (59, 11);
 
+-- Insertando más departamentos
+INSERT INTO tbl_departamento(nombre, facultad_id) VALUES 
+('Matemáticas Aplicadas', 11), 
+('Lenguas y Literatura', 3), 
+('Ciencias Naturales', 8),
+('Ingeniería en sistemas', 4),
+('Ingeniería Mecánica', 4),
+('Ingeniería Civil', 4),
+('Ingeniería Industrial', 4),
+('Ingeniería Eléctrica', 4),
+('Química', 9),
+('Medicina General', 6),
+('Biotecnología', 8),
+('Astronomía', 5),
+('Economía', 10),
+('Contaduría Pública', 10);
 
+-- Insert de edificios
 INSERT INTO tbl_edificio(facultad_id, centro_regional_id, edificio) VALUES 
 (4,1, 'B1'), 
 (4,1, 'B2'), 
@@ -599,214 +615,144 @@ INSERT INTO tbl_edificio(facultad_id, centro_regional_id, edificio) VALUES
 (5,1, 'K1'),
 (5,1, 'K2');
 
-
--- Insertando más departamentos
-INSERT INTO tbl_departamento(nombre, facultad_id) VALUES 
-('Matemáticas Aplicadas', 11), 
-('Lenguas y Literatura', 3), 
-('Ciencias Naturales', 8),
-('Ingeniería de Software', 4),
-('Ingeniería Mecánica', 4),
-('Ingeniería Eléctrica', 4),
-('Química', 9),
-('Medicina General', 6),
-('Biotecnología', 8),
-('Astronomía', 5),
-('Economía', 10),
-('Contaduría Pública', 10);
-
 -- Insertando más clases
 INSERT INTO tbl_clase (edificio_id, departamento_id, nombre, codigo, UV) VALUES 
-(1, 1, 'Álgebra Lineal', 'MAT103', 4),
-(2, 2, 'Literatura Clásica', 'LEN102', 3),
-(3, 3, 'Química General', 'CIE102', 4),
-(4, 4, 'Algoritmos y Estructuras de Datos', 'IS200', 5),
-(5, 5, 'Mecánica de Fluidos', 'ME200', 4),
-(6, 6, 'Electromagnetismo', 'EE300', 5),
-(7, 7, 'Química Orgánica', 'QF201', 4),
-(8, 8, 'Anatomía Humana', 'MED300', 5),
-(9, 9, 'Biología Molecular', 'BIO101', 4),
-(10, 10, 'Astrofísica', 'AST400', 5),
-(11, 11, 'Microeconomía', 'ECO101', 3),
-(12, 12, 'Contabilidad Avanzada', 'CON200', 4),
-(1, 1, 'Geometría Analítica', 'MAT104', 4),
-(2, 2, 'Lingüística Aplicada', 'LEN201', 3),
-(3, 3, 'Física Cuántica', 'CIE300', 5),
-(4, 4, 'Bases de Datos', 'IS300', 4),
-(5, 5, 'Termodinámica', 'ME201', 4),
-(6, 6, 'Circuitos Eléctricos', 'EE200', 4),
-(7, 7, 'Bioquímica', 'QF301', 4),
-(8, 8, 'Fisiología Humana', 'MED400', 5),
-(9, 9, 'Genética', 'BIO200', 4),
-(10, 10, 'Mecánica Celeste', 'AST500', 5),
-(11, 11, 'Macroeconomía', 'ECO102', 3),
-(12, 12, 'Auditoría', 'CON300', 4),
-(1, 1, 'Cálculo Diferencial', 'MAT105', 4),
-(1, 1, 'Cálculo Integral', 'MAT106', 4),
-(2, 2, 'Teoría Literaria', 'LEN202', 3),
-(2, 2, 'Redacción Académica', 'LEN203', 3),
-(3, 3, 'Biofísica', 'CIE201', 4),
-(3, 3, 'Ecología General', 'CIE202', 4),
-(4, 4, 'Programación Orientada a Objetos', 'IS201', 5),
-(4, 4, 'Desarrollo Web', 'IS202', 4),
-(5, 5, 'Dinámica de Fluidos', 'ME202', 4),
-(5, 5, 'Resistencia de Materiales', 'ME203', 4),
-(6, 6, 'Máquinas Eléctricas', 'EE301', 5),
-(6, 6, 'Electrónica Digital', 'EE302', 4),
-(7, 7, 'Farmacología', 'QF302', 4),
-(7, 7, 'Química Analítica', 'QF303', 4),
-(8, 8, 'Patología General', 'MED401', 5),
-(8, 8, 'Neuroanatomía', 'MED402', 5),
-(9, 9, 'Biotecnología', 'BIO300', 4),
-(9, 9, 'Microbiología', 'BIO301', 4),
-(10, 10, 'Cosmología', 'AST600', 5),
-(10, 10, 'Ondas Gravitacionales', 'AST601', 5),
-(11, 11, 'Econometría', 'ECO201', 3),
-(11, 11, 'Historia del Pensamiento Económico', 'ECO202', 3),
-(12, 12, 'Finanzas Corporativas', 'CON301', 4),
-(12, 12, 'Gestión de Riesgos', 'CON302', 4);
+(6, 1, 'Matematicas I', 'MM-110', 5),
+(6, 1, 'Geometria y Trigonometria', 'MM-111', 5),
+(2, 4, 'Introduccion a ingenieria en sistemas', 'IS-110', 3),
+(7, 3, 'Sociologia', 'SC-101', 4),
+(2, 4, 'Programacion I', 'MM-314', 3),
+(6, 1, 'Calculo I', 'MM-201', 5),
+(6, 1, 'Vectores y matrices', 'MM-211', 5),
+(11, 2, 'Ingles I', 'IN-101', 4);
 
 
 INSERT INTO tbl_clase_carrera VALUES
-(3, 2),
-(3, 3),
-(4, 3),
-(31, 4),
-(32, 4),
-(1, 4),
-(16, 4),
-(5, 4),
-(6, 5),
-(7, 6),
-(8, 7),
-(9, 8),
-(10, 9),
-(11, 10),
-(12, 11),
-(13, 12),
-(14, 1),
-(15, 2),
-(16, 3),
-(17, 4),
-(18, 5),
-(19, 6),
-(20, 7),
-(21, 8),
-(22, 9),
-(23, 10),
-(24, 11),
-(25, 12),
-(26, 1),
-(27, 2),
-(28, 3),
-(29, 4),
-(30, 5),
-(31, 6),
-(32, 7),
-(33, 8),
-(34, 9),
-(35, 10),
-(36, 11),
-(37, 12),
-(38, 1),
-(39, 2),
-(40, 3),
-(41, 4),
-(42, 5),
-(43, 6),
-(44, 7),
-(45, 8),
-(46, 9),
-(47, 10),
-(48, 11);
-
+(1,15),
+(1,16),
+(1,17),
+(1,18),
+(1,19),
+(2,15),
+(2,16),
+(2,17),
+(2,18),
+(2,19),
+(3,19),
+(4,15),
+(4,16),
+(4,17),
+(4,18),
+(4,19),
+(5,19),
+(6,15),
+(6,16),
+(6,17),
+(6,18),
+(6,19),
+(7,15),
+(7,16),
+(7,17),
+(7,18),
+(7,19),
+(8,15),
+(8,16),
+(8,17),
+(8,18),
+(8,19);
 
 INSERT INTO tbl_clase_requisito  VALUES
-(4, 1),  -- Algoritmos y Estructuras de Datos requiere Álgebra Lineal
-(16, 4), -- Bases de Datos requiere Algoritmos y Estructuras de Datos
-(32, 16), -- Desarrollo Web requiere Bases de Datos
-
-(26, 25), -- Cálculo Integral requiere Cálculo Diferencial
-(13, 1), -- Geometría Analítica requiere Álgebra Lineal
-(25, 13), -- Cálculo Diferencial requiere Geometría Analítica
-
-(18, 6),  -- Circuitos Eléctricos requiere Electromagnetismo
-(36, 18), -- Electrónica Digital requiere Circuitos Eléctricos
-(35, 18), -- Máquinas Eléctricas requiere Circuitos Eléctricos
-
-(19, 7),  -- Bioquímica requiere Química Orgánica
-(38, 19), -- Farmacología requiere Bioquímica
-
-(24, 10), -- Mecánica Celeste requiere Astrofísica
-(44, 24), -- Cosmología requiere Mecánica Celeste
-(45, 24), -- Ondas Gravitacionales requiere Mecánica Celeste
-
-(30, 3),  -- Biofísica requiere Química General
-(40, 30), -- Biotecnología requiere Biofísica
-(41, 30), -- Microbiología requiere Biofísica
-
-(47, 11), -- Econometría requiere Microeconomía
-(48, 47); -- Historia del Pensamiento Económico requiere Econometría
+(5,1), -- programacionI requiere Matematicas I
+(5,3), -- programacionI requiere Intro
+(6,1), -- Calculo I requiere Matematicas I
+(6,2), -- Calculo I requiere Trigo
+(7,1); -- Vectores requiere Matematicas I
 
 
 
 -- Insertando 15 estudiantes
 INSERT INTO tbl_estudiante (usuario_id, carrera_id, centro_regional_id, correo) VALUES
-(1, 5, 1, 'estudiante1@example.com'),
-(2, 3, 1, 'estudiante2@example.com'),
-(3, 7, 1, 'estudiante3@example.com'),
-(4, 19, 3, 'estudiante4@example.com'),
+(1, 15, 1, 'estudiante1@example.com'),
+(2, 16, 1, 'estudiante2@example.com'),
+(3, 17, 1, 'estudiante3@example.com'),
+(4, 18, 3, 'estudiante4@example.com'),
 (5, 19, 1, 'estudiante5@example.com'),
-(6, 8, 2, 'estudiante6@example.com'),
-(7, 4, 3, 'estudiante7@example.com'),
-(8, 9, 1, 'estudiante8@example.com'),
-(9, 11, 2, 'estudiante9@example.com'),
-(10, 14, 3, 'estudiante10@example.com'),
-(11, 1, 1, 'estudiante11@example.com'),
-(12, 2, 2, 'estudiante12@example.com'),
-(13, 10, 3, 'estudiante13@example.com'),
-(14, 13, 1, 'estudiante14@example.com'),
-(15, 15, 2, 'estudiante15@example.com');
+(6, 15, 2, 'estudiante6@example.com'),
+(7, 16, 3, 'estudiante7@example.com'),
+(8, 17, 1, 'estudiante8@example.com'),
+(9, 18, 2, 'estudiante9@example.com'),
+(10, 19, 3, 'estudiante10@example.com'),
+(11, 15, 1, 'estudiante11@example.com'),
+(12, 16, 2, 'estudiante12@example.com'),
+(13, 17, 3, 'estudiante13@example.com'),
+(14, 18, 1, 'estudiante14@example.com'),
+(15, 19, 2, 'estudiante15@example.com');
 
 -- Insertando 15 docentes
 INSERT INTO tbl_docente (usuario_id, carrera_id, departamento_id, centro_regional_id) VALUES
-(16, 5, 1, 1),
-(17, 3, 2, 2),
-(18, 7, 3, 1),
-(19, 19, 4, 3),
-(20, 6, 5, 1),
-(21, 8, 6, 2),
-(22, 4, 7, 3),
-(23, 9, 8, 1),
-(24, 11, 9, 2),
-(25, 14, 10, 3),
-(26, 1, 11, 1),
-(27, 2, 12, 2),
-(28, 10, 3, 3),
-(29, 13, 5, 1),
-(30, 15, 7, 2);
-
-
+(16, 21, 1, 1),
+(17, 21, 1, 1),
+(18, 21, 1, 1),
+(19, 19, 4, 1),
+(20, 19, 4, 1),
+(21, 15, 4, 1),
+(22, 15, 4, 1),
+(23, 16, 4, 2),
+(24, 16, 4, 2),
+(25, 17, 4, 1),
+(26, 18, 4, 1),
+(27, 19, 4, 1),
+(28, 21, 4, 2),
+(29, 21, 4, 2),
+(30, 15, 4, 1);
 
 insert into tbl_jefe(docente_id) values (1);
-insert into tbl_jefe(docente_id) values (2);
-insert into tbl_jefe(docente_id) values (7);
 insert into tbl_jefe(docente_id) values (4);
+insert into tbl_jefe(docente_id) values (6);
+insert into tbl_jefe(docente_id) values (8);
+insert into tbl_jefe(docente_id) values (10);
+insert into tbl_jefe(docente_id) values (11);
 
 insert into tbl_aula(aula, edificio_id) values
-("Lab1", 1),
-("Lab2", 1),
-("Lab3", 1),
-("202", 5),
-("203", 5),
+("Lab1", 2),
+("Lab2", 2),
+("Lab3", 2),
+("202", 6),
+("203", 6),
 ("404", 2),
-("302", 4),
+("302", 2),
 ("302", 7),
-("102", 5),
-("103", 5),
-("105", 8),
-("200", 1),
-("201", 4),
-("202", 1),
-("203", 2);
+("102", 7),
+("103", 11),
+("105", 6),
+("200", 6),
+("201", 2),
+("202", 2),
+("203", 7);
+
+insert into tbl_seccion(clase_id, docente_id, aula_id, periodo_academico, horario, dias, cupo_maximo) values
+(1,2,4,'2024-III', '11:00-12:00','Lun, Mar, Mie, Jue, Vie', 10),
+(1,2,4,'2024-III', '11:00-12:00','Lun, Mar, Mie, Jue, Vie', 10),
+(2,3,5,'2024-III', '12:00-13:00','Lun, Mar, Mie, Jue, Vie', 10),
+(2,3,5,'2024-III', '12:00-13:00','Lun, Mar, Mie, Jue, Vie', 10),
+(3,5,2,'2024-III', '13:00-14:00','Lun, Mar, Mie',10);
+
+insert into tbl_matricula(estudiante_id, seccion_id, fechaInscripcion, EstadoMatricula) values
+(1,1,'2024-10-03','Inactivo'),
+(5,2,'2024-10-03','Inactivo'),
+(1,3,'2024-10-03','Inactivo'),
+(5,3,'2024-10-03','Inactivo'),
+(5,5,'2024-10-03','Inactivo');
+
+insert into tbl_observacion(observacion) values
+('APR'),
+('RPB'),
+('NSP');
+
+insert into tbl_notas(estudiante_id, seccion_id, calificacion, observacion_id) values
+(1,1,66,1),
+(5,2,70,1),
+(1,3,78,1),
+(5,3,69,1),
+(5,5,89,1);
 
