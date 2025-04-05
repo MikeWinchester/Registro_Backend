@@ -336,6 +336,22 @@ class SeccionesController {
     
         return "$year-$trimestre";
     }
+
+    public function getPeriodoAca(){
+
+        $sql = "SELECT DISTINCT periodo_academico
+        FROM tbl_seccion";
+
+        $result = $this->seccion->customQuery($sql);
+
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "Secciones encontradas", "data" => $result]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "Secciones no disponibles"]);
+        }
+    }
     
 }
 

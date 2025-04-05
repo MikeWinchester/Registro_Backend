@@ -46,6 +46,7 @@ $router->addRoute("GET", "/secciones/get", "SeccionesController", "getSeccion");
 $router->addRoute("GET", "/secciones/matricula", "SeccionesController", "getSeccionAsig");
 $router->addRoute("GET", "/secciones/get/clase", "SeccionesController", "getSeccionesByClass");
 $router->addRoute("GET", "/secciones/count", "SeccionesController", "getSeccionCount");
+$router->addRoute("GET", "/secciones/periodo", "SeccionesController", "getPeriodoAca");
 $router->addRoute("POST", "/secciones/create", "SeccionesController", "createSeccion");
 
 
@@ -65,6 +66,7 @@ $router->addRoute("GET", "/estudiante/get", "EstudianteController", "getEstudian
 $router->addRoute("POST", "/admisiones", "AdmisionesController", "createAdmission");
 
 //Routes for Notas
+$router->addRoute("GET", "/notas/buscar", "NotasController", "searchNotas");
 $router->addRoute("POST", "/notas/asignar", "NotasController", "asigNotas");
 
 //Routes for Carreras
