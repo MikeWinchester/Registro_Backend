@@ -308,6 +308,47 @@ class SeccionesController {
         }
     }
 
+    public function getSeccionesByClassDoc(){
+
+        $header = getallheaders();
+
+        if(!isset($header['claseid']) || !isset($header['docenteid'])){
+            http_response_code(400);
+            echo json_encode(["error" => "Campo claseid y docenteid necesario"]);
+        }
+
+        $sql = "SELECT sc.seccion_id, us.nombre_completo, sc.horario, al.aula, sc.cupo_maximo
+        FROM tbl_seccion AS sc
+        INNER JOIN tbl_docente AS dc
+        ON sc.docente_id = dc.docente_id
+        INNER JOIN tbl_usuario AS us
+        on dc.usuario_id = us.usuario_id
+        INNER JOIN tbl_aula as al
+        ON sc.aula_id = al.aula_id
+        WHERE sc.clase_id = ?
+        AND sc.docente_id = ?
+        AND sc.periodo_academico = ?";
+
+        $claseID = $header['claseid'];
+        $docID = $header['docenteid'];
+
+        $result = $this->seccion->customQuery($sql, [$claseID, $docID,$this->getPeriodo()]);
+        
+        $index = 0;
+        foreach ($result as $seccion) {
+            $result[$index]['cupo_maximo'] = $this->getCupos($seccion['seccion_id']);
+            $index += 1;
+        }
+
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "Secciones encontradas", "data" => $result]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "Secciones no disponibles"]);
+        }
+    }
+
     private function getCupos($seccionid){
         $cupo_ocupados = $this->seccion->customQuery("SELECT count(1) as estudiantes FROM tbl_matricula WHERE seccion_id = ?", [$seccionid]);
         $cupo_seccion = $this->seccion->customQuery("SELECT cupo_maximo FROM tbl_seccion WHERE seccion_id = ?", [$seccionid]);

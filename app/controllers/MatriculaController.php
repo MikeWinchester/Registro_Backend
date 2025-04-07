@@ -90,7 +90,7 @@ class MatriculaController{
 
         if ($result) {
             http_response_code(200);
-            echo json_encode(["message" => "Estudiantes encontradas", "data" => $result]);
+            echo json_encode(["message" => "Estudiantes encontrados", "data" => $result]);
         } else {
             http_response_code(404);
             echo json_encode(["error" => "Estudiantes no disponibles"]);

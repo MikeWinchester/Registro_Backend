@@ -83,7 +83,7 @@ class ClaseController {
         WHERE cm.estudiante_id IS NULL
         AND cl.departamento_id = ?
         AND cc.carrera_id = ?;
-    ";
+        ";
 
         $result = $this->clase->customQuery($sql, [$est, $this->getPeriodo(), $est, $depID, $carID[0]["carrera"]]);
 
@@ -170,9 +170,10 @@ class ClaseController {
                 FROM tbl_clase as cl
                 INNER JOIN tbl_seccion as sc
                 ON cl.clase_id = sc.clase_id
-                WHERE sc.docente_id = ?";
+                WHERE sc.docente_id = ?
+                AND sc.periodo_academico = ?";
 
-        $result = $this->clase->customQuery($sql, [$claseID]);
+        $result = $this->clase->customQuery($sql, [$claseID, $this->getPeriodo()]);
 
         if ($result) {
             http_response_code(200);
