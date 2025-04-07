@@ -48,6 +48,7 @@ $router->addRoute("GET", "/secciones/get/clase", "SeccionesController", "getSecc
 $router->addRoute("GET", "/secciones/get/clase/doc", "SeccionesController", "getSeccionesByClassDoc");
 $router->addRoute("GET", "/secciones/count", "SeccionesController", "getSeccionCount");
 $router->addRoute("GET", "/secciones/periodo", "SeccionesController", "getPeriodoAca");
+$router->addRoute("GET", "/secciones/horario", "SeccionesController", "getHorarioDispo");
 $router->addRoute("POST", "/secciones/create", "SeccionesController", "createSeccion");
 
 

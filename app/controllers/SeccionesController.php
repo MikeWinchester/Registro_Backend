@@ -356,6 +356,81 @@ class SeccionesController {
         return intval($cupo_seccion[0]['cupo_maximo']) - intval($cupo_ocupados[0]['estudiantes']);
     }
 
+    public function getHorarioDispo() {
+        $header = getallheaders();
+    
+        if (!isset($header['dias']) || !isset($header['docenteid'])) {
+            http_response_code(400);
+            echo json_encode(["error" => "Campo dias y docenteid necesario"]);
+            return;
+        }
+    
+        $diasString = $header['dias'];
+        $diasArray = array_map('trim', explode(',', $diasString));
+        $docid = $header['docenteid'];
+    
+        $sql = "SELECT DISTINCT horario FROM tbl_seccion WHERE docente_id = ? AND periodo_academico = ?";
+        $param = [$docid, $this->getPeriodo()];
+    
+        if (count($diasArray) > 0) {
+            $sql .= " AND (";
+    
+            $conditions = [];
+            foreach ($diasArray as $dia) {
+                $conditions[] = "dias LIKE ?";
+                $param[] = "%$dia%";
+            }
+    
+            $sql .= implode(" OR ", $conditions) . ")";
+        }
+
+        $result = $this->seccion->customQuery($sql, $param);
+    
+        $horario = $this->obtenerHorarios($result);
+
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "Horarios obtenidos", "data" => $horario]);
+        } else {
+            http_response_code(200);
+            echo json_encode(["message" => "Horarios no disponibles", "data" => $horario]);
+        }
+    }
+
+    private function obtenerHorarios($horario) {
+        $hora_inicio = [];
+        $hora_final = [];
+    
+        for ($i = 7; $i < 20; $i++) {
+            $hora_inicio[] = sprintf('%02d:00', $i);
+            $hora_final[] = sprintf('%02d:00', $i + 1);
+        }
+    
+        foreach ($horario as $horas) {
+            list($inicio, $final) = explode("-", $horas['horario']);
+    
+            $inicioInt = (int) explode(":", $inicio)[0];
+            $finalInt = (int) explode(":", $final)[0];
+    
+            for ($i = $inicioInt; $i < $finalInt; $i++) {
+                $hora = sprintf('%02d:00', $i);
+                if (($key = array_search($hora, $hora_inicio)) !== false) {
+                    unset($hora_inicio[$key]);
+                }
+                if (($key = array_search($hora, $hora_final)) !== false) {
+                    unset($hora_final[$key]);
+                }
+            }
+        }
+    
+        $hora_inicio = array_values($hora_inicio);
+        $hora_final = array_values($hora_final);
+    
+        return ['hora_inicio' => $hora_inicio, 'hora_final' => $hora_final];
+    }
+    
+    
+
     /**
      * Funcion para obtener el periodo acadmico actual
      *
