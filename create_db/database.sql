@@ -225,16 +225,29 @@ CREATE TABLE tbl_seccion (
     FOREIGN KEY (clase_id) REFERENCES tbl_clase(clase_id)
 );
 
+CREATE TABLE tbl_estado_matricula (
+    estado_matricula_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    estado_matricula VARCHAR(9)
+);
+
+CREATE TABLE tbl_info_matricula (
+    inicio DATE,
+    final DATE,
+    PRIMARY KEY (inicio, final),
+    estado_matricula_id TINYINT UNSIGNED NOT NULL,
+    FOREIGN KEY (estado_matricula_id) REFERENCES tbl_estado_matricula(estado_matricula_id)
+);
+
 -- Tabla Matrícula
 CREATE TABLE tbl_matricula (
-    matricula_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     estudiante_id SMALLINT UNSIGNED NOT NULL,
     seccion_id SMALLINT UNSIGNED NOT NULL,
     fechaInscripcion DATE NOT NULL,
-    EstadoMatricula ENUM('Activo', 'Inactivo') NOT NULL,
+    PRIMARY KEY (estudiante_id, seccion_id),
     FOREIGN KEY (estudiante_id) REFERENCES tbl_estudiante(estudiante_id),
     FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
 );
+
 
 CREATE TABLE tbl_observacion(
     observacion_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -737,12 +750,19 @@ insert into tbl_seccion(clase_id, docente_id, aula_id, periodo_academico, horari
 (2,3,5,'2024-III', '12:00-13:00','Lun, Mar, Mie, Jue, Vie', 10),
 (3,5,2,'2024-III', '13:00-14:00','Lun, Mar, Mie',10);
 
-insert into tbl_matricula(estudiante_id, seccion_id, fechaInscripcion, EstadoMatricula) values
-(1,1,'2024-10-03','Inactivo'),
-(5,2,'2024-10-03','Inactivo'),
-(1,3,'2024-10-03','Inactivo'),
-(5,3,'2024-10-03','Inactivo'),
-(5,5,'2024-10-03','Inactivo');
+insert into tbl_estado_matricula(estado_matricula) values 
+('Activo'),
+('Inactivo');
+
+insert into tbl_info_matricula(inicio, final, estado_matricula_id) values
+('2025-04-01', '2025-04-07', 1);
+
+insert into tbl_matricula(estudiante_id, seccion_id, fechaInscripcion) values
+(1,1,'2024-10-03'),
+(5,2,'2024-10-03'),
+(1,3,'2024-10-03'),
+(5,3,'2024-10-03'),
+(5,5,'2024-10-03');
 
 insert into tbl_observacion(observacion) values
 ('APR'),

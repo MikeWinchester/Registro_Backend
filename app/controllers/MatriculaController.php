@@ -120,12 +120,12 @@ class MatriculaController{
                     unset($data['clase_id']);
                     $result = $this->matricula->create($data);
 
-                    if ($result) {
+                    if (!$result) {
                         http_response_code(200);
                         echo json_encode(["message" => "Se ha matriculado la clase", "data" => 'Clase Matriculada']);
                     } else {
                         http_response_code(400);
-                        echo json_encode(["error" => "No se logró actualizar el cupo"]);
+                        echo json_encode(["error" => "Error al matricula la clase"]);
                     }
 
                 } else {

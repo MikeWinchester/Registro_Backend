@@ -63,6 +63,7 @@ $router->addRoute("DELETE", "/matricula/delete", "MatriculaController", "delMat"
 //Routes for Estudiante
 $router->addRoute("GET", "/estudiante/get", "EstudianteController", "getEstudiante");
 $router->addRoute("GET", "/estudiante/get/cuenta", "EstudianteController", "getEstudianteByCuenta");
+$router->addRoute("GET", "/estudiante/get/hist", "EstudianteController", "getHistorial");
 
 //Routes for Admisiones
 $router->addRoute("POST", "/admisiones", "AdmisionesController", "createAdmission");
