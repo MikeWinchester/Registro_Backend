@@ -223,13 +223,14 @@ class SeccionesController {
      * @version 0.1.0
      */
     public function createSeccion() {
-        header('Content-Type: application/json'); 
+        header('Content-Type: application/json');
     
         $data = json_decode(file_get_contents("php://input"), true);
 
         $centroID = $this->getCentroByJefe($data['jefeID']);
 
         unset($data['jefeID']);
+        $data['periodo_academico'] = $this->getPeriodo();
 
         $data['centro_regional_id'] = $centroID[0]['id'];
     
@@ -280,7 +281,7 @@ class SeccionesController {
                 )
                 ";
 
-        $result = $this->seccion->customQuery($sql, [$data['docente_id'], $data['horario'], $data['periodo_academico'], $data['dias']]);
+        $result = $this->seccion->customQuery($sql, [$data['docente_id'], $data['horario'], $this->getPeriodo(), $data['dias']]);
 
         return $result[0]['existe'];
     }
@@ -335,11 +336,6 @@ class SeccionesController {
     public function getSeccionesByClass(){
 
         $header = getallheaders();
-
-        if(!isset($header['claseid']) || !isset($header['jefeid'])){
-            http_response_code(400);
-            echo json_encode(["error" => "Campo claseid necesario"]);
-        }
 
         $sql = "SELECT sc.seccion_id, us.nombre_completo, sc.horario, al.aula, sc.cupo_maximo
         FROM tbl_seccion AS sc
@@ -543,39 +539,36 @@ class SeccionesController {
     }
 
     public function updateSeccion() {
+        header('Content-Type: application/json');
+
         $data = json_decode(file_get_contents("php://input"), true);
     
         $docenteID = isset($data['docenteid']) && $data['docenteid'] !== '' ? $data['docenteid'] : null;
         $cupos = (isset($data['cupos']) && is_numeric($data['cupos']) && $data['cupos'] !== '') ? intval($data['cupos']) : null;
         $sec = isset($data['seccion_id']) ? $data['seccion_id'] : null;
-    
+
         if (!$sec) {
             http_response_code(400);
-            echo json_encode(["error" => "ID de sección requerido"]);
+            echo json_encode(["error" => "ID de seccion requerido"]);
             return;
         }
     
         if ($docenteID === null && $cupos !== null) {
-            $sql = 'UPDATE tbl_seccion SET cupo_maximo = ? WHERE seccion_id = ?';
-    
-            $cupos_maximo = $this->getCuposMaximo($sec) + $cupos;
-            $result = $this->seccion->customQueryUpdate($sql, [$cupos_maximo, $sec]);
-    
-            if ($result) {
-                if ($this->acceptStudentsEspera($sec)) {
-                    http_response_code(200);
-                    echo json_encode(["message" => "Cupos actualizados"]);
-                } else {
-                    http_response_code(200);
-                    echo json_encode(["message" => "Cupos actualizados pero no hay estudiantes en espera"]);
-                }
-            } else {
-                http_response_code(500);
-                echo json_encode(["error" => "Error al actualizar cupos"]);
-            }
-    
+            $this->updateCupo($cupos, $sec);
+
         } elseif ($docenteID !== null && $cupos === null) {
-            $sql = 'UPDATE tbl_seccion SET docente_id = ? WHERE seccion_id = ?';
+            $this->updateDocente($docenteID, $sec);
+    
+        } elseif($docenteID !== null & $cupos !== null){
+            $this->updateDocAndCupo($docenteID, $cupos, $sec);
+        }else {
+            http_response_code(400);
+            echo json_encode(["error" => "No se proporcionó ningún dato para actualizar"]);
+        }
+    }
+
+    private function updateDocente($docenteID, $sec){
+        $sql = 'UPDATE tbl_seccion SET docente_id = ? WHERE seccion_id = ?';
     
             $result = $this->seccion->customQueryUpdate($sql, [$docenteID, $sec]);
     
@@ -588,12 +581,52 @@ class SeccionesController {
                 http_response_code(500);
                 echo json_encode(["error" => "Error al actualizar docente"]);
             }
+    }
+
+    private function updateCupo($cupos, $sec){
+        $sql = 'UPDATE tbl_seccion SET cupo_maximo = ? WHERE seccion_id = ?';
+    
+        $cupos_maximo = $this->getCuposMaximo($sec) + $cupos;
+        $result = $this->seccion->customQueryUpdate($sql, [$cupos_maximo, $sec]);
+
+        if ($result) {
+            $huboInscritos = $this->acceptStudentsEspera($sec);
+    
+            http_response_code(200);
+            if($huboInscritos) {
+                echo json_encode(["message" => "Cupos actualizados"]);
+            } else {
+                echo json_encode(["message" => "Cupos actualizados"]);
+            }
     
         } else {
-            http_response_code(400);
-            echo json_encode(["error" => "No se proporcionó ningún dato para actualizar"]);
+            http_response_code(500);
+            echo json_encode(["error" => "Error al actualizar  cupos"]);
         }
     }
+
+    private function updateDocAndCupo($docenteID, $cupos, $sec){
+        $sql = 'UPDATE tbl_seccion SET cupo_maximo = ?, docente_id = ? WHERE seccion_id = ?';
+        
+        $cupos_maximo = $this->getCuposMaximo($sec) + $cupos;
+        $result = $this->seccion->customQueryUpdate($sql, [$cupos_maximo, $docenteID, $sec]);
+    
+        if ($result) {
+            $huboInscritos = $this->acceptStudentsEspera($sec);
+    
+            http_response_code(200);
+            if ($huboInscritos) {
+                echo json_encode(["message" => "Cupos y docente actualizados. Algunos estudiantes en espera fueron inscritos."]);
+            } else {
+                echo json_encode(["message" => "Cupos y docente actualizados. No había estudiantes en espera."]);
+            }
+    
+        } else {
+            http_response_code(500);
+            echo json_encode(["error" => "Error al actualizar docente y cupos"]);
+        }
+    }
+    
     
     private function getCuposMaximo($sec){
 

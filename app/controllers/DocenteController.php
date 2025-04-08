@@ -3,11 +3,15 @@
 require_once __DIR__ . "/../models/Docente.php";
 require_once __DIR__ . "/../core/AuthMiddleware.php";
 
+require_once __DIR__ . "/../controllers/JefeController.php";
+
 class DocenteController {
     private $docente;
+    private $jefe;
 
     public function __construct() {
         $this->docente = new Docente();
+        $this->jefe = new JefeController();
         header("Content-Type: application/json"); // Estandariza las respuestas como JSON
     }
 
@@ -152,21 +156,17 @@ class DocenteController {
 
         $header = getallheaders();
 
-        if(!isset($header['areaid'])){
-            http_response_code(400);
-            echo json_encode(["error" => "areaid es requerido en el header"]);
-            return;
-        }
-    
-        $centroID = $header['areaid'];
+        $dep = $header['areaid'];
+        $centro = $this->jefe->getCentroByJefe($header['jefeid']);
 
         $sql = "SELECT doc.docente_id, usr.nombre_completo
         FROM tbl_docente AS doc
         INNER JOIN tbl_usuario AS usr
         ON doc.usuario_id = usr.usuario_id
-        WHERE doc.departamento_id = ?";
-        
-        $result = $this->docente->customQuery($sql, [$centroID]);
+        WHERE doc.departamento_id = ?
+        AND doc.centro_regional_id = ?";
+
+        $result = $this->docente->customQuery($sql, [$dep, $centro[0]['id']]);
 
         if ($result) {
             http_response_code(200);
@@ -177,77 +177,93 @@ class DocenteController {
         }
     }
 
+    public function getDocentesByHorario() {
+        header('Content-Type: application/json');
+        $header = getallheaders();
+    
+        $sec = $header['seccionid'];
+        $dep = $header['areaid'];
+        $centro = $this->jefe->getCentroByJefe($header['jefeid'])[0]['id'];
+        $periodo = $this->getPeriodo();
+    
+        $horario = $this->getHorarioSeccion($sec);
+    
+        if (!$horario || empty($horario[0])) {
+            http_response_code(400);
+            echo json_encode(["error" => "No se encontró el horario de la sección."]);
+            return;
+        }
+    
+        $horarioData = $horario[0];
+        list($inicio, $fin) = explode('-', $horarioData['horario']);
+        $dias = explode(',', str_replace(' ', '', $horarioData['dias'])); // ["Lun", "Mar", ...]
+    
+        $diasCondiciones = implode(' OR ', array_fill(0, count($dias), "sc.dias LIKE ?"));
+        $diasParams = array_map(fn($d) => "%$d%", $dias);
+    
+        $sql = "
+            WITH docentes_ocupados AS (
+                SELECT sc.docente_id
+                FROM tbl_seccion AS sc
+                WHERE sc.periodo_academico = ?
+                AND (
+                    TIME(SUBSTRING_INDEX(sc.horario, '-', 1)) < TIME(?) 
+                    AND TIME(SUBSTRING_INDEX(sc.horario, '-', -1)) > TIME(?)
+                )
+                AND ($diasCondiciones)
+            )
+            SELECT dc.docente_id, usr.nombre_completo
+            FROM tbl_docente AS dc
+            INNER JOIN tbl_usuario AS usr ON dc.usuario_id = usr.usuario_id
+            LEFT JOIN docentes_ocupados AS dcc ON dc.docente_id = dcc.docente_id
+            WHERE dc.departamento_id = ?
+            AND dc.centro_regional_id = ?
+            AND dcc.docente_id IS NULL
+        ";
+    
+        $params = array_merge(
+            [$periodo, $fin, $inicio],
+            $diasParams,
+            [$dep, $centro]
+        );
+    
+        $result = $this->docente->customQuery($sql, $params);
+    
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "Docentes disponibles obtenidos", "data" => $result]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "No se encontraron docentes disponibles"]);
+        }
+    }
+    
+    private function getHorarioSeccion($sec) {
+        $sql = 'SELECT horario, dias FROM tbl_seccion WHERE seccion_id = ?';
+        return $this->docente->customQuery($sql, [$sec]);
+    }
+    
 
     /**
-     * Guardar video subido de la seccion correspondiente
+     * Funcion para obtener el periodo acadmico actual
      *
-     * @param $idSeccion id de la seccion
-     * @param $data json donde ira el archivo
-     *
+     * @return "anio-trimestre" ejemplo: "2021-1"
+     * 
      * @version 0.1.1
      */
-    //Problema no soporta video grandes
-    public function uploadVideo() {
-
-        if (!isset($_POST['idSeccion']) || !isset($_FILES['video'])) {
-            echo json_encode(["error" => "Faltan datos (idSeccion o video)"]);
-            return;
-        }
-
-        
+    private function getPeriodo() {
+        $year = date("Y");
+        $mon = date("n");
     
-        $idSeccion = $_POST['idSeccion']; 
-        $video = $_FILES['video'];
-        $ruta = __DIR__ . "/../uploads/Videos/$idSeccion";
-
-        echo ini_get('upload_max_filesize') . "\n";
-        echo ini_get('post_max_size') . "\n";
-
-        echo var_export($_FILES, true);
-    
-        $this->checkFolder($idSeccion,$ruta);
-
-        $maxSize = 200 * 1024 * 1024; 
-
-        if ($video['size'] > $maxSize) {
-            echo json_encode(["error" => "El archivo excede el tamaño permitido de 200MB"]);
-            return;
-        }
-
-        if ($video['error'] !== UPLOAD_ERR_OK) {
-            echo json_encode(["error" => "Error en la subida del archivo", "code" => $video['error']]);
-            return;
-        }
-    
-        $nombreArchivo = basename($video['name']); 
-        $destino = $ruta . "/" . $nombreArchivo; 
-    
-        if (move_uploaded_file($video['tmp_name'], $destino)) {
-            echo json_encode(["mensaje" => "Video subido con éxito en '$ruta'."]);
+        if ($mon >= 1 && $mon <= 4) {
+            $trimestre = "I";
+        } elseif ($mon >= 5 && $mon <= 8) {
+            $trimestre = "II";
         } else {
-            echo json_encode(["error" => "Error al mover el archivo."]);
+            $trimestre = "III";
         }
-
-    }
-
-    /**
-     * revisa la existencia de la carpeta
-     *
-     * @param $idSeccion id de la seccion
-     * @param $ruta ruta de la capeta
-     * 
-     * @version 0.1.0
-     */
-    private function checkFolder($idSeccion, $ruta){
-        if (!file_exists($ruta)) {
-            if (mkdir($ruta, 0777, true)) {
-                echo "Carpeta '$idSeccion' creada con éxito.";
-            } else {
-                echo "Error al crear la carpeta.";
-            }
-        } else {
-            echo "La carpeta '$idSeccion' ya existe.";
-        }
+    
+        return "$year-$trimestre";
     }
 }
 

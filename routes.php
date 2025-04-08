@@ -40,6 +40,7 @@ $router->addRoute("GET", "/docentes/get", "DocenteController", "getDocente");
 $router->addRoute("GET", "/docentes/all", "DocenteController", "getAllDocentes");
 $router->addRoute("POST", "/docentes/video", "DocenteController", "uploadVideo");
 $router->addRoute("GET", "/docentes/dep", "DocenteController", "getDocentesBydepartment");
+$router->addRoute("GET", "/docentes/horario", "DocenteController", "getDocentesByHorario");
 
 //Routes for Secciones
 $router->addRoute("GET", "/secciones/docente/all", "SeccionesController", "getSecciones");

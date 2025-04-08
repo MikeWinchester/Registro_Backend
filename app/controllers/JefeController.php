@@ -77,5 +77,15 @@ class JefeController {
         }
 
     }
+
+    public function getCentroByJefe($jefe){
+        $sql = "SELECT centro_regional_id as id
+                FROM tbl_jefe as jf
+                INNER JOIN tbl_docente as dc
+                ON jf.docente_id = dc.docente_id
+                WHERE jefe_id = ?";
+
+        return $this->jefe->customQuery($sql, [$jefe]);
+    }
 }
 ?>
