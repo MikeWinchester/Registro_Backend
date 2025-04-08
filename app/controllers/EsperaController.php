@@ -123,7 +123,7 @@ class EsperaController {
             echo json_encode(['Error'=>'campo departamentoid necesario']);
         }
 
-        $sql = 'SELECT cl.codigo, cl.nombre, sc.horario, est.estudiante_id, al.aula, ed.edificio, us.numero_cuenta, sc.periodo_academico, sc.seccion_id, count(1) AS solicitudes
+        $sql = 'SELECT DISTINCT cl.codigo, cl.nombre, sc.horario, al.aula, ed.edificio, sc.periodo_academico, sc.seccion_id, count(1) AS solicitudes
                 FROM tbl_lista_espera as lep
                 INNER JOIN tbl_seccion as sc
                 ON lep.seccion_id = sc.seccion_id
@@ -138,7 +138,7 @@ class EsperaController {
                 INNER JOIN tbl_usuario as us
                 ON est.usuario_id = us.usuario_id
                 WHERE cl.departamento_id = ?
-                GROUP BY cl.codigo, cl.nombre, sc.horario, est.estudiante_id, al.aula, ed.edificio, us.numero_cuenta, sc.periodo_academico, sc.seccion_id';
+                GROUP BY cl.codigo, cl.nombre, sc.horario, al.aula, ed.edificio, sc.periodo_academico, sc.seccion_id';
 
         $departamentoid = $header['departamentoid'];
 

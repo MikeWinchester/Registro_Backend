@@ -25,7 +25,7 @@ class AulaController {
 
         $header = getallheaders();
 
-        if(!isset($header['centroid']) || !isset($header['facultadid'])){
+        if(!isset($header['edificioid'])){
             http_response_code(400);
             echo json_encode(['Error'=>'campo centroid necesario']);
         }
@@ -34,24 +34,21 @@ class AulaController {
                 FROM tbl_aula as al
                 INNER JOIN tbl_edificio as ed
                 ON al.edificio_id = ed.edificio_id
-                WHERE ed.centro_regional_id = ?';
+                WHERE ed.edificio_id = ?';
 
-        $centroId = $header['centroid'];
+        $edificioid = $header['edificioid'];
 
-        $resultExist = $this->aula->customQuery($sql, [$centroId]);
+        $resultExist = $this->aula->customQuery($sql, [$edificioid]);
 
         if($resultExist[0]['existe'] > 0){
-
-            $facuId = $header['facultadid'];
 
             $sql = 'SELECT aula_id, al.aula, ed.edificio
                 FROM tbl_aula as al
                 INNER JOIN tbl_edificio as ed
                 ON al.edificio_id = ed.edificio_id
-                WHERE ed.centro_regional_id = ?
-                AND ed.facultad_id = ?';
+                WHERE ed.edificio_id = ?';
 
-            $result = $this->aula->customQuery($sql, [$centroId, $facuId]);
+            $result = $this->aula->customQuery($sql, [$edificioid]);
 
             if ($result) {
                 http_response_code(200);

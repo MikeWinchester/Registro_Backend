@@ -220,8 +220,12 @@ CREATE TABLE tbl_seccion (
     horario VARCHAR(50),
     dias VARCHAR(50),
     cupo_maximo TINYINT UNSIGNED NOT NULL,
+    imagen_portada VARCHAR(500),
+    video VARCHAR(500),
+    centro_regional_id TINYINT UNSIGNED,
     FOREIGN KEY (docente_id) REFERENCES tbl_docente(docente_id),
     FOREIGN KEY (aula_id) REFERENCES tbl_aula(aula_id),
+    FOREIGN KEY (centro_regional_id) REFERENCES tbl_centro_regional(centro_regional_id),
     FOREIGN KEY (clase_id) REFERENCES tbl_clase(clase_id)
 );
 
@@ -313,6 +317,15 @@ CREATE TABLE tbl_mensajes (
     INDEX (fecha_envio)
 );
 
+CREATE TABLE tbl_evaluacion (
+    estudiante_id SMALLINT UNSIGNED,
+    seccion_id SMALLINT UNSIGNED,
+    calificacion DECIMAL(2,0),
+    comentario VARCHAR(100),
+    PRIMARY KEY (estudiante_id, seccion_id),
+    FOREIGN KEY (estudiante_id) REFERENCES tbl_estudiante(estudiante_id),
+    FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
+);
 
 DELIMITER $$
 
@@ -743,12 +756,12 @@ insert into tbl_aula(aula, edificio_id) values
 ("202", 2),
 ("203", 7);
 
-insert into tbl_seccion(clase_id, docente_id, aula_id, periodo_academico, horario, dias, cupo_maximo) values
-(1,2,4,'2024-III', '11:00-12:00','Lun, Mar, Mie, Jue, Vie', 10),
-(1,2,4,'2024-III', '11:00-12:00','Lun, Mar, Mie, Jue, Vie', 10),
-(2,3,5,'2024-III', '12:00-13:00','Lun, Mar, Mie, Jue, Vie', 10),
-(2,3,5,'2024-III', '12:00-13:00','Lun, Mar, Mie, Jue, Vie', 10),
-(3,5,2,'2024-III', '13:00-14:00','Lun, Mar, Mie',10);
+insert into tbl_seccion(clase_id, docente_id, aula_id, periodo_academico, horario, dias, cupo_maximo, imagen_portada, video, centro_regional_id) values
+(1,2,4,'2024-III', '11:00-12:00','Lun, Mar, Mie, Jue, Vie', 10, 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fes%2Ffotos%2Fingenieria-civil&psig=AOvVaw0mvRI0aqeLvG3ciaQv5v_8&ust=1744141691735000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCIjS16HYxowDFQAAAAAdAAAAABAE', 'https://www.youtube.com/watch?v=4YhJgX2GqC8', 1),
+(1,2,4,'2024-III', '11:00-12:00','Lun, Mar, Mie, Jue, Vie', 10,  'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fes%2Ffotos%2Fingenieria-civil&psig=AOvVaw0mvRI0aqeLvG3ciaQv5v_8&ust=1744141691735000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCIjS16HYxowDFQAAAAAdAAAAABAE', 'https://www.youtube.com/watch?v=4YhJgX2GqC8', 1),
+(2,3,5,'2024-III', '12:00-13:00','Lun, Mar, Mie, Jue, Vie', 10,  'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fes%2Ffotos%2Fingenieria-civil&psig=AOvVaw0mvRI0aqeLvG3ciaQv5v_8&ust=1744141691735000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCIjS16HYxowDFQAAAAAdAAAAABAE', 'https://www.youtube.com/watch?v=4YhJgX2GqC8', 1),
+(2,3,5,'2024-III', '12:00-13:00','Lun, Mar, Mie, Jue, Vie', 10,  'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fes%2Ffotos%2Fingenieria-civil&psig=AOvVaw0mvRI0aqeLvG3ciaQv5v_8&ust=1744141691735000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCIjS16HYxowDFQAAAAAdAAAAABAE', 'https://www.youtube.com/watch?v=4YhJgX2GqC8', 1),
+(3,5,2,'2024-III', '13:00-14:00','Lun, Mar, Mie',10,  'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fes%2Ffotos%2Fingenieria-civil&psig=AOvVaw0mvRI0aqeLvG3ciaQv5v_8&ust=1744141691735000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCIjS16HYxowDFQAAAAAdAAAAABAE', 'https://www.youtube.com/watch?v=4YhJgX2GqC8', 1);
 
 insert into tbl_estado_matricula(estado_matricula) values 
 ('Activo'),
@@ -775,4 +788,11 @@ insert into tbl_notas(estudiante_id, seccion_id, calificacion, observacion_id) v
 (1,3,78,1),
 (5,3,69,1),
 (5,5,89,1);
+
+insert into tbl_evaluacion(estudiante_id, seccion_id, calificacion, comentario) values 
+(1,1, 9.5, 'Clase muy entretenida y dispuesto a ayudarr a sus alumnos'),
+(5,2, 8.5, 'Clase muy entretenida y dispuesto a ayudarr a sus alumnos'),
+(1,3, 4.5, 'Clase muy entretenida y dispuesto a ayudarr a sus alumnos'),
+(5,3, 4.5, 'Clase muy entretenida y dispuesto a ayudarr a sus alumnos'),
+(5,5, 10, 'Clase muy entretenida y dispuesto a ayudarr a sus alumnos');
 

@@ -1,13 +1,16 @@
 <?php
 
 require_once __DIR__ . "/../models/Seccion.php";
+require_once __DIR__ . "/../models/Matricula.php";
 require_once __DIR__ . "/../core/AuthMiddleware.php";
 
 class SeccionesController {
     private $seccion;
+    private $mat;
 
     public function __construct() {
         $this->seccion = new Seccion();
+        $this->mat = new Matricula();
         header("Content-Type: application/json"); // Estandariza las respuestas como JSON
     }
 
@@ -223,6 +226,12 @@ class SeccionesController {
         header('Content-Type: application/json'); 
     
         $data = json_decode(file_get_contents("php://input"), true);
+
+        $centroID = $this->getCentroByJefe($data['jefeID']);
+
+        unset($data['jefeID']);
+
+        $data['centro_regional_id'] = $centroID[0]['id'];
     
         if ($this->validateSec($data) == 0) {
             if ($this->seccion->create($data)) {
@@ -239,6 +248,18 @@ class SeccionesController {
             echo json_encode(["error" => "Docente ocupado en el mismo horario"]);
             exit();
         }
+    }
+
+    private function getCentroByJefe($jefe){
+     
+        $sql = 'SELECT centro_regional_id AS id
+                FROM tbl_jefe AS jf
+                INNER JOIN tbl_docente AS dc
+                ON jf.docente_id = dc.docente_id
+                WHERE jefe_id = ?';
+
+        return $this->seccion->customQuery($sql, [$jefe]);
+        
     }
     
 
@@ -269,11 +290,11 @@ class SeccionesController {
      *
      * @version 0.1.1
      */
-    public function getSeccionesByClass(){
+    public function getSeccionesByClassEstu(){
 
         $header = getallheaders();
 
-        if(!isset($header['claseid'])){
+        if(!isset($header['claseid']) || !isset($header['estudianteid'])){
             http_response_code(400);
             echo json_encode(["error" => "Campo claseid necesario"]);
         }
@@ -287,11 +308,14 @@ class SeccionesController {
         INNER JOIN tbl_aula as al
         ON sc.aula_id = al.aula_id
         WHERE sc.clase_id = ?
-        AND sc.periodo_academico = ?";
+        AND sc.periodo_academico = ?
+        AND sc.centro_regional_id = ?";
 
         $claseID = $header['claseid'];
+        $estu = $header['estudianteid'];
+        $centro = $this->getCentroByEstu($estu);
 
-        $result = $this->seccion->customQuery($sql, [$claseID, $this->getPeriodo()]);
+        $result = $this->seccion->customQuery($sql, [$claseID, $this->getPeriodo(), $centro[0]['id']]);
         
         $index = 0;
         foreach ($result as $seccion) {
@@ -306,6 +330,56 @@ class SeccionesController {
             http_response_code(404);
             echo json_encode(["error" => "Secciones no disponibles"]);
         }
+    }
+
+    public function getSeccionesByClass(){
+
+        $header = getallheaders();
+
+        if(!isset($header['claseid']) || !isset($header['jefeid'])){
+            http_response_code(400);
+            echo json_encode(["error" => "Campo claseid necesario"]);
+        }
+
+        $sql = "SELECT sc.seccion_id, us.nombre_completo, sc.horario, al.aula, sc.cupo_maximo
+        FROM tbl_seccion AS sc
+        INNER JOIN tbl_docente AS dc
+        ON sc.docente_id = dc.docente_id
+        INNER JOIN tbl_usuario AS us
+        on dc.usuario_id = us.usuario_id
+        INNER JOIN tbl_aula as al
+        ON sc.aula_id = al.aula_id
+        WHERE sc.clase_id = ?
+        AND sc.periodo_academico = ?
+        AND sc.centro_regional_id = ?";
+
+        $claseID = $header['claseid'];
+        $jefe = $header['jefeid'];
+        $centro = $this->getCentroByJefe($jefe);
+
+        $result = $this->seccion->customQuery($sql, [$claseID, $this->getPeriodo(), $centro[0]['id']]);
+        
+        $index = 0;
+        foreach ($result as $seccion) {
+            $result[$index]['cupo_maximo'] = $this->getCupos($seccion['seccion_id']);
+            $index += 1;
+        }
+
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "Secciones encontradas", "data" => $result]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "Secciones no disponibles"]);
+        }
+    }
+
+    private function getCentroByEstu($estu){
+        $sql = 'SELECT centro_regional_id AS id
+                FROM tbl_estudiante as et
+                WHERE estudiante_id = ?';
+
+        return $this->seccion->customQuery($sql, [$estu]);
     }
 
     public function getSeccionesByClassDoc(){
@@ -359,7 +433,7 @@ class SeccionesController {
     public function getHorarioDispo() {
         $header = getallheaders();
     
-        if (!isset($header['dias']) || !isset($header['docenteid'])) {
+        if (!isset($header['dias']) || !isset($header['docenteid']) || !isset($header['aula'])) {
             http_response_code(400);
             echo json_encode(["error" => "Campo dias y docenteid necesario"]);
             return;
@@ -367,10 +441,11 @@ class SeccionesController {
     
         $diasString = $header['dias'];
         $diasArray = array_map('trim', explode(',', $diasString));
+        $aulaid = $header['aula'];
         $docid = $header['docenteid'];
     
-        $sql = "SELECT DISTINCT horario FROM tbl_seccion WHERE docente_id = ? AND periodo_academico = ?";
-        $param = [$docid, $this->getPeriodo()];
+        $sql = "SELECT DISTINCT horario FROM tbl_seccion WHERE (docente_id = ? AND periodo_academico = ?) OR aula_id = ?";
+        $param = [$docid, $this->getPeriodo(), $aulaid];
     
         if (count($diasArray) > 0) {
             $sql .= " AND (";
@@ -429,8 +504,6 @@ class SeccionesController {
         return ['hora_inicio' => $hora_inicio, 'hora_final' => $hora_final];
     }
     
-    
-
     /**
      * Funcion para obtener el periodo acadmico actual
      *
@@ -468,6 +541,148 @@ class SeccionesController {
             echo json_encode(["error" => "Secciones no disponibles"]);
         }
     }
+
+    public function updateSeccion() {
+        $data = json_decode(file_get_contents("php://input"), true);
+    
+        $docenteID = isset($data['docenteid']) && $data['docenteid'] !== '' ? $data['docenteid'] : null;
+        $cupos = (isset($data['cupos']) && is_numeric($data['cupos']) && $data['cupos'] !== '') ? intval($data['cupos']) : null;
+        $sec = isset($data['seccion_id']) ? $data['seccion_id'] : null;
+    
+        if (!$sec) {
+            http_response_code(400);
+            echo json_encode(["error" => "ID de sección requerido"]);
+            return;
+        }
+    
+        if ($docenteID === null && $cupos !== null) {
+            $sql = 'UPDATE tbl_seccion SET cupo_maximo = ? WHERE seccion_id = ?';
+    
+            $cupos_maximo = $this->getCuposMaximo($sec) + $cupos;
+            $result = $this->seccion->customQueryUpdate($sql, [$cupos_maximo, $sec]);
+    
+            if ($result) {
+                if ($this->acceptStudentsEspera($sec)) {
+                    http_response_code(200);
+                    echo json_encode(["message" => "Cupos actualizados"]);
+                } else {
+                    http_response_code(200);
+                    echo json_encode(["message" => "Cupos actualizados pero no hay estudiantes en espera"]);
+                }
+            } else {
+                http_response_code(500);
+                echo json_encode(["error" => "Error al actualizar cupos"]);
+            }
+    
+        } elseif ($docenteID !== null && $cupos === null) {
+            $sql = 'UPDATE tbl_seccion SET docente_id = ? WHERE seccion_id = ?';
+    
+            $result = $this->seccion->customQueryUpdate($sql, [$docenteID, $sec]);
+    
+            if ($result) {
+                
+                http_response_code(200);
+                echo json_encode(["message" => "Docente actualizado"]);
+            
+            } else {
+                http_response_code(500);
+                echo json_encode(["error" => "Error al actualizar docente"]);
+            }
+    
+        } else {
+            http_response_code(400);
+            echo json_encode(["error" => "No se proporcionó ningún dato para actualizar"]);
+        }
+    }
+    
+    private function getCuposMaximo($sec){
+
+        $sql = 'SELECT cupo_maximo
+                FROM tbl_seccion
+                WHERE seccion_id = ?';
+
+        $result = $this->seccion->customQuery($sql, [$sec]);
+        return intval($result[0]['cupo_maximo']);
+
+    }
+
+    private function acceptStudentsEspera($sec){
+
+        $sql = "SELECT lep.estudiante_id AS id
+                FROM tbl_lista_espera AS lep
+                WHERE seccion_id = ?
+                ORDER BY (lista_espera_id)";
+
+        $sqlDel = "DELETE FROM tbl_lista_espera WHERE estudiante_id = ?";
+
+        $result = $this->seccion->customQuery($sql, [$sec]);
+
+        if($result){
+            foreach ($result as $est) {
+                $cupo = $this->getCupos($sec);
+            
+                if ($cupo > 0) {
+                    if (!$this->matriculado($est['id'], $sec)) {
+                        $this->mat->create([
+                            'estudiante_id' => $est['id'],
+                            'seccion_id' => $sec,
+                            'fechaInscripcion' => date('y-m-d')
+                        ]);
+            
+                        $this->seccion->customQueryUpdate($sqlDel, [$est['id']]);
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+
+    }
+    
+    private function matriculado($estudiante_id, $seccion_id) {
+        $sql = "SELECT 1 FROM tbl_matricula WHERE estudiante_id = ? AND seccion_id = ?";
+        $result = $this->seccion->customQuery($sql, [$estudiante_id, $seccion_id]);
+    
+        return !empty($result); 
+    }
+
+    public function deleteSeccion(){
+        $header = getallheaders();
+    
+        $sec = isset($header['seccionid']) ? $header['seccionid'] : null;
+    
+        if ($sec === null) {
+            http_response_code(400);
+            echo json_encode(["error" => "ID de sección requerido"]);
+            return;
+        }
+    
+        try {
+
+            $sqlEst = 'DELETE FROM tbl_matricula WHERE seccion_id = ?';
+            $resultEst = $this->seccion->customQueryUpdate($sqlEst, [$sec]);
+
+            $sqlEsp = 'DELETE FROM tbl_lista_espera WHERE seccion_id = ?';
+            $resultEsp = $this->seccion->customQueryUpdate($sqlEsp, [$sec]);
+    
+            $sqlSec = 'DELETE FROM tbl_seccion WHERE seccion_id = ?';
+            $resultSec = $this->seccion->customQueryUpdate($sqlSec, [$sec]);
+    
+            if ($resultSec || $resultEst || $resultEsp) {
+                http_response_code(200);
+                echo json_encode(["message" => "Sección y registros asociados eliminados exitosamente"]);
+            } else {
+                http_response_code(500);
+                echo json_encode(["error" => "No se pudo eliminar la sección o los registros asociados"]);
+            }
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(["error" => "Error interno del servidor", "details" => $e->getMessage()]);
+        }
+    }
+    
     
 }
 

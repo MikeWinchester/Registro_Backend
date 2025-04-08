@@ -20,6 +20,7 @@ require_once __DIR__ . "/app/controllers/CancelacionController.php";
 require_once __DIR__ . "/app/controllers/DepartamentoController.php";
 require_once __DIR__ . "/app/controllers/MensajesController.php";
 require_once __DIR__ . "/app/controllers/ObservacionesController.php";
+require_once __DIR__ . "/app/controllers/EdificioController.php";
 
 $router = new Router;
 
@@ -45,11 +46,14 @@ $router->addRoute("GET", "/secciones/docente", "SeccionesController", "getSeccio
 $router->addRoute("GET", "/secciones/get", "SeccionesController", "getSeccion");
 $router->addRoute("GET", "/secciones/matricula", "SeccionesController", "getSeccionAsig");
 $router->addRoute("GET", "/secciones/get/clase", "SeccionesController", "getSeccionesByClass");
+$router->addRoute("GET", "/secciones/get/clase/estu", "SeccionesController", "getSeccionesByClassEstu");
 $router->addRoute("GET", "/secciones/get/clase/doc", "SeccionesController", "getSeccionesByClassDoc");
 $router->addRoute("GET", "/secciones/count", "SeccionesController", "getSeccionCount");
 $router->addRoute("GET", "/secciones/periodo", "SeccionesController", "getPeriodoAca");
 $router->addRoute("GET", "/secciones/horario", "SeccionesController", "getHorarioDispo");
 $router->addRoute("POST", "/secciones/create", "SeccionesController", "createSeccion");
+$router->addRoute("PUT", "/secciones/update", "SeccionesController", "updateSeccion");
+$router->addRoute("DELETE", "/secciones/delete", "SeccionesController", "deleteSeccion");
 
 
 //Routes for Matricula
@@ -114,6 +118,9 @@ $router->addRoute("PUT", "/mensaje/leer", "MensajesController", "leerMensaje");
 
 //Observaciones
 $router->addRoute("GET", "/observacion/get", "ObservacionesController", "getObservacion");
+
+//Edificio
+$router->addRoute("GET", "/edificio/jefe", "EdificioController", "getEdificioByJefe");
 
 //Routes
 $router->addRoute("GET", "/solicitud/{id}/estado", "SolicitudController", "getSolicitudEstado");
