@@ -21,6 +21,7 @@ require_once __DIR__ . "/app/controllers/DepartamentoController.php";
 require_once __DIR__ . "/app/controllers/MensajesController.php";
 require_once __DIR__ . "/app/controllers/ObservacionesController.php";
 require_once __DIR__ . "/app/controllers/EdificioController.php";
+require_once __DIR__ . "/app/controllers/EvaluacionController.php";
 
 $router = new Router;
 
@@ -62,6 +63,7 @@ $router->addRoute("GET", "/matricula/estudiantes/seccion", "MatriculaController"
 $router->addRoute("GET", "/matricula/get", "MatriculaController", "getMatriculaEst");
 $router->addRoute("GET", "/matricula/check", "MatriculaController", "cumpleRequisito");
 $router->addRoute("GET", "/matricula/horario", "MatriculaController", "cumpleHorario");
+$router->addRoute("GET", "/matricula/validate/estu", "MatriculaController", "permitirMatriculaEstu");
 $router->addRoute("POST", "/matricula/set", "MatriculaController", "setMatricula");
 $router->addRoute("DELETE", "/matricula/delete", "MatriculaController", "delMat");
 
@@ -122,8 +124,12 @@ $router->addRoute("GET", "/observacion/get", "ObservacionesController", "getObse
 //Edificio
 $router->addRoute("GET", "/edificio/jefe", "EdificioController", "getEdificioByJefe");
 
+//Evaluaciones
+$router->addRoute("GET", "/edificio/jefe", "EdificioController", "getEdificioByJefe");
+
+
 //Routes
-$router->addRoute("GET", "/solicitud/{id}/estado", "SolicitudController", "getSolicitudEstado");
+$router->addRoute("GET", "/evaluaciones/doc", "EvaluacionController", "getEvaluaciones");
 
 $router->dispatch($_SERVER["REQUEST_METHOD"], $_SERVER["REQUEST_URI"]);
 ?>

@@ -390,6 +390,30 @@ class MatriculaController{
         return "$year-$trimestre";
     }
 
+
+    public function permitirMatriculaEstu() {
+        $sql = "SELECT * FROM tbl_info_matricula";
+        $fecha = $this->matricula->customQuery($sql);
+    
+        if ($fecha) {
+            $hoy = date("Y-m-d");
+    
+            $inicio = $fecha[0]['inicio'];
+            $final = $fecha[0]['final'];
+    
+            if ($hoy >= $inicio && $hoy <= $final) {
+                http_response_code(200);
+                echo json_encode(["message" => "Dentro del horario de matricula"]);
+            } else {
+                http_response_code(404);
+                echo json_encode(["error" => "El horario de matricula es a partir de ".$inicio]);
+            }
+    
+        }
+    
+        return false;
+    }
+    
 }
 
 
