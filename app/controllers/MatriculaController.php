@@ -366,7 +366,6 @@ class MatriculaController{
             echo json_encode(["error" => "No se completo la cancelacion"]);
         }
     }
-    
 
     /**
      * Funcion para obtener el periodo acadmico actual
@@ -390,29 +389,66 @@ class MatriculaController{
         return "$year-$trimestre";
     }
 
-
     public function permitirMatriculaEstu() {
-        $sql = "SELECT * FROM tbl_info_matricula";
-        $fecha = $this->matricula->customQuery($sql);
+        $header = getallheaders();
+        $estudianteId = $header['estudianteid'] ?? null;
     
-        if ($fecha) {
-            $hoy = date("Y-m-d");
+        $sql = "SELECT * FROM tbl_info_matricula WHERE estado_matricula_id = 1 LIMIT 1";
+        $rango = $this->matricula->customQuery($sql);
     
-            $inicio = $fecha[0]['inicio'];
-            $final = $fecha[0]['final'];
-    
-            if ($hoy >= $inicio && $hoy <= $final) {
-                http_response_code(200);
-                echo json_encode(["message" => "Dentro del horario de matricula"]);
-            } else {
-                http_response_code(404);
-                echo json_encode(["error" => "El horario de matricula es a partir de ".$inicio]);
-            }
-    
+        if (!$rango) {
+            http_response_code(404);
+            echo json_encode(["error" => "No hay rango de matrícula definido"]);
+            return;
         }
     
-        return false;
+        $inicio = new DateTime($rango[0]['inicio']);
+        $final = new DateTime($rango[0]['final']);
+        $hoy = new DateTime();
+    
+        if ($hoy < $inicio || $hoy > $final) {
+            http_response_code(404);
+            echo json_encode(["error" => "Fuera del horario de matrícula"]);
+            return;
+        }
+    
+        $diasTotales = $inicio->diff($final)->days + 1;
+        $diasTranscurridos = $inicio->diff($hoy)->days;
+    
+        $promedios = [85, 80, 75, 70, 65, 60, 0];
+        $promediosDistribuidos = array_slice($promedios, 0, $diasTotales);
+        $promedioRequerido = $promediosDistribuidos[$diasTranscurridos];
+    
+        $indice = $this->getIndiceGlobal($estudianteId);
+    
+        if (is_null($indice)){
+            http_response_code(200);
+            echo json_encode(["message" => "Primer ingreso: dentro del horario de matrícula"]);
+            return;
+        }
+
+        if ($indice >= $promedioRequerido) {
+            http_response_code(200);
+            echo json_encode(["message" => "Índice válido: dentro del horario de matrícula"]);
+        } else {
+            http_response_code(403);
+            echo json_encode(["error" => "Se requiere mínimo de {$promedioRequerido} para este día."]);
+        }
     }
+    
+    
+    private function getIndiceGlobal($estudianteid){
+        $sql = "SELECT sum(nt.calificacion * UV)/sum(UV) AS promedio
+                FROM tbl_notas AS nt
+                INNER JOIN tbl_seccion AS sc ON nt.seccion_id = sc.seccion_id
+                INNER JOIN tbl_clase AS cl ON sc.clase_id = cl.clase_id
+                WHERE nt.estudiante_id = ?";
+    
+        $res = $this->matricula->customQuery($sql, [$estudianteid]);
+        return $res && isset($res[0]['promedio']) ? floatval($res[0]['promedio']) : null;
+    }
+    
+    
     
 }
 

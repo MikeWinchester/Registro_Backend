@@ -243,6 +243,23 @@ class DocenteController {
         return $this->docente->customQuery($sql, [$sec]);
     }
     
+    public function getUsuarioByDocente(){
+        $header = getallheaders();
+
+        $sql = "SELECT usuario_id 
+                FROM tbl_docente
+                WHERE docente_id = ?";
+
+        $result = $this->docente->customQuery($sql, $header['docenteid']);
+
+        if($result){
+            http_response_code(200);
+            echo json_encode(['message' => 'usuario obtenido', "data" => $result]);
+        }else{
+            http_response_code(400);
+            echo json_encode(['error' => 'usuario no obtenido']);
+        }
+    }
 
     /**
      * Funcion para obtener el periodo acadmico actual

@@ -87,5 +87,25 @@ class JefeController {
 
         return $this->jefe->customQuery($sql, [$jefe]);
     }
+
+    public function getUsuarioByJefe(){
+        $header = getallheaders();
+
+        $sql = "SELECT usuario_id 
+                FROM tbl_jefe AS jf
+                INNER JOIN tbl_docente AS dc
+                ON jf.docente_id = dc.docente_id
+                WHERE jefe_id = ?";
+
+        $result = $this->jefe->customQuery($sql, $header['jefeid']);
+
+        if($result){
+            http_response_code(200);
+            echo json_encode(['message' => 'usuario obtenido', "data" => $result]);
+        }else{
+            http_response_code(400);
+            echo json_encode(['error' => 'usuario no obtenido']);
+        }
+    }
 }
 ?>

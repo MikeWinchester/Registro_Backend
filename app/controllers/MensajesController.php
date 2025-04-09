@@ -134,6 +134,33 @@ class MensajesController {
             echo json_encode(["error" => "No se obtuvieron los mensajes"]);
         }
     }
+
+    public function getUltimoMensaje(){
+        $header = getallheaders();
+
+        $emi = $header['emisorid'];
+        $rec = $header['receptorid'];
+
+        $sql = "SELECT ms.mensaje
+                FROM tbl_mensajes AS ms
+                INNER JOIN tbl_usuario AS us_em ON ms.remitente_id = us_em.usuario_id
+                INNER JOIN tbl_usuario AS us_de ON ms.destinatario_id = us_de.usuario_id
+                WHERE
+                    (ms.remitente_id = ? AND ms.destinatario_id = ?)
+                    OR (ms.remitente_id = ? AND ms.destinatario_id = ?)
+                ORDER BY ms.fecha_envio DESC
+                LIMIT 1";
+
+        $result = $this->mensaje->customQuery($sql, [$emi, $rec, $rec, $emi]);
+
+        if($result){
+            http_response_code(200);
+            echo json_encode(["message" => "mensajes obtenidos", "data" => $result]);
+        }else{
+            http_response_code(400);
+            echo json_encode(["error" => "No se obtuvieron los mensajes"]);
+        }
+    }
 }
 
 ?>

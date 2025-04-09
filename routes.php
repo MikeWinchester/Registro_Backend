@@ -10,6 +10,7 @@ require_once __DIR__ . "/app/controllers/CarreraController.php";
 require_once __DIR__ . "/app/controllers/CentroController.php";
 require_once __DIR__ . "/app/controllers/NotasController.php";
 require_once __DIR__ . "/app/controllers/AuthController.php";
+require_once __DIR__ . "/app/controllers/InfoMatriculaController.php";
 
 require_once __DIR__ . "/app/controllers/ClaseController.php";
 require_once __DIR__ . "/app/controllers/AulaController.php";
@@ -22,6 +23,7 @@ require_once __DIR__ . "/app/controllers/MensajesController.php";
 require_once __DIR__ . "/app/controllers/ObservacionesController.php";
 require_once __DIR__ . "/app/controllers/EdificioController.php";
 require_once __DIR__ . "/app/controllers/EvaluacionController.php";
+require_once __DIR__ . "/app/controllers/SolicitudAmistadController.php";
 
 $router = new Router;
 
@@ -41,6 +43,7 @@ $router->addRoute("GET", "/docentes/all", "DocenteController", "getAllDocentes")
 $router->addRoute("POST", "/docentes/video", "DocenteController", "uploadVideo");
 $router->addRoute("GET", "/docentes/dep", "DocenteController", "getDocentesBydepartment");
 $router->addRoute("GET", "/docentes/horario", "DocenteController", "getDocentesByHorario");
+$router->addRoute("GET", "/docentes/usuario", "DocenteController", "getUsuarioByDocente");
 
 //Routes for Secciones
 $router->addRoute("GET", "/secciones/docente/all", "SeccionesController", "getSecciones");
@@ -72,6 +75,7 @@ $router->addRoute("DELETE", "/matricula/delete", "MatriculaController", "delMat"
 $router->addRoute("GET", "/estudiante/get", "EstudianteController", "getEstudiante");
 $router->addRoute("GET", "/estudiante/get/cuenta", "EstudianteController", "getEstudianteByCuenta");
 $router->addRoute("GET", "/estudiante/get/hist", "EstudianteController", "getHistorial");
+$router->addRoute("GET", "/estudiante/usuario", "EstudianteController", "getUsuarioByEstu");
 
 //Routes for Admisiones
 $router->addRoute("POST", "/admisiones", "AdmisionesController", "createAdmission");
@@ -99,6 +103,7 @@ $router->addRoute("GET", "/aula/get", "AulaController", "getAulasByEdificio");
 //Jefe
 $router->addRoute("GET", "/jefe/getDep", "JefeController", "getDepByJefe");
 $router->addRoute("GET", "/jefe/getFac", "JefeController", "getFacByJefe");
+$router->addRoute("GET", "/jefe/usuario", "JefeController", "getUsuarioByJefe");
 
 //Lista de espera
 $router->addRoute("GET", "/esp/estu", "EsperaController", "getEspByEstudiante");
@@ -118,6 +123,7 @@ $router->addRoute("POST", "/mensaje/set", "MensajesController", "setMensaje");
 $router->addRoute("GET", "/mensaje/get", "MensajesController", "getMensaje");
 $router->addRoute("GET", "/mensaje/sinleer", "MensajesController", "getMensajesLeido");
 $router->addRoute("PUT", "/mensaje/leer", "MensajesController", "leerMensaje");
+$router->addRoute("GET", "/mensaje/get/last", "MensajesController", "getUltimoMensaje");
 
 //Observaciones
 $router->addRoute("GET", "/observacion/get", "ObservacionesController", "getObservacion");
@@ -127,6 +133,16 @@ $router->addRoute("GET", "/edificio/jefe", "EdificioController", "getEdificioByJ
 
 //Evaluaciones
 $router->addRoute("GET", "/edificio/jefe", "EdificioController", "getEdificioByJefe");
+
+//SolicituAmistad
+$router->addRoute("GET", "/solicitud_amistad/get/accept", "SolicitudAmistadController", "getUsuariosAceptadosByUsuario");
+$router->addRoute("GET", "/solicitud_amistad/get/waiting", "SolicitudAmistadController", "getUsuariosEspera");
+$router->addRoute("GET", "/solicitud_amistad/get/update", "SolicitudAmistadController", "updateSolicitud");
+$router->addRoute("GET", "/solicitud_amistad/get/message", "SolicitudAmistadController", "getUsuariosAceptadosWithMessage");
+
+//Info Matricula
+$router->addRoute("POST", "/info_matricula/set", "InfoMatriculaController", "setFecha");
+$router->addRoute("GET", "/info_matricula/get", "InfoMatriculaController", "getHorario");
 
 
 //Routes

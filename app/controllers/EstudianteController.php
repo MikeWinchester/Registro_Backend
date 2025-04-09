@@ -208,6 +208,24 @@ class EstudianteController {
         }
     }
 
+    public function getUsuarioByEstu(){
+        $header = getallheaders();
+
+        $sql = "SELECT usuario_id 
+                FROM tbl_estudiante
+                WHERE estudiante_id = ?";
+
+        $result = $this->estudiante->customQuery($sql, $header['estudianteid']);
+
+        if($result){
+            http_response_code(200);
+            echo json_encode(['message' => 'usuario obtenido', "data" => $result]);
+        }else{
+            http_response_code(400);
+            echo json_encode(['error' => 'usuario no obtenido']);
+        }
+    }
+
     /**
      * Funcion para obtener el periodo acadmico actual
      *

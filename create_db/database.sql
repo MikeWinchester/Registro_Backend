@@ -220,13 +220,18 @@ CREATE TABLE tbl_seccion (
     horario VARCHAR(50),
     dias VARCHAR(50),
     cupo_maximo TINYINT UNSIGNED NOT NULL,
-    imagen_portada VARCHAR(500),
-    video VARCHAR(500),
     centro_regional_id TINYINT UNSIGNED,
     FOREIGN KEY (docente_id) REFERENCES tbl_docente(docente_id),
     FOREIGN KEY (aula_id) REFERENCES tbl_aula(aula_id),
     FOREIGN KEY (centro_regional_id) REFERENCES tbl_centro_regional(centro_regional_id),
     FOREIGN KEY (clase_id) REFERENCES tbl_clase(clase_id)
+);
+
+CREATE TABLE tbl_recurso(
+        seccion_id SMALLINT UNSIGNED PRIMARY KEY,
+        imagen_portada VARCHAR(500),
+        video VARCHAR(500),
+        FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
 );
 
 CREATE TABLE tbl_estado_matricula (
@@ -325,6 +330,23 @@ CREATE TABLE tbl_evaluacion (
     PRIMARY KEY (estudiante_id, seccion_id),
     FOREIGN KEY (estudiante_id) REFERENCES tbl_estudiante(estudiante_id),
     FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
+);
+
+
+CREATE TABLE tbl_estado_solicitud(
+    estado_solicitud_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    estado VARCHAR(20)
+);
+
+CREATE TABLE tbl_solicitud_amistad(
+    usuario_emisor SMALLINT UNSIGNED,
+    usuario_receptor SMALLINT UNSIGNED,
+    estado_solicitud_id TINYINT UNSIGNED,
+    fecha_envio DATE,
+    PRIMARY KEY(usuario_emisor, usuario_receptor),
+    FOREIGN KEY (usuario_emisor) REFERENCES tbl_usuario(usuario_id),
+    FOREIGN KEY (usuario_receptor) REFERENCES tbl_usuario(usuario_id),
+    FOREIGN KEY (estado_solicitud_id) REFERENCES tbl_estado_solicitud(estado_solicitud_id)
 );
 
 DELIMITER $$
@@ -756,19 +778,26 @@ insert into tbl_aula(aula, edificio_id) values
 ("202", 2),
 ("203", 7);
 
-insert into tbl_seccion(clase_id, docente_id, aula_id, periodo_academico, horario, dias, cupo_maximo, imagen_portada, video, centro_regional_id) values
-(1,2,4,'2024-III', '11:00-12:00','Lun, Mar, Mie, Jue, Vie', 10, 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fes%2Ffotos%2Fingenieria-civil&psig=AOvVaw0mvRI0aqeLvG3ciaQv5v_8&ust=1744141691735000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCIjS16HYxowDFQAAAAAdAAAAABAE', 'https://www.youtube.com/watch?v=4YhJgX2GqC8', 1),
-(1,2,4,'2024-III', '11:00-12:00','Lun, Mar, Mie, Jue, Vie', 10,  'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fes%2Ffotos%2Fingenieria-civil&psig=AOvVaw0mvRI0aqeLvG3ciaQv5v_8&ust=1744141691735000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCIjS16HYxowDFQAAAAAdAAAAABAE', 'https://www.youtube.com/watch?v=4YhJgX2GqC8', 1),
-(2,3,5,'2024-III', '12:00-13:00','Lun, Mar, Mie, Jue, Vie', 10,  'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fes%2Ffotos%2Fingenieria-civil&psig=AOvVaw0mvRI0aqeLvG3ciaQv5v_8&ust=1744141691735000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCIjS16HYxowDFQAAAAAdAAAAABAE', 'https://www.youtube.com/watch?v=4YhJgX2GqC8', 1),
-(2,3,5,'2024-III', '12:00-13:00','Lun, Mar, Mie, Jue, Vie', 10,  'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fes%2Ffotos%2Fingenieria-civil&psig=AOvVaw0mvRI0aqeLvG3ciaQv5v_8&ust=1744141691735000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCIjS16HYxowDFQAAAAAdAAAAABAE', 'https://www.youtube.com/watch?v=4YhJgX2GqC8', 1),
-(3,5,2,'2024-III', '13:00-14:00','Lun, Mar, Mie',10,  'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fes%2Ffotos%2Fingenieria-civil&psig=AOvVaw0mvRI0aqeLvG3ciaQv5v_8&ust=1744141691735000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCIjS16HYxowDFQAAAAAdAAAAABAE', 'https://www.youtube.com/watch?v=4YhJgX2GqC8', 1);
+insert into tbl_seccion(clase_id, docente_id, aula_id, periodo_academico, horario, dias, cupo_maximo, centro_regional_id) values
+(1,2,4,'2024-III', '11:00-12:00','Lun, Mar, Mie, Jue, Vie', 10, 1),
+(1,2,4,'2024-III', '11:00-12:00','Lun, Mar, Mie, Jue, Vie', 10, 1),
+(2,3,5,'2024-III', '12:00-13:00','Lun, Mar, Mie, Jue, Vie', 10, 1),
+(2,3,5,'2024-III', '12:00-13:00','Lun, Mar, Mie, Jue, Vie', 10, 1),
+(3,5,2,'2024-III', '13:00-14:00','Lun, Mar, Mie',10, 1);
+
+insert into tbl_recurso(seccion_id, imagen_portada, video) values
+(1, 'https://www.google.com/url?sa=i&url=https%3A%2F%2Frevistas.ucr.ac.cr%2Findex.php%2Fingenieria&psig=AOvVaw2O9rdoQ_A6Sg6COEdNOEb3&ust=1744232985713000&source=images&opi=89978449', 'https://www.youtube.com/watch?v=mHoFKij-bWc'),
+(2, 'https://www.google.com/url?sa=i&url=https%3A%2F%2Frevistas.ucr.ac.cr%2Findex.php%2Fingenieria&psig=AOvVaw2O9rdoQ_A6Sg6COEdNOEb3&ust=1744232985713000&source=images&opi=89978449', 'https://www.youtube.com/watch?v=mHoFKij-bWc'),
+(3, 'https://www.google.com/url?sa=i&url=https%3A%2F%2Frevistas.ucr.ac.cr%2Findex.php%2Fingenieria&psig=AOvVaw2O9rdoQ_A6Sg6COEdNOEb3&ust=1744232985713000&source=images&opi=89978449', 'https://www.youtube.com/watch?v=mHoFKij-bWc'),
+(4, 'https://www.google.com/url?sa=i&url=https%3A%2F%2Frevistas.ucr.ac.cr%2Findex.php%2Fingenieria&psig=AOvVaw2O9rdoQ_A6Sg6COEdNOEb3&ust=1744232985713000&source=images&opi=89978449', 'https://www.youtube.com/watch?v=mHoFKij-bWc'),
+(5, 'https://www.google.com/url?sa=i&url=https%3A%2F%2Frevistas.ucr.ac.cr%2Findex.php%2Fingenieria&psig=AOvVaw2O9rdoQ_A6Sg6COEdNOEb3&ust=1744232985713000&source=images&opi=89978449', 'https://www.youtube.com/watch?v=mHoFKij-bWc');
 
 insert into tbl_estado_matricula(estado_matricula) values 
 ('Activo'),
 ('Inactivo');
 
 insert into tbl_info_matricula(inicio, final, estado_matricula_id) values
-('2025-04-01', '2025-04-07', 1);
+('2025-04-08', '2025-04-11', 1);
 
 insert into tbl_matricula(estudiante_id, seccion_id, fechaInscripcion) values
 (1,1,'2024-10-03'),
@@ -795,4 +824,50 @@ insert into tbl_evaluacion(estudiante_id, seccion_id, calificacion, comentario) 
 (1,3, 4.5, 'Clase muy entretenida y dispuesto a ayudarr a sus alumnos'),
 (5,3, 4.5, 'Clase muy entretenida y dispuesto a ayudarr a sus alumnos'),
 (5,5, 10, 'Clase muy entretenida y dispuesto a ayudarr a sus alumnos');
+
+insert into tbl_estado_solicitud(estado) values
+('ACEPTADO'),
+('RECHAZADO'),
+('ESPERA');
+
+insert into tbl_solicitud_amistad(usuario_emisor, usuario_receptor, estado_solicitud_id,fecha_envio) values
+(1, 2, 3, '2025-01-01'),
+(2, 2, 3, '2025-01-01'),
+(4, 5, 1, '2025-01-01'),
+(5, 6, 1, '2025-01-01'),
+(6, 7, 1, '2025-01-01'),
+(7, 8, 1, '2025-01-01'),
+(8, 9, 1, '2025-01-01'),
+(9, 10, 3, '2025-01-01'),
+(10, 11, 3, '2025-01-01'),
+(11, 12, 3, '2025-01-01'),
+(12, 13, 3, '2025-01-01'),
+(1, 3, 2, '2025-01-01'),
+(1, 4, 2, '2025-01-01'),
+(1, 5, 1, '2025-01-01'),
+(5, 7, 1, '2025-01-01'),
+(5, 8, 1, '2025-01-01'),
+(5, 9, 1, '2025-01-01'),
+(5, 10, 2, '2025-01-01'),
+(5, 11, 2, '2025-01-01'),
+(3, 10, 1, '2025-01-01'),
+(3, 12, 1, '2025-01-01'),
+(3, 4, 2, '2025-01-01'),
+(3, 6, 1, '2025-01-01');
+
+INSERT INTO tbl_mensajes (remitente_id, destinatario_id, mensaje, fecha_envio, leido) VALUES
+(5, 6, 'Hola, ¿cómo estás?', NOW(), 1),
+(6, 5, 'Todo bien, que paso?', NOW(), 1),
+(5, 6, '¿Vas a ir a clase hoy?', NOW(), 1),
+(5, 6, 'Recuerda que tenemos examen mañana.', NOW(), 1),
+(6, 5, 'No me la constes, no he estudiado ', NOW(), 1),
+(5, 6, '¿Tienes el PDF del profesor?', NOW(), 0),
+(5, 4, 'Claro, maniana te lo paso por nfc', NOW(), 0),
+(5, 6, 'Gracias por la ayuda de ayer.', NOW(), 0),
+(5, 6, '¿Quieres hacer el trabajo juntos?', NOW(), 0),
+(5, 6, 'Te pasé el archivo por correo.', NOW(), 0),
+(5, 6, '¿Qué opinas del nuevo horario?', NOW(), 0),
+(5, 6, 'Hablamos más tarde.', NOW(), 0);
+
+
 
