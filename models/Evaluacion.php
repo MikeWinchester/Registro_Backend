@@ -55,6 +55,8 @@ class Evaluacion extends BaseModel {
         }
     
         $sql .= implode(' AND ', $conditions);
+
+        return $this->fetchAll($sql, $params);
     }
 }
 

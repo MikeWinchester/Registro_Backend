@@ -148,12 +148,6 @@ class Matricula extends BaseModel {
         return $this->executeWrite($sql, $param);
     }
 
-    public function actualizarSeccion($param){
-        $sql = "UPDATE tbl_seccion SET cupo_maximo = cupo_maximo + 1 WHERE seccion_id = ?";
-
-        return $this->executeWrite($sql, $param);
-    }
-
     public function obtenerFechaMatricula(){
         $sql = "SELECT * FROM tbl_info_matricula WHERE estado_matricula_id = 1 LIMIT 1";
 

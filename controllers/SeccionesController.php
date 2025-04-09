@@ -138,7 +138,7 @@ class SeccionesController extends BaseController{
         $estu = $header['estudianteid'];
         $centro = $this->seccion->getCentroByEstu([$estu]);
 
-        $result = $this->seccion->obtenerSeccionesByEstu([$claseID, $this->getPeriodo(), $centro[0]['id']]);
+        $result = $this->seccion->obtenerSeccionesByEstu([$claseID, $this->getPeriodo(), $centro['id']]);
         
         $index = 0;
         foreach ($result as $seccion) {
@@ -164,7 +164,7 @@ class SeccionesController extends BaseController{
         $jefe = $header['jefeid'];
         $centro = $this->seccion->getCentroByJefe($jefe)['id'];
 
-        $result = $this->seccion->obtenerSeccionesByClassCentro([$claseID, $this->getPeriodo(), $centro[0]['id']]);
+        $result = $this->seccion->obtenerSeccionesByClassCentro([$claseID, $this->getPeriodo(), $centro]);
         
         $index = 0;
         foreach ($result as $seccion) {

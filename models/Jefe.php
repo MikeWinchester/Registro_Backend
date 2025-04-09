@@ -51,6 +51,18 @@ class Jefe extends BaseModel {
 
         return $this->fetchOne($sql, [$jefeid]);
     }
+
+    public function obtenerJefeId($param){
+        $sql = "SELECT jefe_id AS id
+        FROM tbl_jefe AS jf
+        INNER JOIN tbl_docente AS dc
+        ON jf.docente_id = dc.docente_id
+        INNER JOIN tbl_usuario AS us
+        ON dc.usuario_id = us.usuario_id
+        WHERE us.id = ?";
+
+return $this->fetchOne($sql, $param);
+    }
 }
 
 ?>

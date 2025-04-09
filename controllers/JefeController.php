@@ -49,8 +49,7 @@ class JefeController extends BaseController{
 
     public function getCentroByJefe($jefe){
         
-
-        return $this->jefe->obtenerCentroByJefe($jefe);
+        return $this->jefe->obtenerCentroByJefe($jefe)['id'];
     }
 
     public function getUsuarioByJefe(){
@@ -64,6 +63,21 @@ class JefeController extends BaseController{
         }else{
             http_response_code(400);
             echo json_encode(['error' => 'usuario no obtenido']);
+        }
+    }
+
+    public function getId(){
+        
+        $header = getallheaders();
+        
+        $result = $this->jefe->obtenerJefeId([$header['id']]);
+
+        if($result){
+            http_response_code(200);
+            echo json_encode(['data' => $result]);
+        }else{
+            http_response_code(400);
+            echo json_encode(['error' => "No se pudo completa la accion"]);
         }
     }
 }

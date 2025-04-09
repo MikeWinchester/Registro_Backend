@@ -66,7 +66,7 @@ class Seccion extends BaseModel {
                 ON jf.docente_id = dc.docente_id
                 WHERE jefe_id = ?';
 
-        return $this->fetchOne($sql,$param);
+        return $this->fetchOne($sql,[$param]);
     }
 
     public function validarSeccion($param){

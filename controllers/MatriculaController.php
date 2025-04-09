@@ -198,12 +198,11 @@ class MatriculaController extends BaseController{
         $resultMAT = $this->matricula->eliminarMatricula([$estId, $secId]);
 
         if ($resultMAT) {
-            $resultSec = $this->matricula->actualizarSeccion([$secId]);
             $this->cancelacion->createCancelacion(["seccion_id" => $secId, "estudiante_id" => $estId]);
-            if($resultSec){
-                http_response_code(200);
-                echo json_encode(["message" => "Seccion cancelada"]);
-            }
+            
+            http_response_code(200);
+            echo json_encode(["message" => "Seccion cancelada"]);
+            
         } else {
             http_response_code(404);
             echo json_encode(["error" => "No se completo la cancelacion"]);

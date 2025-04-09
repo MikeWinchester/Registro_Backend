@@ -94,6 +94,16 @@ class Docente extends BaseModel {
 
         return $this->fetchOne($sql, [$docenteid]);
     }
+
+    public function obtenerDocenteId($param){
+        $sql = "SELECT docente_id AS id
+                FROM tbl_docente AS dc
+                INNER JOIN tbl_usuario AS us
+                ON dc.usuario_id = us.usuario_id
+                WHERE us.id = ?";
+
+        return $this->fetchOne($sql, $param);
+    }
 }
 
 

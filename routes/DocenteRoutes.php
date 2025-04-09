@@ -11,6 +11,7 @@ function registerDocenteRoutes($router) {
     $router->get( "/docentes/dep", [$docenteController, "getDocentesBydepartment"], ['Docente']);
     $router->get( "/docentes/horario", [$docenteController, "getDocentesByHorario"], ['Docente']);
     $router->get( "/docentes/usuario", [$docenteController, "getUsuarioByDocente"], ['Docente']);
+    $router->get( "/docentes/get/id", [$docenteController, "getId"], ['Docente']);
 }
 
 ?>

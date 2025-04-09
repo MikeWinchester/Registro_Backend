@@ -21,7 +21,7 @@ class ClaseController extends BaseController{
      */
     public function getClasesByArea(){
 
-        $header = array_change_key_case(getallheaders(), CASE_LOWER);
+        $header = getallheaders();
 
         $depID = $header['areaid'];
 

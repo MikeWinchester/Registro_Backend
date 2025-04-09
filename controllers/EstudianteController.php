@@ -170,5 +170,19 @@ class EstudianteController extends BaseController{
     
         return "$anio-$periodo";
     }
+
+    public function getId(){
+        $header = getallheaders();
+
+        $result = $this->estudiante->obtenerEstudianteId([$header['id']]);
+
+        if($result){
+            http_response_code(200);
+            echo json_encode(['data' => $result]);
+        }else{
+            http_response_code(400);
+            echo json_encode(['error' => "No se pudo completa la accion"]);
+        }
+    }
 }
 ?>

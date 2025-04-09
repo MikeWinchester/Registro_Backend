@@ -7,5 +7,6 @@ function registerJefeRoutes($router) {
     $router->get( "/jefe/getDep", [$jefeController, "getDepByJefe"]);
     $router->get( "/jefe/getFac", [$jefeController, "getFacByJefe"]);
     $router->get( "/jefe/usuario", [$jefeController, "getUsuarioByJefe"]);
+    $router->get( "/jefe/get/id", [$jefeController, "getId"]);
 }
 ?>

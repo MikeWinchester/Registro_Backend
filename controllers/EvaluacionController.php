@@ -15,13 +15,7 @@ class EvaluacionController extends BaseController{
 
     public function getEvaluaciones(){
         $header = getallheaders();
-    
-        if (!$header) {
-            http_response_code(400);
-            echo json_encode(["error" => "Datos JSON inválidos"]);
-            return;
-        }
-    
+        
         $result = $this->evaluacion->obtenerEvaluaciones($header);
     
         if ($result) {

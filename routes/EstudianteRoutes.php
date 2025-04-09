@@ -8,6 +8,6 @@ function registerEstudianteRoutes($router) {
     $router->get( "/estudiante/get/cuenta", [$estudianteController, "getEstudianteByCuenta"]);
     $router->get( "/estudiante/get/hist", [$estudianteController, "getHistorial"]);
     $router->get( "/estudiante/usuario", [$estudianteController, "getUsuarioByEstu"]);
-
+    $router->get( "/estudiante/get/id", [$estudianteController, "getId"]);
 }
 ?>

@@ -102,7 +102,7 @@ class DocenteController extends BaseController{
         $dep = $header['areaid'];
         $centro = $this->jefe->getCentroByJefe($header['jefeid']);
 
-        $result = $this->docente->listaDocentes($dep, $centro[0]['id']);
+        $result = $this->docente->listaDocentes($dep, $centro);
 
         if ($result) {
             http_response_code(200);
@@ -191,6 +191,20 @@ class DocenteController extends BaseController{
         }
     
         return "$year-$trimestre";
+    }
+
+    public function getId(){
+        $header = getallheaders();
+
+        $result = $this->docente->obtenerDocenteId([$header['id']]);
+
+        if($result){
+            http_response_code(200);
+            echo json_encode(['data' => $result]);
+        }else{
+            http_response_code(400);
+            echo json_encode(['error' => "No se pudo completa la accion"]);
+        }
     }
 }
 
