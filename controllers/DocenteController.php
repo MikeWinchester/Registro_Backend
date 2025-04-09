@@ -119,7 +119,7 @@ class DocenteController extends BaseController{
     
         $sec = $header['seccionid'];
         $dep = $header['areaid'];
-        $centro = $this->jefe->getCentroByJefe($header['jefeid'])[0]['id'];
+        $centro = $this->jefe->getCentroByJefe($header['jefeid']);
         $periodo = $this->getPeriodo();
     
         $horario = $this->docente->obtenerHorarioBySeccion($sec);

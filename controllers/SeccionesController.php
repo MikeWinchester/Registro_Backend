@@ -435,18 +435,11 @@ class SeccionesController extends BaseController{
     
         $sec = isset($header['seccionid']) ? $header['seccionid'] : null;
     
-        if ($sec === null) {
-            http_response_code(400);
-            echo json_encode(["error" => "ID de sección requerido"]);
-            return;
-        }
-    
         try {
 
-            
+            $resultSec = $this->seccion->eliminarSeccion([$sec]);
             $resultEst = $this->seccion->eliminarMatricula([$sec]);
             $resultEsp = $this->seccion->eliminarEspera([$sec]);
-            $resultSec = $this->seccion->eliminarSeccion([$sec]);
     
             if ($resultSec || $resultEst || $resultEsp) {
                 http_response_code(200);
