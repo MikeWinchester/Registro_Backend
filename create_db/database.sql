@@ -247,6 +247,30 @@ CREATE TABLE tbl_info_matricula (
     FOREIGN KEY (estado_matricula_id) REFERENCES tbl_estado_matricula(estado_matricula_id)
 );
 
+CREATE TABLE tbl_registrar_notas(
+    inicio DATE,
+    final DATE,
+    PRIMARY KEY (inicio, final),
+    estado_matricula_id TINYINT UNSIGNED NOT NULL,
+    FOREIGN KEY (estado_matricula_id) REFERENCES tbl_estado_matricula(estado_matricula_id)
+);
+
+CREATE TABLE tbl_adicion_cancelacion(
+    inicio DATE,
+    final DATE,
+    PRIMARY KEY (inicio, final),
+    estado_matricula_id TINYINT UNSIGNED NOT NULL,
+    FOREIGN KEY (estado_matricula_id) REFERENCES tbl_estado_matricula(estado_matricula_id)
+);
+
+CREATE TABLE tbl_crear_seccion(
+    inicio DATE,
+    final DATE,
+    PRIMARY KEY (inicio, final),
+    estado_matricula_id TINYINT UNSIGNED NOT NULL,
+    FOREIGN KEY (estado_matricula_id) REFERENCES tbl_estado_matricula(estado_matricula_id)  
+);
+
 -- Tabla Matrícula
 CREATE TABLE tbl_matricula (
     estudiante_id SMALLINT UNSIGNED NOT NULL,
