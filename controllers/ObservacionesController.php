@@ -9,6 +9,7 @@ class ObservacionesController extends BaseController{
     
 
     public function __construct() {
+        parent::__construct();
         $this->observacion = new Observacion();
         header("Content-Type: application/json"); // Estandariza las respuestas como JSON
     }

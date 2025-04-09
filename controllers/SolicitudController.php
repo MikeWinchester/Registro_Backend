@@ -1,17 +1,18 @@
 <?php
 require_once __DIR__ . "/../models/Solicitud.php";
-require_once __DIR__ . "/../core/AuthMiddleware.php";
+require_once __DIR__ . "/BaseController.php";
 
-class SolicitudController {
+class SolicitudController extends BaseController{
     private $solicitud;
 
     public function __construct() {
+        parent::__construct();
         $this->solicitud = new Solicitud();
-        header("Content-Type: application/json"); // Estandariza las respuestas como JSON
+        header("Content-Type: application/json"); 
     }
 
     public function getSolicitudEstado($id) {
-        $solicitud = $this->solicitud->getOne($id);
+        $solicitud = $this->solicitud->getById($id);
 
         if (!$solicitud) {
             echo json_encode(["error" => "Solicitud no encontrada"]);
