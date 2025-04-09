@@ -121,6 +121,7 @@ class Estudiante extends BaseModel {
         return $this->fetchOne($sql, $param);
     
     }
+    
 
     public function obtenerHistorialEstudiante($busqueda, $carrera){
         // Base del SQL
