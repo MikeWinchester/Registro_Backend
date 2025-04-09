@@ -251,5 +251,16 @@ class Seccion extends BaseModel {
 
         return $this->executeWrite($sqlSec, $param);
     }
+
+    public function obtenerSeccionesSinParametros(){
+        $sql = "SELECT seccion_id, tbl_clase.codigo, tbl_clase.nombre, tbl_usuario.nombre_completo, tbl_edificio.edificio
+                FROM tbl_seccion
+                INNER JOIN tbl_docente ON tbl_seccion.docente_id = tbl_docente.docente_id
+                INNER JOIN tbl_clase ON tbl_clase.clase_id = tbl_seccion.clase_id
+                INNER JOIN tbl_edificio ON tbl_edificio.edificio_id = tbl_clase.edificio_id
+                INNER JOIN tbl_usuario ON tbl_docente.usuario_id = tbl_usuario.usuario_id";
+    
+        return $this->fetchAll($sql);
+    }
 }
 ?>

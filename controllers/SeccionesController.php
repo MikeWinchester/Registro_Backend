@@ -53,6 +53,21 @@ class SeccionesController extends BaseController{
 
     }
 
+    public function getSeccionesOutParams() {
+    
+        // Ejecutamos la consulta
+        $result = $this->seccion->obtenerSeccionesSinParametros();
+    
+        // Verificamos si la consulta devuelve resultados
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "Secciones encontradas", "data" => $result]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "Secciones no disponibles"]);
+        }
+    }
+
 
     public function getSeccion(){
 

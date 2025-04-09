@@ -121,5 +121,37 @@ class Estudiante extends BaseModel {
         return $this->fetchOne($sql, $param);
     
     }
+
+    public function obtenerHistorialEstudiante($busqueda, $carrera){
+        // Base del SQL
+        $sql = "SELECT tbl_usuario.nombre_completo, tbl_carrera.nombre_carrera, tbl_centro_regional.nombre_centro, 
+                       tbl_usuario.correo, AVG(tbl_notas.calificacion) as Promedio 
+                FROM tbl_estudiante  
+                INNER JOIN tbl_centro_regional ON tbl_centro_regional.centro_regional_id = tbl_estudiante.centro_regional_id 
+                INNER JOIN tbl_usuario ON tbl_estudiante.usuario_id = tbl_usuario.usuario_id 
+                INNER JOIN tbl_carrera ON tbl_estudiante.carrera_id = tbl_carrera.carrera_id
+                INNER JOIN tbl_notas ON tbl_notas.estudiante_id = tbl_estudiante.estudiante_id";
+    
+        // Filtros dinámicos
+        $condiciones = [];
+    
+        if (!empty($busqueda)) {
+            $busqueda = addslashes($busqueda); // Evitar inyección SQL
+            $condiciones[] = "(tbl_usuario.nombre_completo LIKE '%$busqueda%' OR tbl_usuario.numero_cuenta LIKE '%$busqueda%')";
+        }
+    
+        if (!empty($carrera)) {
+            $carrera = addslashes($carrera);
+            $condiciones[] = "tbl_carrera.nombre_carrera = '$carrera'";
+        }
+    
+        if (!empty($condiciones)) {
+            $sql .= " WHERE " . implode(" AND ", $condiciones);
+        }
+    
+        $sql .= " GROUP BY tbl_estudiante.estudiante_id";
+
+        return $this->fetchAll($sql);
+    }
 }
 ?>

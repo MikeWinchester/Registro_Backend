@@ -184,5 +184,23 @@ class EstudianteController extends BaseController{
             echo json_encode(['error' => "No se pudo completa la accion"]);
         }
     }
+
+    public function getAll() {
+        // Obtenemos parámetros desde la URL
+        $busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : null;
+        $carrera = isset($_GET['carrera']) ? $_GET['carrera'] : null;
+
+    
+        // Ejecutamos la consulta
+        $result = $this->estudiante->obtenerHistorialEstudiante($busqueda, $carrera);
+    
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "Historial encontrado", "data" => $result]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "No se encontraron resultados."]);
+        }
+    }
 }
 ?>

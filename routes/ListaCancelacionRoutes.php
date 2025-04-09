@@ -6,5 +6,8 @@ function registerCancelacionRoutes($router) {
     
     $router->get("/can/estu", [$cancelacionController, "getCanByEstudiante"]);
     $router->post("/can/estu", [$cancelacionController, "createCancelacion"]);
+    $router->get("/can/solicitud", [$cancelacionController, "getSolicitudCancel"]);
+    $router->post("/can/responder", [$cancelacionController, "responderSolicitud"]);
+
 }
 ?>
