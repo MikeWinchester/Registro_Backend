@@ -45,7 +45,7 @@ class ClaseController extends BaseController{
 
         $carID = $this->carrera->getCarrera($est)['carrera'];
 
-        $result = $this->clase->obtenerClasesPendientes($est, $this->getPeriodo(), $depID, $carID);
+        $result = $this->clase->obtenerClasesPendientes([$est, $this->getPeriodo(), $est, $est,$this->getPeriodo(), $depID, $carID]);
 
         if ($result) {
             http_response_code(200);

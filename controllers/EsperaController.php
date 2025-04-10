@@ -63,9 +63,7 @@ class EsperaController extends BaseController {
 
     public function getEstEsperaDep(){
         $header = getallheaders();
-
-
-
+        
         $departamentoid = $header['departamentoid'];
 
         $result = $this->espera->obtenerEsperaByDep($departamentoid);
