@@ -14,6 +14,7 @@ function registerSeccionRoutes($router) {
     $router->get( "/secciones/count", [$seccionController, "getSeccionCount"]);
     $router->get( "/secciones/periodo", [$seccionController, "getPeriodoAca"]);
     $router->get( "/secciones/horario", [$seccionController, "getHorarioDispo"]);
+    $router->get( "/secciones/dep/all", [$seccionController, "getSeccionesOutParams"]);
     $router->post(  "/secciones/create", [$seccionController, "createSeccion"], ['Jefe']);
     $router->put( "/secciones/update", [$seccionController, "updateSeccion"], ['Jefe']);
     $router->delete( "/secciones/delete", [$seccionController, "deleteSeccion"], ['Jefe']);

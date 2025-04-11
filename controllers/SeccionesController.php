@@ -36,7 +36,6 @@ class SeccionesController extends BaseController{
 
     public function getSecciones(){
 
-
         $header = getallheaders();
         
         $docenteid = $header['docenteid'];
