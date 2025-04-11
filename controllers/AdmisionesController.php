@@ -1,8 +1,9 @@
 <?php
 
 require_once __DIR__ . "/../models/Admisiones.php";
+require_once __DIR__ . "/BaseController.php";
 
-class AdmisionesController {
+class AdmisionesController extends BaseController{
     private $admision;
 
     public function __construct() {
@@ -72,7 +73,7 @@ class AdmisionesController {
 
         if ($newAdmissionId) {
             // Recuperar la admisión recién creada usando el ID
-            $newAdmission = $this->admision->getOne($newAdmissionId);
+            $newAdmission = $this->admision->fetcOne($newAdmissionId);
             
             // Responder con el registro recién creado
             http_response_code(200);

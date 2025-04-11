@@ -247,6 +247,22 @@ CREATE TABLE tbl_info_matricula (
     FOREIGN KEY (estado_matricula_id) REFERENCES tbl_estado_matricula(estado_matricula_id)
 );
 
+CREATE TABLE tbl_info_notas (
+    inicio DATE,
+    final DATE,
+    PRIMARY KEY (inicio, final),
+    estado_matricula_id TINYINT UNSIGNED NOT NULL,
+    FOREIGN KEY (estado_matricula_id) REFERENCES tbl_estado_matricula(estado_matricula_id)
+);
+
+CREATE TABLE tbl_info_add_can (
+    inicio DATE,
+    final DATE,
+    PRIMARY KEY (inicio, final),
+    estado_matricula_id TINYINT UNSIGNED NOT NULL,
+    FOREIGN KEY (estado_matricula_id) REFERENCES tbl_estado_matricula(estado_matricula_id)
+);
+
 CREATE TABLE tbl_registrar_notas(
     inicio DATE,
     final DATE,
@@ -821,7 +837,13 @@ insert into tbl_estado_matricula(estado_matricula) values
 ('Inactivo');
 
 insert into tbl_info_matricula(inicio, final, estado_matricula_id) values
-('2025-04-08', '2025-04-11', 1);
+('2025-04-08', '2025-04-14', 1);
+
+insert into tbl_info_notas(inicio, final, estado_matricula_id) values
+('2025-06-10', '2025-06-15', 1);
+
+insert into tbl_info_add_can(inicio, final, estado_matricula_id) values
+('2025-04-14', '2025-04-21', 1);
 
 insert into tbl_matricula(estudiante_id, seccion_id, fechaInscripcion) values
 (1,1,'2024-10-03'),

@@ -226,48 +226,75 @@ class MatriculaController extends BaseController{
     }
 
     public function permitirMatriculaEstu() {
-        $header = getallheaders();
-        $estudianteId = $header['estudianteid'] ?? null;
+        date_default_timezone_set('America/Tegucigalpa');
     
+        $header = getallheaders();
+
+        $estudianteId = $header['id'];
+
         $rango = $this->matricula->obtenerFechaMatricula();
     
-        if (!$rango) {
-            http_response_code(404);
-            echo json_encode(["error" => "No hay rango de matrícula definido"]);
-            return;
-        }
-    
-        $inicio = new DateTime($rango[0]['inicio']);
-        $final = new DateTime($rango[0]['final']);
+        $inicio = new DateTime($rango['inicio']);
+        $final = new DateTime($rango['final']);
         $hoy = new DateTime();
     
         if ($hoy < $inicio || $hoy > $final) {
-            http_response_code(404);
-            echo json_encode(["error" => "Fuera del horario de matrícula"]);
-            return;
+            $this->validateAddCan($hoy);
+        }else{
+            $this->validateMatricula($inicio, $final, $hoy, $estudianteId);
         }
     
-        $diasTotales = $inicio->diff($final)->days + 1;
-        $diasTranscurridos = $inicio->diff($hoy)->days;
-    
-        $promedios = [85, 80, 75, 70, 65, 60, 0];
-        $promediosDistribuidos = array_slice($promedios, 0, $diasTotales);
-        $promedioRequerido = $promediosDistribuidos[$diasTranscurridos];
-    
-        $indice = $this->getIndiceGlobal($estudianteId);
-    
-        if (is_null($indice)){
-            http_response_code(200);
-            echo json_encode(["message" => "Primer ingreso: dentro del horario de matrícula"]);
-            return;
-        }
+        
+    }
 
-        if ($indice >= $promedioRequerido) {
+    private function validateMatricula($inicio, $final, $hoy, $estudianteId){
+        $diasTotales = $inicio->diff($final)->days + 1;
+            $diasTranscurridos = $inicio->diff($hoy)->days;
+        
+            $promedios = [85, 83, 75, 70, 65];
+            $promediosDistribuidos = array_slice($promedios, 0, $diasTotales);
+            $promedioRequerido = $promediosDistribuidos[$diasTranscurridos];
+            if($diasTranscurridos > 0){
+                $promedioSuperior = $promediosDistribuidos[$diasTranscurridos-1];
+            }else{
+                $promedioSuperior = 100;
+            }
+        
+            $indice = $this->getIndiceGlobal($estudianteId);
+        
+            if (is_null($indice)){
+                http_response_code(200);
+                echo json_encode(["message" => "Primer ingreso: dentro del horario de matrícula", 'validate' => true]);
+                return;
+            }
+
+            if($hoy == $final){
+                if ($indice <= $promedioRequerido) {
+                    http_response_code(200);
+                    echo json_encode(["message" => "Índice válido: dentro del horario de matrícula", 'validate' => true]);
+                } 
+            }else{
+                if ($indice >= $promedioRequerido && $indice <= $promedioSuperior) {
+                    http_response_code(200);
+                    echo json_encode(["message" => "Índice válido: dentro del horario de matrícula", 'validate' => true]);
+                } else {
+                    http_response_code(403);
+                    echo json_encode(["error" => "Se requiere mínimo de {$promedioRequerido} para este día.", "validate" => false]);
+                }
+            }
+    }
+
+    private function validateAddCan($hoy){
+        $rango = $this->matricula->obtenerFechaAddCan();
+    
+        $inicio_add = new DateTime($rango['inicio']);
+        $final_add = new DateTime($rango['final']);
+        if($hoy < $inicio_add || $hoy > $final_add){
+            http_response_code(404);
+            echo json_encode(["error" => "Fuera del horario de adiccion y cancelacion", 'validate' => false]);
+        }else{
             http_response_code(200);
-            echo json_encode(["message" => "Índice válido: dentro del horario de matrícula"]);
-        } else {
-            http_response_code(403);
-            echo json_encode(["error" => "Se requiere mínimo de {$promedioRequerido} para este día."]);
+            echo json_encode(["message" => "Dentro del horario de adiccion y cancelacion", 'validate' => true]);
         }
     }
     

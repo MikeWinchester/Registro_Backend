@@ -49,5 +49,11 @@ class Notas extends BaseModel {
 
     return $this->fetchAll($sql, $params);
     }
+
+    public function obtenerFechaNotas(){
+        $sql = "SELECT inicio, final FROM tbl_info_notas WHERE estado_matricula_id = 1 LIMIT 1";
+
+        return $this->fetchOne($sql);
+    }
 }
 ?>

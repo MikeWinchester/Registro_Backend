@@ -22,15 +22,12 @@ class Matricula extends BaseModel {
 
     public function obtenerEstudiantesByNotas($seccionid){
         $sql = "SELECT est.estudiante_id, usr.nombre_completo, usr.numero_cuenta, est.correo
-        FROM tbl_matricula as mat
-        left join tbl_estudiante as est
-        on mat.estudiante_id = est.estudiante_id
-        left join tbl_usuario as usr
-        on est.usuario_id = usr.usuario_id
-        LEFT JOIN tbl_notas as nt
-        on mat.estudiante_id = nt.estudiante_id
-        where mat.seccion_id = ?
-        AND nt.estudiante_id is null";
+                FROM tbl_matricula AS mat
+                INNER JOIN tbl_estudiante AS est ON mat.estudiante_id = est.estudiante_id
+                INNER JOIN tbl_usuario AS usr ON est.usuario_id = usr.usuario_id
+                LEFT JOIN tbl_notas AS nt ON mat.estudiante_id = nt.estudiante_id AND nt.seccion_id = mat.seccion_id
+                WHERE mat.seccion_id = ?
+                AND nt.nota_id IS NULL";
 
         return $this->fetchAll($sql, $seccionid);
     }
@@ -47,20 +44,41 @@ class Matricula extends BaseModel {
     }
 
     public function cumpleHorario($data){
-        $sql = "WITH tbl_horario AS (
-            SELECT horario, dias
-            FROM tbl_seccion 
-            WHERE seccion_id = ?
-        )
-        SELECT COUNT(1) AS existe
-        FROM tbl_matricula AS mat
-        INNER JOIN tbl_seccion AS sec
-            ON mat.seccion_id = sec.seccion_id
-        INNER JOIN tbl_horario AS hr
-            ON sec.horario = hr.horario 
-            AND sec.dias LIKE CONCAT('%', hr.dias, '%') 
-        WHERE mat.estudiante_id = ?
-            AND sec.periodo_academico = ?";
+        $sql = "WITH horario_nueva_seccion AS (
+                SELECT 
+                    seccion_id,
+                    SUBSTRING_INDEX(horario, '-', 1) AS hora_inicio,
+                    SUBSTRING_INDEX(horario, '-', -1) AS hora_fin,
+                    dias
+                FROM tbl_seccion
+                WHERE seccion_id = ?
+                ),
+                horarios_matriculados AS (
+                    SELECT
+                        sec.seccion_id,
+                        SUBSTRING_INDEX(sec.horario, '-', 1) AS hora_inicio,
+                        SUBSTRING_INDEX(sec.horario, '-', -1) AS hora_fin,
+                        sec.dias
+                    FROM tbl_matricula AS mat
+                    INNER JOIN tbl_seccion AS sec ON mat.seccion_id = sec.seccion_id
+                    WHERE mat.estudiante_id = ?
+                    AND sec.periodo_academico = ?
+                )
+                SELECT COUNT(1) AS existe
+                FROM horario_nueva_seccion AS nueva
+                JOIN horarios_matriculados AS existente
+                ON (
+                    
+                    (
+                        nueva.dias LIKE CONCAT('%', SUBSTRING_INDEX(existente.dias, ',', 1), '%') OR
+                        nueva.dias LIKE CONCAT('%', SUBSTRING_INDEX(existente.dias, ',', -1), '%') OR
+                        nueva.dias LIKE CONCAT('%', TRIM(existente.dias), '%')
+                    )
+                    
+                    AND (
+                        (nueva.hora_inicio < existente.hora_fin AND nueva.hora_fin > existente.hora_inicio)
+                    )
+                )";
 
         return $this->fetchOne($sql, $data);
     }
@@ -149,9 +167,15 @@ class Matricula extends BaseModel {
     }
 
     public function obtenerFechaMatricula(){
-        $sql = "SELECT * FROM tbl_info_matricula WHERE estado_matricula_id = 1 LIMIT 1";
+        $sql = "SELECT inicio, final FROM tbl_info_matricula WHERE estado_matricula_id = 1 LIMIT 1";
 
-        return $this->fetchAll($sql);
+        return $this->fetchOne($sql);
+    }
+
+    public function obtenerFechaAddCan(){
+        $sql = "SELECT inicio, final FROM tbl_info_add_can WHERE estado_matricula_id = 1 LIMIT 1";
+
+        return $this->fetchOne($sql);
     }
 
     public function obtenerIndiceGlobal($param){
@@ -159,7 +183,9 @@ class Matricula extends BaseModel {
         FROM tbl_notas AS nt
         INNER JOIN tbl_seccion AS sc ON nt.seccion_id = sc.seccion_id
         INNER JOIN tbl_clase AS cl ON sc.clase_id = cl.clase_id
-        WHERE nt.estudiante_id = ?";
+        INNER JOIN tbl_estudiante AS et ON nt.estudiante_id = et.estudiante_id
+        INNER JOIN tbl_usuario AS us ON et.usuario_id = us.usuario_id
+        WHERE us.id = ?";
 
         return $this->fetchOne($sql, $param);
     }

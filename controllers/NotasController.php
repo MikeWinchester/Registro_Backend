@@ -61,7 +61,26 @@ class NotasController extends BaseController{
         }
     }
     
+    public function permitirNotas() {
+        date_default_timezone_set('America/Tegucigalpa');
     
+        $rango = $this->notas->obtenerFechaNotas();
+    
+        $inicio = new DateTime($rango['inicio']);
+        $final = new DateTime($rango['final']);
+        $hoy = new DateTime();
+    
+        if ($hoy <= $inicio || $hoy >= $final) {
+            http_response_code(404);
+            echo json_encode(["error" => "Fuera del horario de registro de notas", 'validate' => false]);
+            return;
+        }else{
+            http_response_code(200);
+            echo json_encode(["message" => "Fecha valida: dentro del horario de registro", 'validate' => true]);
+        }
+            
+        
+    }
 
 }
 
