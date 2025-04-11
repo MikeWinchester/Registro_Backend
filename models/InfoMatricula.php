@@ -9,7 +9,7 @@ class InfoMatricula extends BaseModel {
     }
 
     public function desactivarMatricula(){
-        $sql = "UPDATE tbl_info_matricula SET estado_matricula_id = 0";
+        $sql = "UPDATE tbl_info_matricula SET estado_matricula_id = 2";
 
         $this->executeWrite($sql);
     }
@@ -19,6 +19,7 @@ class InfoMatricula extends BaseModel {
 
         return $this->fetchOne($sql);
     }
+
 }
 
 ?>

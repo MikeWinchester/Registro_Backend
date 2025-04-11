@@ -1,14 +1,14 @@
 <?php
-require_once __DIR__ . "/../models/InfoMatricula.php";
+require_once __DIR__ . "/../models/InfoNotas.php";
 require_once __DIR__ . "/BaseController.php";
 
-class InfoMatriculaController extends BaseController{
+class InfoNotasControllerr extends BaseController{
     private $info;
     
 
     public function __construct() {
         parent::__construct();
-        $this->info = new InfoMatricula();
+        $this->info = new InfoNotas();
     }
 
     public function setFecha(){
@@ -17,7 +17,7 @@ class InfoMatriculaController extends BaseController{
     
         $data = json_decode(file_get_contents("php://input"), true);
 
-        $this->info->desactivarMatricula();
+        $this->info->desactivarNotas();
 
         $data['estado_matricula_id'] = 1;
 
@@ -39,7 +39,7 @@ class InfoMatriculaController extends BaseController{
     
         if (!$rango) {
             http_response_code(404);
-            echo json_encode(["error" => "No hay horario de matrícula disponible"]);
+            echo json_encode(["error" => "No hay horario disponible"]);
             return;
         }
     

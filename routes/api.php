@@ -26,6 +26,8 @@ require_once __DIR__. '/InfoMatriculaRoutes.php';
 require_once __DIR__. '/AmisionesRoutes.php';
 require_once __DIR__. '/CarreraRoutes.php';
 require_once __DIR__. '/CentroRoutes.php';
+require_once __DIR__. '/InfoNotasRoutes.php';
+require_once __DIR__. '/InfoAddCanRoutes.php';
 
 function registerAllRoutes($router) {
     registerAuthRoutes($router);
@@ -55,4 +57,6 @@ function registerAllRoutes($router) {
     registerAdmisionesRoutes($router);
     registerCarreraRoutes($router);
     registerCentroRoutes($router);
+    registerInfoNotasRoutes($router);
+    registerInfoAddCanRoutes($router);
 }
