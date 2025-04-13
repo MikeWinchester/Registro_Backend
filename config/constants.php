@@ -2,21 +2,21 @@
 
 require_once __DIR__ . '/config.php';
 // Configuración de la base de datos
-define('DB_HOST', 'localhost');
-define('DB_USER', 'admin_registro');
-define('DB_PASS', '1234');
-define('DB_NAME', 'bd_registro');
+define('DB_HOST', getenv('DB_HOST'));
+define('DB_USER', getenv('DB_USER'));
+define('DB_PASS', getenv('DB_PASS'));
+define('DB_NAME', getenv('DB_NAME'));
 
 // Configuración de CORS
-define('ALLOWED_ORIGINS', ['http://localhost:8000', 'http://127.0.0.1:8000']);
+define('ALLOWED_ORIGINS', explode(',', getenv('ALLOWED_ORIGINS')));
 
 // Configuración de JWT
-define('JWT_SECRET', 'A93D1C992824DAF6D71E5C1AE345A');
-define('JWT_EXPIRE', 3600); // 1 hora en segundos
+define('JWT_SECRET', getenv('JWT_SECRET'));
+define('JWT_EXPIRE', (int)getenv('JWT_EXPIRE')); // 1 hora en segundos
 
 // Configuración de paginación
-define('DEFAULT_PER_PAGE', 10);
-define('MAX_PER_PAGE', 100);
+define('DEFAULT_PER_PAGE', (int)getenv('DEFAULT_PER_PAGE')); // 10 por defecto
+define('MAX_PER_PAGE', (int)getenv('MAX_PER_PAGE')); // 100 máximo
 
 // Configuración de la aplicación
-define('APP_DEBUG', true);
+define('APP_DEBUG', filter_var(getenv('APP_DEBUG'), FILTER_VALIDATE_BOOLEAN));
