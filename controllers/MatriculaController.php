@@ -139,8 +139,6 @@ class MatriculaController extends BaseController{
         $est = $header['estudianteid'];
         $cla = $header['claseid'];
 
-        
-
         $result = $this->matricula->comprobarRequisitos([$est, $cla, $cla]);
 
         if ($result) {
@@ -291,7 +289,7 @@ class MatriculaController extends BaseController{
         $final_add = new DateTime($rango['final']);
         if($hoy < $inicio_add || $hoy > $final_add){
             http_response_code(404);
-            echo json_encode(["error" => "Fuera del horario de adiccion y cancelacion", 'validate' => false]);
+            echo json_encode(["error" => "Fuera del horario de adiccion y cancelacion", 'validate' => false, 'inicio fin' => [$inicio_add, $final_add] ]);
         }else{
             http_response_code(200);
             echo json_encode(["message" => "Dentro del horario de adiccion y cancelacion", 'validate' => true]);

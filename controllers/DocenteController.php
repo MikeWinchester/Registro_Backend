@@ -174,7 +174,7 @@ class DocenteController extends BaseController{
     }
 
 
-    public function uploadVideo() {
+    public function uploadData() {
         header('Content-Type: application/json');
         $input = json_decode(file_get_contents("php://input"), true);
     
@@ -234,6 +234,21 @@ class DocenteController extends BaseController{
             http_response_code(400);
             echo json_encode(['error' => 'No se pudo guardar la imagen']);
             return false;
+        }
+    }
+
+    public function uploadVideo(){
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        $value = [$data['seccion_id'], $data['titulo'], $data['video'], $data['descripcion']];
+        $result = $this->docente->uploadVideoSql($value);
+
+        if($result){
+            http_response_code(200);
+            echo json_encode(['message' => 'Se ha guardado el video']);
+        }else{
+            http_response_code(400);
+            echo json_encode(['error' => 'Ha ocurrido un error']);
         }
     }
 

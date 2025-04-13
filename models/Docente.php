@@ -132,6 +132,12 @@ class Docente extends BaseModel {
     
         return $this->executeWrite($sql, $values);
     }
+
+    public function uploadVideoSql($param){
+        $sql = 'INSERT INTO tbl_recurso(seccion_id, titulo, video, descripcion) VALUES (?,?,?,?)';
+
+        return $this->executeWrite($sql, $param);
+    }
     
 }
 

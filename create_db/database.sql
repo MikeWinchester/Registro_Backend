@@ -228,9 +228,11 @@ CREATE TABLE tbl_seccion (
 );
 
 CREATE TABLE tbl_recurso(
-        seccion_id SMALLINT UNSIGNED PRIMARY KEY,
-        imagen_portada VARCHAR(500),
-        video VARCHAR(500),
+        recuro SMALLINT UNSIGNED PRIMARY KEY,
+        seccion_id SMALLINT UNSIGNED,
+        titulo VARCHAR(50),
+        video VARCHAR(200),
+        descripcion VARCHAR(500),
         FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
 );
 

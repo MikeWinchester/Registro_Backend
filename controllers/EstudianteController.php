@@ -56,8 +56,8 @@ class EstudianteController extends BaseController{
         
         $result = $this->estudiante->obtenerEstudianteByCuenta($estudiante);
 
-        $result[0]['indice_global'] = $this->getIndiceGlobal($estudiante);
-        $result[0]['indice_periodo'] = $this->getIndicePeriodo($estudiante);
+        $result['indice_global'] = $this->getIndiceGlobal($estudiante);
+        $result['indice_periodo'] = $this->getIndicePeriodo($estudiante);
 
         if ($result) {
             http_response_code(200);
@@ -74,7 +74,7 @@ class EstudianteController extends BaseController{
         $result = $this->estudiante->obtenerIndiceGlobal($numero_cuenta);
 
         if($result){
-            return $result[0]['indice_global'];
+            return $result['indice_global'];
         }
 
         return 0;
@@ -85,14 +85,14 @@ class EstudianteController extends BaseController{
 
         $result = $this->estudiante->obtenerIndicePeriodo($numero_cuenta, $this->getPeriodo());
 
-        if($result[0]['indice_periodo'] != null){
-            return $result[0]['indice_periodo'];
+        if($result['indice_periodo'] != null){
+            return $result['indice_periodo'];
         }
 
         $result = $this->estudiante->obtenerIndicePeriodo($numero_cuenta, $this->getPeriodoPasado());
 
-        if($result[0]['indice_periodo'] != null){
-            return $result[0]['indice_periodo'];
+        if($result['indice_periodo'] != null){
+            return $result['indice_periodo'];
         }
 
         return 0;

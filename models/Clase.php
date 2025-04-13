@@ -54,7 +54,7 @@ class Clase extends BaseModel {
     }
 
     public function obtenerClasesAsignadasDoc($docenteid, $periodo){
-        $sql = "SELECT DISTINCT cl.clase_id, cl.nombre, cl.codigo, sc.periodo_academico
+        $sql = "SELECT DISTINCT cl.clase_id, cl.nombre, cl.codigo, sc.periodo_academico, sc.horario
         FROM tbl_clase as cl
         INNER JOIN tbl_seccion as sc
         ON cl.clase_id = sc.clase_id
