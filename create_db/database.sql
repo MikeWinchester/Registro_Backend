@@ -240,7 +240,7 @@ CREATE TABLE tbl_seccion (
 );
 
 CREATE TABLE tbl_recurso(
-        recuro SMALLINT UNSIGNED PRIMARY KEY,
+        recurso_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
         seccion_id SMALLINT UNSIGNED,
         titulo VARCHAR(50),
         video VARCHAR(200),
