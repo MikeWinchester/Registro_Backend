@@ -620,12 +620,12 @@ INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (27, 2);
 INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (28, 2);
 INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (29, 2);
 INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (30, 2);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (1, 3);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (4, 3);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (6, 3);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (8, 3);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (10, 3);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (11, 3);
+INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (16, 3);
+INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (19, 3);
+INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (21, 3);
+INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (23, 3);
+INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (25, 3);
+INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (26, 3);
 
 INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Ciencias Jurídicas");
 INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Ciencias Sociales");
