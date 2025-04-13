@@ -386,13 +386,13 @@ CREATE TABLE tbl_solicitud_amistad(
 
 CREATE TABLE tbl_libro (
     libro_id INT AUTO_INCREMENT PRIMARY KEY,
+    id CHAR(36) NOT NULL,
     titulo VARCHAR(255) NOT NULL,
     descripcion TEXT,
     portada VARCHAR(255),
-    ruta_archivo VARCHAR(255) NOT NULL,
+    ruta_archivo VARCHAR(255),
     creado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    actualizado TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    id CHAR(36) NOT NULL DEFAULT (UUID())    
+    actualizado TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- Tabla de autores
@@ -475,6 +475,29 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER before_insert_libro
+BEFORE INSERT ON tbl_libro
+FOR EACH ROW
+BEGIN
+    IF NEW.id IS NULL THEN
+        SET NEW.id = UUID();
+    END IF;
+
+    IF NEW.portada IS NULL THEN
+        SET NEW.portada = CONCAT('/books/', NEW.id, '/portada.jpg');
+    END IF;
+
+    IF NEW.ruta_archivo IS NULL THEN
+        SET NEW.ruta_archivo = CONCAT('/books/', NEW.id, '/documento.pdf');
+    END IF;
+END;
+$$
+
+DELIMITER ;
+
 
 INSERT INTO tbl_categoria (nombre) VALUES 
 ('Programación'),
@@ -605,8 +628,8 @@ INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (1, 1);
 INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (1, 5);
 INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (2, 2);
 INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (2, 5);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (3, 1);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (4, 1);
+INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (3, 3);
+INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (4, 4);
 INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (5, 1);
 INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (6, 1);
 INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (8, 1);
