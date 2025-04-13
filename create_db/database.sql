@@ -532,17 +532,17 @@ INSERT INTO tbl_autor (nombre, bio) VALUES
 ('Dr. Alan Turing', 'Pionero en ciencias de la computación'),
 ('Dr. John McCarthy', 'Creador del lenguaje LISP y padre de la IA');
 
-INSERT INTO tbl_libro (titulo, descripcion, portada, ruta_archivo) VALUES 
-('Introducción a la Programación', 'Fundamentos de programación para principiantes', 'intro_programacion.jpg', 'libros/intro_programacion.pdf'),
-('Historia del Arte Moderno', 'Evolución del arte desde 1900 hasta la actualidad', 'arte_moderno.jpg', 'libros/arte_moderno.pdf'),
-('Matemáticas Avanzadas', 'Conceptos avanzados de álgebra y cálculo', 'matematicas_avanzadas.jpg', 'libros/matematicas_avanzadas.pdf'),
-('Física Cuántica', 'Principios fundamentales de la mecánica cuántica', 'fisica_cuantica.jpg', 'libros/fisica_cuantica.pdf'),
-('Literatura Clásica', 'Análisis de las obras maestras de la literatura universal', 'literatura_clasica.jpg', 'libros/literatura_clasica.pdf'),
-('Inteligencia Artificial', 'Fundamentos y aplicaciones modernas de IA', 'inteligencia_artificial.jpg', 'libros/inteligencia_artificial.pdf'),
-('Química Orgánica', 'Compuestos orgánicos y sus reacciones', 'quimica_organica.jpg', 'libros/quimica_organica.pdf'),
-('Derecho Constitucional', 'Principios y jurisprudencia constitucional', 'derecho_constitucional.jpg', 'libros/derecho_constitucional.pdf'),
-('Psicología Cognitiva', 'Procesos mentales y modelos cognitivos', 'psicologia_cognitiva.jpg', 'libros/psicologia_cognitiva.pdf'),
-('Economía Internacional', 'Sistemas económicos globales y comercio', 'economia_internacional.jpg', 'libros/economia_internacional.pdf');
+INSERT INTO tbl_libro (titulo, descripcion) VALUES 
+('Introducción a la Programación', 'Fundamentos de programación para principiantes'),
+('Historia del Arte Moderno', 'Evolución del arte desde 1900 hasta la actualidad'),
+('Matemáticas Avanzadas', 'Conceptos avanzados de álgebra y cálculo'),
+('Física Cuántica', 'Principios fundamentales de la mecánica cuántica'),
+('Literatura Clásica', 'Análisis de las obras maestras de la literatura universal'),
+('Inteligencia Artificial', 'Fundamentos y aplicaciones modernas de IA'),
+('Química Orgánica', 'Compuestos orgánicos y sus reacciones'),
+('Derecho Constitucional', 'Principios y jurisprudencia constitucional'),
+('Psicología Cognitiva', 'Procesos mentales y modelos cognitivos'),
+('Economía Internacional', 'Sistemas económicos globales y comercio');
 
 INSERT INTO tbl_libro_x_autor (libro_id, autor_id) VALUES 
 (1, 1), (1, 2),    -- Introducción a la Programación: Juan Pérez, María Gómez

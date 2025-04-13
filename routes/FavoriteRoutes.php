@@ -7,4 +7,3 @@ function registerFavoriteRoutes($router) {
     $router->get('/favorites', [$favoriteController, 'listarFavoritos'], ['Estudiante', 'Docente']);
     $router->post('/favorites/toggle', [$favoriteController, 'toggleFavorito'], ['Estudiante', 'Docente']);
 }
-?>

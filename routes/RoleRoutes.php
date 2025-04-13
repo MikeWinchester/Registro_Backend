@@ -10,4 +10,3 @@ function registerRoleRoutes($router) {
     $router->put('/roles/{id}', [$roleController, 'update'], ['Administrador']);
     $router->delete('/roles/{id}', [$roleController, 'delete'], ['Administrador']);
 }
-?>

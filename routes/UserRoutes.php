@@ -4,7 +4,7 @@ require_once __DIR__ . '/../controllers/UserController.php';
 function registerUserRoutes($router) {
     $userController = new UserController();
     
-    $router->get('/users', [$userController, 'getAll']);
+    $router->get('/users', [$userController, 'getAll'], ['Administraador']);
     $router->get('/users/{id}', [$userController, 'getById'], ['Administrador']);
     $router->post('/users', [$userController, 'create'], ['Administrador']);
     $router->put('/users/{id}', [$userController, 'update'], ['Administrador']);
@@ -14,4 +14,3 @@ function registerUserRoutes($router) {
     $router->post('/users/{id}/roles', [$userController, 'assignRole'], ['Administrador']);
     $router->delete('/users/{id}/roles/{roleId}', [$userController, 'removeRole'], ['Administrador']);
 }
-?>

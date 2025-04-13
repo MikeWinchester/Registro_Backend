@@ -112,7 +112,6 @@ class BookController extends BaseController {
         
         header('Content-Type: ' . $mimeType);
         
-        // Para PDFs: mostrar en el navegador (no descargar)
         if ($extension === 'pdf') {
             header('Content-Disposition: inline; filename="'.basename($path).'"');
         }

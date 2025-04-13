@@ -73,7 +73,7 @@ class AdmisionesController extends BaseController{
 
         if ($newAdmissionId) {
             // Recuperar la admisión recién creada usando el ID
-            $newAdmission = $this->admision->fetcOne($newAdmissionId);
+            $newAdmission = $this->admision->fetchOne($newAdmissionId);
             
             // Responder con el registro recién creado
             http_response_code(200);

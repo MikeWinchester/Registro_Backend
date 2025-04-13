@@ -6,4 +6,3 @@ function registerTagRoutes($router) {
     
     $router->get('/tags', [$tagController, 'getAll']);
 }
-?>

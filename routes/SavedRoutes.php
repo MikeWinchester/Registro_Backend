@@ -7,4 +7,3 @@ function registerSavedRoutes($router) {
     $router->get('/saved', [$savedController, 'listarGuardados'], ['Estudiante', 'Docente']);
     $router->post('/saved/toggle', [$savedController, 'toggleGuardado'], ['Estudiante', 'Docente']);
 }
-?>
