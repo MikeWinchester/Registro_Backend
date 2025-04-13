@@ -132,10 +132,21 @@ CREATE TABLE tbl_estudiante (
     carrera_id TINYINT UNSIGNED NOT NULL,
     centro_regional_id TINYINT UNSIGNED NOT NULL,
     correo VARCHAR(100) UNIQUE NOT NULL,
+    descripcion VARCHAR(200),
     id CHAR(36) NOT NULL DEFAULT (UUID()),    
     FOREIGN KEY (usuario_id) REFERENCES tbl_usuario(usuario_id),
     FOREIGN KEY (carrera_id) REFERENCES tbl_carrera(carrera_id),
     FOREIGN KEY (centro_regional_id) REFERENCES tbl_centro_regional(centro_regional_id)
+);
+
+-- Tabla recurso estudiante
+CREATE TABLE tbl_recurso_estudiante (
+    recurso_estudiante SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    estudiante_id SMALLINT UNSIGNED,
+    descripcion varchar(100),
+    fotografia varchar(200),
+    id CHAR(36) NOT NULL DEFAULT (UUID()),   
+    FOREIGN KEY (estudiante_id) REFERENCES tbl_estudiante(estudiante_id)
 );
 
 -- Tabla Docente
