@@ -10,4 +10,17 @@ class Tag extends BaseModel {
         $query = "SELECT * FROM tbl_categoria ORDER BY nombre";
         return $this->fetchAll($query);
     }
+
+    public function crearSiNoExiste($nombre) {
+        $categoriaExistente = $this->fetchOne(
+            "SELECT * FROM {$this->table} WHERE nombre = ?", 
+            [$nombre]
+        );
+        
+        if ($categoriaExistente) {
+            return $categoriaExistente['categoria_id'];
+        }
+        
+        return $this->create(['nombre' => $nombre]);
+    }
 }

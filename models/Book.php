@@ -90,4 +90,112 @@ class Book extends BaseModel {
         $result = $this->fetchOne($query, $params);
         return $result['total'] ?? 0;
     }
+
+    public function crearLibroConArchivos($datosLibro, $autores, $categorias) {
+        $this->connection->begin_transaction();
+        
+        try {
+            // Insertar libro
+            $libroId = $this->create($datosLibro);
+            
+            // Asociar autores
+            $this->asociarAutores($libroId, $autores);
+            
+            
+            // Asociar categorías
+            $this->asociarCategorias($libroId, $categorias);
+            
+            $this->connection->commit();
+            return $libroId;
+
+            
+        } catch (Exception $e) {
+            $this->connection->rollback();
+            throw $e;
+        }
+    }
+
+    public function actualizarLibroConArchivos($libroId, $datosLibro, $autores, $categorias) {
+        $this->connection->begin_transaction();
+        
+        try {
+            // Actualizar libro
+            $this->update($libroId, $datosLibro);
+
+            $book = $this->getById($libroId);
+            
+            // Actualizar autores
+            $this->actualizarAutores($book['libro_id'], $autores);
+            
+            // Actualizar categorías
+            $this->actualizarCategorias($book['libro_id'], $categorias);
+            
+            $this->connection->commit();
+            return true;
+            
+        } catch (Exception $e) {
+            $this->connection->rollback();
+            throw $e;
+        }
+    }
+
+    private function asociarAutores($libroId, $autores) {
+        if (empty($autores)) return;
+        
+        $placeholders = implode(',', array_fill(0, count($autores), '(?,?)'));
+        $values = [];
+        foreach ($autores as $autorId) {
+            $values[] = $libroId;
+            $values[] = $autorId;
+        }
+        
+        $query = "INSERT IGNORE INTO tbl_libro_x_autor (libro_id, autor_id) VALUES {$placeholders}";
+        $this->executeWrite($query, $values);
+    }
+
+    private function actualizarAutores($libroId, $autores) {
+        // Eliminar relaciones existentes
+        $this->executeWrite(
+            "DELETE FROM tbl_libro_x_autor WHERE libro_id = ?", 
+            [$libroId]
+        );
+        
+        // Crear nuevas relaciones
+        $this->asociarAutores($libroId, $autores);
+    }
+
+    private function asociarCategorias($libroId, $categorias) {
+        if (empty($categorias)) return;
+        
+        $placeholders = implode(',', array_fill(0, count($categorias), '(?,?)'));
+        $values = [];
+        foreach ($categorias as $categoriaId) {
+            $values[] = $libroId;
+            $values[] = $categoriaId;
+        }
+        
+        $query = "INSERT IGNORE INTO tbl_libro_x_categorias (libro_id, categoria_id) VALUES {$placeholders}";
+        $this->executeWrite($query, $values);
+    }
+
+    private function actualizarCategorias($libroId, $categorias) {
+        // Eliminar relaciones existentes
+        $this->executeWrite(
+            "DELETE FROM tbl_libro_x_categorias WHERE libro_id = ?", 
+            [$libroId]
+        );
+        
+        // Crear nuevas relaciones
+        $this->asociarCategorias($libroId, $categorias);
+    }
+
+    public function buscarAutorPorNombre($nombre) {
+        $query = "SELECT * FROM tbl_autor WHERE nombre = ?";
+        return $this->fetchOne($query, [$nombre]);
+    }
+
+    public function buscarCategoriaPorNombre($nombre) {
+        $query = "SELECT * FROM tbl_categoria WHERE nombre = ?";
+        return $this->fetchOne($query, [$nombre]);
+    }
 }

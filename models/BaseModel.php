@@ -88,6 +88,11 @@ abstract class BaseModel {
         return $this->connection->insert_id;
     }
 
+    public function getByPrimaryKey($key): ?array {
+        $query = "SELECT * FROM {$this->table} WHERE {$this->primaryKey} = ?";
+        return $this->fetchOne($query, [$key]);
+    }
+
     public function update($id, array $data): bool {
         $setClause = implode(', ', array_map(fn($col) => "{$col} = ?", array_keys($data)));
         $values = array_values($data);
