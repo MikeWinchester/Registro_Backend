@@ -45,6 +45,8 @@ class DocenteController extends BaseController{
             "usuario_id" => $usuario[0]['usuario_id'],
             "centro_regional_id" => $data["centro_regional_id"],
             "carrera_id" => $data["carrera_id"],
+            "departamento_id" => $data["departamento_id"],
+            "foto_perfil" => null
         ];
     
         // Insertar docente
@@ -170,6 +172,46 @@ class DocenteController extends BaseController{
             echo json_encode(['error' => 'usuario no obtenido']);
         }
     }
+
+
+    public function uploadVideo() {
+        
+        $fotoNombre = $_FILES['foto_perfil']['name'];
+        $fotoTemporal = $_FILES['foto_perfil']['tmp_name'];
+    
+        $ruta = null;
+        if (!empty($fotoNombre)) {
+            $carpetaDestino = "uploads/";
+            if (!is_dir($carpetaDestino)) {
+                mkdir($carpetaDestino, 0755, true);
+            }
+    
+            $nombreFinal = uniqid() . "_" . basename($fotoNombre);
+            $rutaDestino = $carpetaDestino . $nombreFinal;
+    
+            if (move_uploaded_file($fotoTemporal, $rutaDestino)) {
+                $ruta = $rutaDestino; 
+            } else {
+                http_response_code(400);
+                echo json_encode(['error' => 'No se pudo guardar la imagen']);
+                return;
+            }
+        }
+    
+        $data = [
+            'foto_perfil' => $ruta,
+            'descripcion' => $_POST['descripcion'] ?? '',
+            'video_url' => $_POST['video_url'] ?? '',
+            'id_docente' => $_POST['id_docente'] ?? 0
+        ];
+    
+        
+            http_response_code(200);
+            echo json_encode(['message' => "Se han actualizado los datos", 'data' => $data]);
+        
+        
+    }
+    
 
     /**
      * Funcion para obtener el periodo acadmico actual

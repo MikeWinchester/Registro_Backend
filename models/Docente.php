@@ -104,6 +104,33 @@ class Docente extends BaseModel {
 
         return $this->fetchOne($sql, $param);
     }
+
+    public function uploadData($param){
+        $sql = "UPDATE tbl_docente SET ";
+        $conditions = [];
+        $values = [];
+    
+        if (!empty($param['foto_perfil'])) {
+            $conditions[] = "foto_perfil = ?";
+            $values[] = $param['foto_perfil'];
+        }
+    
+        if (!empty($param['descripcion'])) {
+            $conditions[] = "descripcion = ?";
+            $values[] = $param['descripcion'];
+        }
+    
+        if (empty($conditions)) {
+            return false;
+        }
+    
+        $sql .= implode(", ", $conditions);
+        $sql .= " WHERE id_docente = ?";
+        $values[] = $param['id'];
+    
+        return $this->executeWrite($sql, $values);
+    }
+    
 }
 
 

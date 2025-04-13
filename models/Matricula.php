@@ -120,10 +120,10 @@ class Matricula extends BaseModel {
                     WHERE cr.clase_id = ?
                 )
             END AS cumple
-        FROM requisitos r;
+        FROM requisitos r
         ";
 
-        return $this->fetchAll($sql, $param);
+        return $this->fetchOne($sql, $param);
     }
 
     public function obtenerEstudiantesMatriculados($param){
