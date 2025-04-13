@@ -13,9 +13,12 @@ class MensajesController extends BaseController {
 
 
     public function setMensaje(){
-
+        date_default_timezone_set('date_default_timezone_set("America/Tegucigalpa")');
         $data = json_decode(file_get_contents("php://input"), true);
         
+        $data['fecha_envio'] =  date("Y-m-d H:i:s");
+        $data['leido' ] = 0;
+
         $result = $this->mensaje->create($data);
 
         if ($result) {
@@ -34,7 +37,7 @@ class MensajesController extends BaseController {
         $remid = $header['remitenteid'];
         $desid = $header['destinatarioid'];
 
-        $result = $this->mensaje->obtenerMensajes([$remid, $desid, $remid, $desid]);
+        $result = $this->mensaje->obtenerMensajes([$remid, $remid, $desid, $remid, $desid]);
 
         if($result){
             http_response_code(200);

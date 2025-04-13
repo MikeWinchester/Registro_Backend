@@ -23,7 +23,7 @@ class Estudiante extends BaseModel {
     }
 
     public function obtenerPerfilEstudiante($estudianteid){
-        $sql = "SELECT nombre_completo, numero_cuenta, nombre_carrera, nombre_centro
+        $sql = "SELECT nombre_completo, numero_cuenta, nombre_carrera, nombre_centro, descripcion, usr.correo, telefono, foto_perfil
         FROM tbl_usuario AS usr
         INNER JOIN tbl_estudiante as est
         ON usr.usuario_id = est.usuario_id
@@ -84,6 +84,23 @@ class Estudiante extends BaseModel {
         return $this->fetchOne($sql, [$cuenta, $periodo]);
     }
 
+    public function obtenerIndiceGlobalById($cuenta){
+        $sql = "SELECT ROUND(((sum(calificacion * UV)) / sum(UV)),2) AS indice_global
+        FROM tbl_notas AS nt
+        INNER JOIN tbl_estudiante AS et
+        ON nt.estudiante_id = et.estudiante_id
+        INNER JOIN tbl_usuario AS ur
+        ON et.usuario_id = ur.usuario_id
+        INNER JOIN tbl_seccion AS sc
+        ON nt.seccion_id = sc.seccion_id
+        INNER JOIN tbl_clase AS cl
+        ON sc.clase_id = cl.clase_id
+        WHERE ur.id = ?";
+
+        return $this->fetchOne($sql, [$cuenta]);
+    }
+
+
     public function obtenerHistorialByCuenta($cuenta){
         $sql = "SELECT cl.codigo, cl.nombre, cl.UV, sc.horario, sc.periodo_academico, nt.calificacion, ob.observacion
         FROM tbl_notas AS nt
@@ -124,7 +141,7 @@ class Estudiante extends BaseModel {
     
 
     public function obtenerHistorialEstudiante($busqueda, $carrera){
-        // Base del SQL
+        
         $sql = "SELECT tbl_usuario.nombre_completo, tbl_carrera.nombre_carrera, tbl_centro_regional.nombre_centro, 
                        tbl_usuario.correo, AVG(tbl_notas.calificacion) as Promedio 
                 FROM tbl_estudiante  
@@ -154,5 +171,22 @@ class Estudiante extends BaseModel {
 
         return $this->fetchAll($sql);
     }
+
+    public function actualizarDescripcion($param){
+        $sql = 'UPDATE tbl_estudiante
+                SET descripcion = ?
+                WHERE usuario_id = ?';
+
+        return $this->executeWrite($sql, [$param['descripcion'] , $param['usuario_id']]);
+    }
+
+    public function uploadData($param){
+        $sql = "UPDATE tbl_estudiante
+                SET foto_perfil = ?
+                WHERE usuario_id = ?";
+        
+        return $this->executeWrite($sql, $param);
+    }
+
 }
 ?>

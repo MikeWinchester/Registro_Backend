@@ -37,8 +37,15 @@ class EstudianteController extends BaseController{
 
         $estudiante = $header['estudianteid'];
         
-
         $result = $this->estudiante->obtenerPerfilEstudiante($estudiante);
+
+        $indice = $this->estudiante->obtenerIndiceGlobalById($estudiante)['indice_global'];
+
+        if($indice == null){
+            $indice = 0;
+        }
+
+        $result['indice_global'] = $indice;
 
         if ($result) {
             http_response_code(200);
@@ -202,5 +209,92 @@ class EstudianteController extends BaseController{
             echo json_encode(["error" => "No se encontraron resultados."]);
         }
     }
+
+    public function updateDescripcion(){
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        $result = $this->estudiante->actualizarDescripcion($data);
+
+        if($result){
+            http_response_code(200);
+            echo json_encode(['message' => 'Se ha actualizado la informacion']);
+        }else{
+            http_response_code(200);
+            echo json_encode(['message' => 'No se ha actualizado la informacion']);
+        }
+    }
+
+    public function uploadData() {
+        header('Content-Type: application/json');
+        $input = json_decode(file_get_contents("php://input"), true);
+    
+        $estudianteid = $input['estudiante_id'] ?? 0;
+        $base64 = $input['foto_perfil'] ?? null;
+    
+        if (!$base64) {
+            http_response_code(400);
+            echo json_encode(['error' => 'La imagen de perfil es obligatoria']);
+            return;
+        }
+    
+        $ruta = $this->guardarImagenBase64($base64, $estudianteid);
+    
+        if (!$ruta) {
+            return;  // La función guardarImagenBase64 ya maneja la respuesta de error
+        }
+    
+        $data = [
+            'foto_perfil' => $ruta,
+            'estudiante_id' => $estudianteid
+        ];
+    
+        if (strlen($ruta) > 255) {
+            http_response_code(400);
+            echo json_encode(['error' => "Excede el máximo de caracteres permitidos en la ruta"]);
+            return;
+        }
+    
+        $value = [$data['foto_perfil'], $data['estudiante_id']];
+        $result = $this->estudiante->uploadData($value);
+    
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(['message' => "Se ha actualizado la foto de perfil"]);
+        } else {
+            http_response_code(400);
+            echo json_encode(['error' => "Ha ocurrido un error al actualizar la foto de perfil", 'data' => $data]);
+        }
+    }
+    
+    private function guardarImagenBase64($base64, $estudianteid) {
+        if (!preg_match('/^data:image\/(\w+);base64,/', $base64, $type)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Formato base64 no válido']);
+            return false;
+        }
+    
+        $base64 = substr($base64, strpos($base64, ',') + 1);
+        $type = strtolower($type[1]); 
+    
+        $decoded = base64_decode($base64);
+    
+        $carpetaDestino = "data/uploads/estudiante/$estudianteid/";
+        if (!is_dir($carpetaDestino)) {
+            mkdir($carpetaDestino, 0755, true);
+        }
+    
+        $nombreArchivo = uniqid() . "." . $type;
+        $rutaDestino = $carpetaDestino . $nombreArchivo;
+    
+        if (file_put_contents($rutaDestino, $decoded)) {
+            return $rutaDestino;
+        } else {
+            http_response_code(400);
+            echo json_encode(['error' => 'No se pudo guardar la imagen']);
+            return false;
+        }
+    }
+    
+
 }
 ?>

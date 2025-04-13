@@ -9,11 +9,19 @@ class Mensaje extends BaseModel {
     }
 
     public function obtenerMensajes($param){
-        $sql = "SELECT mensaje, fecha_envio, leido
-        FROM tbl_mensajes as ms
-        WHERE (ms.remitente_id = ? AND ms.destinatario_id = ?)
-        OR (ms.destinatario_id = ? AND ms.remitente_id = ?)
-        ORDER BY ASC fecha_envio";
+        $sql = "SELECT
+                mensaje,
+                fecha_envio,
+                leido,
+                CASE
+                    WHEN ms.remitente_id = ? THEN 'enviado'
+                    ELSE 'recibido'
+                END AS tipo_mensaje
+            FROM tbl_mensajes AS ms
+            WHERE (ms.remitente_id = ? AND ms.destinatario_id = ?)
+            OR (ms.destinatario_id = ? AND ms.remitente_id = ?)
+            ORDER BY fecha_envio ASC;
+            ";
 
         return $this->fetchAll($sql, $param);
     }

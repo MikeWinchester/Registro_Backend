@@ -78,6 +78,15 @@ class SolicitudAmistad extends BaseModel {
 
         return $this->executeWrite($sql, $param);
     }
+
+    public function obtenerId($usr){
+        $sql = "SELECT usuario_id AS id
+                FROM tbl_estudiante
+                WHERE id = ?";
+
+        return $this->fetchOne($sql, $usr);
+    }
 }
+
 
 ?>

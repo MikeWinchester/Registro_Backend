@@ -10,5 +10,8 @@ function registerEstudianteRoutes($router) {
     $router->get( "/estudiante/usuario", [$estudianteController, "getUsuarioByEstu"]);
     $router->get( "/estudiante/get/id", [$estudianteController, "getId"]);
     $router->get( "/estudiante/historial", [$estudianteController, "getAll"]);
+    $router->put( "/estudiante/actu/desc", [$estudianteController, "updateDescripcion"]);
+    $router->put( "/estudiante/upload/perfil", [$estudianteController, "uploadData"]);
+    
 }
 ?>

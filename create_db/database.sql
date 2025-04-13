@@ -132,6 +132,7 @@ CREATE TABLE tbl_estudiante (
     carrera_id TINYINT UNSIGNED NOT NULL,
     centro_regional_id TINYINT UNSIGNED NOT NULL,
     correo VARCHAR(100) UNIQUE NOT NULL,
+    foto_perfil VARCHAR(100),
     descripcion VARCHAR(200),
     id CHAR(36) NOT NULL DEFAULT (UUID()),    
     FOREIGN KEY (usuario_id) REFERENCES tbl_usuario(usuario_id),
