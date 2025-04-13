@@ -145,7 +145,7 @@ CREATE TABLE tbl_docente (
     carrera_id TINYINT UNSIGNED NOT NULL,
     departamento_id TINYINT UNSIGNED NOT NULL,
     centro_regional_id TINYINT UNSIGNED NOT NULL,
-    foto_perfil VARCHAR(20),
+    foto_perfil VARCHAR(100),
     descripcion VARCHAR(100),
     id CHAR(36) NOT NULL DEFAULT (UUID()),    
     FOREIGN KEY (usuario_id) REFERENCES tbl_usuario(usuario_id),

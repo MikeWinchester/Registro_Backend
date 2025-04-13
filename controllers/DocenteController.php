@@ -175,43 +175,67 @@ class DocenteController extends BaseController{
 
 
     public function uploadVideo() {
-        
-        $fotoNombre = $_FILES['foto_perfil']['name'];
-        $fotoTemporal = $_FILES['foto_perfil']['tmp_name'];
+        header('Content-Type: application/json');
+        $input = json_decode(file_get_contents("php://input"), true);
     
-        $ruta = null;
-        if (!empty($fotoNombre)) {
-            $carpetaDestino = "uploads/";
-            if (!is_dir($carpetaDestino)) {
-                mkdir($carpetaDestino, 0755, true);
-            }
+        $docenteId = $input['docente_id'] ?? 0;
+        $descripcion = $input['descripcion'] ?? '';
+        $base64 = $input['foto_perfil'] ?? null;
     
-            $nombreFinal = uniqid() . "_" . basename($fotoNombre);
-            $rutaDestino = $carpetaDestino . $nombreFinal;
-    
-            if (move_uploaded_file($fotoTemporal, $rutaDestino)) {
-                $ruta = $rutaDestino; 
-            } else {
-                http_response_code(400);
-                echo json_encode(['error' => 'No se pudo guardar la imagen']);
-                return;
-            }
-        }
+        $ruta = $this->guardarImagenBase64($base64, $docenteId);
     
         $data = [
             'foto_perfil' => $ruta,
-            'descripcion' => $_POST['descripcion'] ?? '',
-            'video_url' => $_POST['video_url'] ?? '',
-            'id_docente' => $_POST['id_docente'] ?? 0
+            'descripcion' => $descripcion,
+            'docente_id' => $docenteId
         ];
     
-        
+        if (strlen($ruta) > 255) {
+            http_response_code(400);
+            echo json_encode(['error' => "Excede el máximo de caracteres permitidos en la ruta"]);
+            return;
+        }
+
+        $result = $this->docente->uploadData($data);
+    
+        if ($result) {
             http_response_code(200);
-            echo json_encode(['message' => "Se han actualizado los datos", 'data' => $data]);
-        
-        
+            echo json_encode(['message' => "Se han actualizado los datos"]);
+        } else {
+            http_response_code(400);
+            echo json_encode(['error' => "Ha ocurrido un error"]);
+        }
     }
     
+    private function guardarImagenBase64($base64, $docenteId) {
+    
+        if (!preg_match('/^data:image\/(\w+);base64,/', $base64, $type)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Formato base64 no válido']);
+            return false;
+        }
+    
+        $base64 = substr($base64, strpos($base64, ',') + 1);
+        $type = strtolower($type[1]); 
+    
+        $decoded = base64_decode($base64);
+    
+        $carpetaDestino = "data/uploads/$docenteId/";
+        if (!is_dir($carpetaDestino)) {
+            mkdir($carpetaDestino, 0755, true);
+        }
+    
+        $nombreArchivo = uniqid() . "." . $type;
+        $rutaDestino = $carpetaDestino . $nombreArchivo;
+    
+        if (file_put_contents($rutaDestino, $decoded)) {
+            return $rutaDestino;
+        } else {
+            http_response_code(400);
+            echo json_encode(['error' => 'No se pudo guardar la imagen']);
+            return false;
+        }
+    }
 
     /**
      * Funcion para obtener el periodo acadmico actual

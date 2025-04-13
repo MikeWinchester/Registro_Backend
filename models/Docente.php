@@ -106,7 +106,9 @@ class Docente extends BaseModel {
     }
 
     public function uploadData($param){
-        $sql = "UPDATE tbl_docente SET ";
+        $sql = "UPDATE tbl_docente AS dc
+                INNER JOIN tbl_usuario AS us ON dc.usuario_id = us.usuario_id 
+                SET ";
         $conditions = [];
         $values = [];
     
@@ -125,8 +127,8 @@ class Docente extends BaseModel {
         }
     
         $sql .= implode(", ", $conditions);
-        $sql .= " WHERE id_docente = ?";
-        $values[] = $param['id'];
+        $sql .= " WHERE us.id = ?";
+        $values[] = $param['docente_id'];
     
         return $this->executeWrite($sql, $values);
     }

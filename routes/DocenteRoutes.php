@@ -12,7 +12,7 @@ function registerDocenteRoutes($router) {
     $router->get( "/docentes/get/id", [$docenteController, "getId"], ['Docente']);
     $router->post( "/docentes/video", [$docenteController, "uploadVideo"], ['Docente']);
     $router->post( "/docentes/create", [$docenteController, 'createDocente'], ['Docente']);
-    $router->post( "/docentes/upload", [$docenteController, 'uploadVideo'], ['Docente']);
+    $router->put( "/docentes/upload", [$docenteController, 'uploadVideo'], ['Docente']);
     
 }
 
