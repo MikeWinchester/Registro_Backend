@@ -6,7 +6,9 @@ function registerSolicitudAmistadRoutes($router) {
     
     $router->get("/solicitud_amistad/get/accept", [$solicitudAmistadController, "getUsuariosAceptadosByUsuario"]);
     $router->get("/solicitud_amistad/get/waiting", [$solicitudAmistadController, "getUsuariosEspera"]);
-    $router->get("/solicitud_amistad/get/update", [$solicitudAmistadController, "updateSolicitud"]);
+    $router->put("/solicitud_amistad/update", [$solicitudAmistadController, "updateSolicitud"]);
     $router->get("/solicitud_amistad/get/message", [$solicitudAmistadController, "getUsuariosAceptadosWithMessage"]);
+    $router->post("/solicitud_amistad/set/soli", [$solicitudAmistadController, "sendSolicitud"]);
+    
 }
 ?>

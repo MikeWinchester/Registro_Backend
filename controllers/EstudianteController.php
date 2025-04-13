@@ -237,7 +237,9 @@ class EstudianteController extends BaseController{
             return;
         }
     
-        $ruta = $this->guardarImagenBase64($base64, $estudianteid);
+        $carpetaDestino = "data/uploads/estudiante/$estudianteid/";
+
+        $ruta = $this->guardarImagenBase64($base64, $carpetaDestino);
     
         if (!$ruta) {
             return;  // La función guardarImagenBase64 ya maneja la respuesta de error
@@ -265,8 +267,74 @@ class EstudianteController extends BaseController{
             echo json_encode(['error' => "Ha ocurrido un error al actualizar la foto de perfil", 'data' => $data]);
         }
     }
+
+    public function uploadGaleria(){
+        header('Content-Type: application/json');
+        $input = json_decode(file_get_contents("php://input"), true);
     
-    private function guardarImagenBase64($base64, $estudianteid) {
+        $estudianteid = $input['estudiante_id'] ?? 0;
+        $base64 = $input['fotografia'] ?? null;
+    
+        if (!$base64) {
+            http_response_code(400);
+            echo json_encode(['error' => 'La imagen de perfil es obligatoria']);
+            return;
+        }
+    
+        $data = [
+            'estudiante_id' => $estudianteid,
+            'fotografia' => null
+        ];
+
+        $carpetaDestino = "data/uploads/estudiante/$estudianteid/galeria/";
+
+        $value[] = $data['estudiante_id'];
+        $result = $this->estudiante->validateGaleria($value);
+        if($result['cantidad_fotos'] == 3){
+            http_response_code(400);
+            echo json_encode(['message' => "Excede la cantidad de fotos permitidas"]);
+            return;
+        }
+
+        $ruta = $this->guardarImagenBase64($base64, $carpetaDestino);
+        $data['fotografia'] = $ruta;
+    
+        if (strlen($ruta) > 255) {
+            http_response_code(400);
+            echo json_encode(['error' => "Excede el máximo de caracteres permitidos en la ruta"]);
+            return;
+        }
+
+        $value[] = $data['fotografia']; 
+
+        $result = $this->estudiante->uploadGaleria($value);
+    
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(['message' => "Se ha subido la fotografia"]);
+        } else {
+            http_response_code(400);
+            echo json_encode(['error' => "Ha ocurrido un error al subir la foto"]);
+        }
+    }
+
+    public function getGaleriaEstu(){
+        $header = getallheaders();
+
+        $usuario = $header['id'];
+
+        $result = $this->estudiante->getRouteGaleria([$usuario]);
+
+        if($result){
+            http_response_code(200);
+            echo json_encode(['message' => "Se ha obtenido la galeria", 'data' => $result]);
+        } else {
+            http_response_code(400);
+            echo json_encode(['error' => "Ha ocurrido un error "]);
+        }
+    }
+    
+    private function guardarImagenBase64($base64, $carpetaDestino) {
         if (!preg_match('/^data:image\/(\w+);base64,/', $base64, $type)) {
             http_response_code(400);
             echo json_encode(['error' => 'Formato base64 no válido']);
@@ -278,7 +346,6 @@ class EstudianteController extends BaseController{
     
         $decoded = base64_decode($base64);
     
-        $carpetaDestino = "data/uploads/estudiante/$estudianteid/";
         if (!is_dir($carpetaDestino)) {
             mkdir($carpetaDestino, 0755, true);
         }
@@ -293,6 +360,32 @@ class EstudianteController extends BaseController{
             echo json_encode(['error' => 'No se pudo guardar la imagen']);
             return false;
         }
+    }
+
+    public function deleteFotoGal(){
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        $filepath = $data['ruta'] ?? null;
+
+        if ($filepath && file_exists($filepath)) {
+            if (unlink($filepath)) {
+                $result = $this->estudiante->eliminarFoto([$data['ruta']]);
+                if($result){
+                    http_response_code(200);
+                    echo json_encode(["message" => "Se ha eliminado la fotografia"]);
+                }else{
+                    http_response_code(600);
+                    echo json_encode(["error" => "No se pudo eliminar el archivo"]);
+                }
+            } else {
+                http_response_code(500);
+                echo json_encode(["error" => "No se pudo eliminar el archivo"]);
+            }
+        } else {
+            http_response_code(400);
+            echo json_encode(["error" => "Ruta no válida o archivo no encontrado"]);
+        }
+
     }
     
 

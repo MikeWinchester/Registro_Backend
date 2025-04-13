@@ -38,7 +38,7 @@ class Estudiante extends BaseModel {
     }
 
     public function obtenerEstudianteByCuenta($cuenta){
-        $sql = "SELECT nombre_completo, numero_cuenta, nombre_carrera, nombre_centro
+        $sql = "SELECT usr.usuario_id ,nombre_completo, numero_cuenta, nombre_carrera, nombre_centro
         FROM tbl_usuario AS usr
         INNER JOIN tbl_estudiante as est
         ON usr.usuario_id = est.usuario_id
@@ -181,10 +181,62 @@ class Estudiante extends BaseModel {
     }
 
     public function uploadData($param){
-        $sql = "UPDATE tbl_estudiante
-                SET foto_perfil = ?
-                WHERE usuario_id = ?";
+        $sql = "UPDATE tbl_estudiante AS et
+                JOIN tbl_usuario AS us ON et.usuario_id = us.usuario_id
+                SET et.foto_perfil = ?
+                WHERE us.id = ?";
+
         
+        return $this->executeWrite($sql, $param);
+    }
+
+    public function validateGaleria($param){
+        $sql = "SELECT count(1) AS cantidad_fotos
+                FROM tbl_recurso_estudiante as re
+                INNER JOIN tbl_estudiante as et
+                ON et.estudiante_id = re.estudiante_id
+                INNER JOIN tbl_usuario as us
+                ON us.usuario_id = et.usuario_id
+                WHERE us.id = ?";
+
+        return $this->fetchOne($sql, $param);
+    }
+
+    public function uploadGaleria($param){
+        $param[0] = $this->getEstId([$param[0]]);
+
+        $sql = "INSERT INTO tbl_recurso_estudiante(estudiante_id, fotografia)
+                VALUES (?,?)";
+
+        
+        return $this->executeWrite($sql, $param);
+    }
+
+    private function getEstId($param){
+        $sql = "SELECT et.estudiante_id AS id
+                FROM tbl_estudiante as et
+                INNER JOIN tbl_usuario as us
+                ON et.usuario_id = us.usuario_id
+                WHERE us.id = ?";
+
+        return $this->fetchOne($sql, $param)['id'];
+    }
+
+    public function getRouteGaleria($param){
+        $sql = "SELECT fotografia
+                FROM tbl_recurso_estudiante AS re
+                INNER JOIN tbl_estudiante AS et
+                ON et.estudiante_id = re.estudiante_id
+                INNER JOIN tbl_usuario AS us
+                ON et.usuario_id = us.usuario_id
+                WHERE us.id = ?";
+
+        return $this->fetchAll($sql, $param);
+    }
+
+    public function eliminarFoto($param){
+        $sql = "DELETE FROM tbl_recurso_estudiante WHERE fotografia = ?";
+
         return $this->executeWrite($sql, $param);
     }
 
