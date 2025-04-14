@@ -181,6 +181,8 @@ class EstudianteController extends BaseController{
     public function getId(){
         $header = getallheaders();
 
+        error_log("ID recibido: " . $header['id']);
+
         $result = $this->estudiante->obtenerEstudianteId([$header['id']]);
 
         if($result){
