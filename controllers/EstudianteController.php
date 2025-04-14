@@ -178,8 +178,8 @@ class EstudianteController extends BaseController{
         return "$anio-$periodo";
     }
 
-    public function getId(){
-        $header = getallheaders();
+    public function getId($request){
+        $header = $request->getHeaders();
 
         error_log("ID recibido: " . $header['id']);
 
