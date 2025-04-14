@@ -185,7 +185,7 @@ class EstudianteController extends BaseController{
 
         error_log("ID recibido: " . $header['Id']);
 
-        $result = $this->estudiante->obtenerEstudianteId([$header['id']]);
+        $result = $this->estudiante->obtenerEstudianteId([$header['Id']]);
 
         if($result){
             http_response_code(200);
