@@ -21,7 +21,7 @@ class ClaseController extends BaseController{
      */
     public function getClasesByArea(){
 
-        $header = array_change_key_case(getallheaders(), CASE_LOWER);
+        $header = getallheaders();
 
         $depID = $header['Areaid'];
 
@@ -38,7 +38,7 @@ class ClaseController extends BaseController{
 
     public function getClasesByAreaEstu(){
 
-        $header = array_change_key_case(getallheaders(), CASE_LOWER);
+        $header = getallheaders();
 
         $depID = $header['Areaid'];
         $est = $header['Estudianteid'];
@@ -81,8 +81,7 @@ class ClaseController extends BaseController{
      */
     public function getEdidByClass(){
 
-        $header = array_change_key_case(getallheaders(), CASE_LOWER);
-
+        $header = getallheaders();
         $claseID = $header['Claseid']; 
 
         $result = $this->clase->obtenerEdificioPorClase($claseID);
@@ -103,7 +102,7 @@ class ClaseController extends BaseController{
      * @version 0.1.0
      */
     public function getClasesAsigDoc(){
-        $header = array_change_key_case(getallheaders(), CASE_LOWER);
+        $header = getallheaders();
 
         $claseID = $header['Docenteid'];
 
