@@ -119,6 +119,28 @@ class Estudiante extends BaseModel {
         return $this->fetchAll($sql, [$cuenta]);
     }
 
+    public function obtenerHistorialById($id){
+        $sql = "SELECT cl.codigo, cl.nombre, cl.UV, sc.horario, sc.periodo_academico, nt.calificacion, ob.observacion, us_d.nombre_completo AS docente
+        FROM tbl_notas AS nt
+        INNER JOIN tbl_seccion AS sc
+        ON nt.seccion_id = sc.seccion_id
+        INNER JOIN tbl_docente AS dc
+        ON sc.docente_id = dc.docente_id
+        INNER JOIN tbl_usuario As us_d
+        ON us_d.usuario_id = dc.usuario_id
+        INNER JOIN tbl_clase AS cl
+        ON sc.clase_id = cl.clase_id
+        INNER JOIN tbl_observacion AS ob
+        ON ob.observacion_id = nt.observacion_id
+        INNER JOIN tbl_estudiante AS et
+        ON nt.estudiante_id = et.estudiante_id
+        INNER JOIN tbl_usuario AS ur
+        ON et.usuario_id = ur.usuario_id
+        WHERE et.estudiante_id = ?";
+
+        return $this->fetchAll($sql, [$id]);
+    }
+
     public function obtenerUsuarioByEstudiante($estudianteid){
         $sql = "SELECT usuario_id 
         FROM tbl_estudiante

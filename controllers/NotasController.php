@@ -82,6 +82,52 @@ class NotasController extends BaseController{
         
     }
 
+    public function obtenerNotas($request){
+        $est = $request->getRouteParam(0);
+
+        error_log($est);
+
+
+        $result = $this->notas->obtenerNotasEstu([$est, $this->getPeriodo()]);
+
+        if($result){
+            http_response_code(200);
+            echo json_encode(['message' => 'Notas obtenidas con exito', 'data' => $result]);
+        }else{
+            http_response_code(400);
+            echo json_encode(['message' => 'Notas no obtenidas con exito']);
+        }
+    }
+
+    public function createEvaluacion(){
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        $result = $this->notas->crearEvaluacion([$data['estudianteid'], $data['seccionid'], $data['calificacion'], $data['comentario']]);
+
+        if($result){
+            http_response_code(200);
+            echo json_encode(['message'=>'Se ha evaluado al docente']);
+        }else{
+            http_response_code(200);
+            echo json_encode(['message'=>'Docente ya evaluado']);
+        }
+    }
+
+    private function getPeriodo() {
+        $year = date("Y");
+        $mon = date("n");
+    
+        if ($mon >= 1 && $mon <= 4) {
+            $trimestre = "I";
+        } elseif ($mon >= 5 && $mon <= 8) {
+            $trimestre = "II";
+        } else {
+            $trimestre = "III";
+        }
+    
+        return "$year-$trimestre";
+    }
+
 }
 
 

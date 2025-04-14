@@ -55,5 +55,37 @@ class Notas extends BaseModel {
 
         return $this->fetchOne($sql);
     }
+
+    public function obtenerNotasEstu($params){
+        $sql = "SELECT 
+                cl.nombre AS clase,
+                us.nombre_completo AS docente,
+                dc.docente_id,
+                sc.seccion_id,
+                CASE 
+                    WHEN ev.estudiante_id IS NOT NULL THEN nt.calificacion
+                    ELSE NULL
+                END AS calificacion
+            FROM tbl_matricula AS mt
+            INNER JOIN tbl_seccion AS sc ON mt.seccion_id = sc.seccion_id
+            INNER JOIN tbl_clase AS cl ON sc.clase_id = cl.clase_id
+            INNER JOIN tbl_docente AS dc ON sc.docente_id = dc.docente_id
+            INNER JOIN tbl_usuario AS us ON dc.usuario_id = us.usuario_id
+            LEFT JOIN tbl_evaluacion AS ev 
+                ON ev.seccion_id = sc.seccion_id AND ev.estudiante_id = mt.estudiante_id
+            LEFT JOIN tbl_notas AS nt 
+                ON nt.seccion_id = sc.seccion_id AND nt.estudiante_id = mt.estudiante_id
+            WHERE mt.estudiante_id = ?
+            AND sc.periodo_academico = ?";
+
+        return $this->fetchAll($sql, $params);
+    }
+
+    public function crearEvaluacion($param){
+        $sql = "INSERT INTO tbl_evaluacion VALUES (?,?,?,?)";
+
+        return $this->executeWrite($sql, $param);
+    }
+
 }
 ?>

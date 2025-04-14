@@ -11,10 +11,12 @@ function registerEstudianteRoutes($router) {
     $router->get( "/estudiante/get/id", [$estudianteController, "getId"]);
     $router->get( "/estudiante/historial", [$estudianteController, "getAll"]);
     $router->get( "/estudiante/get/galeria", [$estudianteController, "getGaleriaEstu"]);
+    $router->get( "/estudiante/get/hist/{id}", [$estudianteController, "getHistorialById"]);
     $router->put( "/estudiante/actu/desc", [$estudianteController, "updateDescripcion"]);
     $router->put( "/estudiante/upload/perfil", [$estudianteController, "uploadData"]);
     $router->post( "/estudiante/upload/galeria", [$estudianteController, "uploadGaleria"]);
     $router->delete( "/estudiante/delete/galeria", [$estudianteController, "deleteFotoGal"]);
+    
     
 }
 ?>

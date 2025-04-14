@@ -123,6 +123,21 @@ class EstudianteController extends BaseController{
         }
     }
 
+    public function getHistorialById($request){
+         
+        $estudiante = $request->getRouteParam(0);
+
+        $result = $this->estudiante->obtenerHistorialById($estudiante);
+
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "Historial encontrado", "data" => $result]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "Historial no encontrado"]);
+        }
+    }
+
     public function getUsuarioByEstu(){
         $header = getallheaders();
 
