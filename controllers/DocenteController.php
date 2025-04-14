@@ -64,12 +64,8 @@ class DocenteController extends BaseController{
 
         $header = getallheaders();
 
-        if(!isset($header['docenteid'])){
-            echo "clabe docenteid necesria";
-            return;
-        }
 
-        $docenteid = $header['docenteid'];
+        $docenteid = $header['Docenteid'];
 
 
         $result = $this->docente->obtenerPerfilDocente($docenteid);

@@ -10,9 +10,9 @@ class Evaluacion extends BaseModel {
 
     public function obtenerEvaluaciones($header){
         if (
-            (!isset($header["docenteid"]) || trim($header["docenteid"]) === "") &&
-            (!isset($header["claseid"]) || trim($header["claseid"]) === "") &&
-            (!isset($header["periodoacademico"]) || trim($header["periodoacademico"]) === "")
+            (!isset($header["Docenteid"]) || trim($header["Docenteid"]) === "") &&
+            (!isset($header["Claseid"]) || trim($header["Claseid"]) === "") &&
+            (!isset($header["Periodoacademico"]) || trim($header["Periodoacademico"]) === "")
         ) {
             http_response_code(400);
             echo json_encode(["error" => "Faltan datos requeridos"]);
@@ -39,19 +39,19 @@ class Evaluacion extends BaseModel {
         $conditions = [];
         $params = [];
     
-        if (isset($header['docenteid']) && trim($header['docenteid']) !== "") {
+        if (isset($header['Docenteid']) && trim($header['Docenteid']) !== "") {
             $conditions[] = 'sc.docente_id = ?';
-            $params[] = $header['docenteid'];
+            $params[] = $header['Docenteid'];
         }
     
-        if (isset($header['claseid']) && trim($header['claseid']) !== "") {
+        if (isset($header['Claseid']) && trim($header['Claseid']) !== "") {
             $conditions[] = 'sc.clase_id = ?';
-            $params[] = $header['claseid'];
+            $params[] = $header['Claseid'];
         }
     
-        if (isset($header['periodoacademico']) && trim($header['periodoacademico']) !== "") {
+        if (isset($header['Periodoacademico']) && trim($header['Periodoacademico']) !== "") {
             $conditions[] = 'sc.periodo_academico = ?';
-            $params[] = $header['periodoacademico'];
+            $params[] = $header['Periodoacademico'];
         }
     
         $sql .= implode(' AND ', $conditions);
