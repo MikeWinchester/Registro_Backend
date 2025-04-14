@@ -82,7 +82,7 @@ class SolicitudAmistadController extends BaseController{
         date_default_timezone_set('America/Tegucigalpa');
 
         $data = json_decode(file_get_contents("php://input"), true);
-        $data['fecha_envio'] = date('Y-m-d');
+        $data['fecha_envio'] = date('y-m-n-h-m-s');
         $data['estado_solicitud_id'] = 3;
 
         $result = $this->soli->checkEnvio([$data['usuario_emisor'], $data['usuario_receptor'], $data['usuario_receptor'], $data['usuario_emisor']]);
@@ -95,7 +95,7 @@ class SolicitudAmistadController extends BaseController{
 
         $result = $this->soli->create($data);
 
-        if($result){
+        if(!$result){
             http_response_code(200);
             echo json_encode(['message' => "Se ha mandado la solicitud"]);
         }else{
