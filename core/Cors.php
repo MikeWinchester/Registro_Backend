@@ -17,9 +17,11 @@ class Cors {
                 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS, PATCH");
             
             if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
-                header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
+                header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-CSRF-Token, X-HTTP-Method-Override, Accept, id, estudianteid, seccionid");
             
             exit(0);
         }
     }
 }
+
+//{$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}
