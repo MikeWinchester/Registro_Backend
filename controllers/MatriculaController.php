@@ -26,7 +26,7 @@ class MatriculaController extends BaseController{
 
         $header = getallheaders();
     
-        $secID = $header['seccionid'];
+        $secID = $header['Seccionid'];
 
         $result = $this->matricula->obtenerEstudianteBySeccion($secID);
 
@@ -46,7 +46,7 @@ class MatriculaController extends BaseController{
 
         $header = getallheaders();
     
-        $secID = $header['seccionid'];
+        $secID = $header['Seccionid'];
 
 
 
@@ -136,8 +136,8 @@ class MatriculaController extends BaseController{
     public function cumpleRequisito(){
         $header = getallheaders();
 
-        $est = $header['estudianteid'];
-        $cla = $header['claseid'];
+        $est = $header['Estudianteid'];
+        $cla = $header['Claseid'];
 
         $result = $this->matricula->comprobarRequisitos([$est, $cla, $cla]);
 
@@ -157,7 +157,7 @@ class MatriculaController extends BaseController{
 
         $header = getallheaders();
     
-        $estId = $header['estudianteid'];
+        $estId = $header['Estudianteid'];
 
         $result = $this->matricula->obtenerEstudiantesMatriculados([$estId, $this->getPeriodo()]);
 
@@ -173,7 +173,7 @@ class MatriculaController extends BaseController{
     public function getHistMat(){
         $header = getallheaders();
     
-        $estId = $header['estudianteid'];
+        $estId = $header['Estudianteid'];
 
         $result = $this->matricula->obtenerHistorialMatricula([$estId]);
 
@@ -190,8 +190,8 @@ class MatriculaController extends BaseController{
 
         $header = getallheaders();
     
-        $estId = $header['estudianteid'];
-        $secId = $header['seccionid'];
+        $estId = $header['Estudianteid'];
+        $secId = $header['Seccionid'];
 
         $resultMAT = $this->matricula->eliminarMatricula([$estId, $secId]);
 
@@ -228,7 +228,7 @@ class MatriculaController extends BaseController{
     
         $header = getallheaders();
 
-        $estudianteId = $header['id'];
+        $estudianteId = $header['Id'];
 
         $rango = $this->matricula->obtenerFechaMatricula();
     

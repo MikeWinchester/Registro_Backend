@@ -16,7 +16,7 @@ class EsperaController extends BaseController {
 
         $header = getallheaders();
 
-        $estudianteId = $header['estudianteid'];
+        $estudianteId = $header['Estudianteid'];
 
         $result = $this->espera->obtenerListaEsperaByEstu($estudianteId);
 
@@ -32,7 +32,7 @@ class EsperaController extends BaseController {
     public function getCupoEsperaBySec(){
         $header = getallheaders();
 
-        $seccionId = $header['seccionid'];
+        $seccionId = $header['Seccionid'];
 
         $result = $this->espera->obtenerCuposEspera($seccionId);
 
@@ -48,8 +48,8 @@ class EsperaController extends BaseController {
 
         $header = getallheaders();
 
-        $seccionId = $header['seccionid'];
-        $estudianteId = $header['estudianteid'];
+        $seccionId = $header['Seccionid'];
+        $estudianteId = $header['Estudianteid'];
 
         $result = $this->espera->eliminarEspera($seccionId, $estudianteId);
 
@@ -64,7 +64,7 @@ class EsperaController extends BaseController {
     public function getEstEsperaDep(){
         $header = getallheaders();
         
-        $departamentoid = $header['departamentoid'];
+        $departamentoid = $header['Departamentoid'];
 
         $result = $this->espera->obtenerEsperaByDep($departamentoid);
 

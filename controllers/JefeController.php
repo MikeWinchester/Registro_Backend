@@ -14,7 +14,7 @@ class JefeController extends BaseController{
     public function getDepByJefe(){
         $header = getallheaders();
 
-        $jefeID = $header['jefeid'];
+        $jefeID = $header['Jefeid'];
 
         $result = $this->jefe->getDepartamentoByJefe($jefeID);
 
@@ -33,7 +33,7 @@ class JefeController extends BaseController{
         $header = getallheaders();
 
 
-        $jefeID = $header['jefeid'];
+        $jefeID = $header['Jefeid'];
 
         $result = $this->jefe->obtenerFacultadByJefe($jefeID);
 
@@ -55,7 +55,7 @@ class JefeController extends BaseController{
     public function getUsuarioByJefe(){
         $header = getallheaders();
 
-        $result = $this->jefe->getUsuarioByJefe($header['jefeid']);
+        $result = $this->jefe->getUsuarioByJefe($header['Jefeid']);
 
         if($result){
             http_response_code(200);
@@ -70,7 +70,7 @@ class JefeController extends BaseController{
         
         $header = getallheaders();
         
-        $result = $this->jefe->obtenerJefeId([$header['id']]);
+        $result = $this->jefe->obtenerJefeId([$header['Id']]);
 
         if($result){
             http_response_code(200);

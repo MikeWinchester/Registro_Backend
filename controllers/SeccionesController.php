@@ -19,7 +19,7 @@ class SeccionesController extends BaseController{
 
         $header = getallheaders();
         
-        $docenteid = $header['docenteid'];
+        $docenteid = $header['Docenteid'];
 
         $result = $this->seccion->obtenerSeccionesActuByDoc([$docenteid, $this->getPeriodo()]);
 
@@ -38,7 +38,7 @@ class SeccionesController extends BaseController{
 
         $header = getallheaders();
         
-        $docenteid = $header['docenteid'];
+        $docenteid = $header['Docenteid'];
         
         $result = $this->seccion->obtenerSeccionesByDoc([$docenteid]);
 
@@ -72,7 +72,7 @@ class SeccionesController extends BaseController{
 
         $header = getallheaders();
         
-        $secID = $header['seccionid'];
+        $secID = $header['Seccionid'];
         
         $result = $this->seccion->obtenerSeccion([$secID]);
 
@@ -92,7 +92,7 @@ class SeccionesController extends BaseController{
         $header = getallheaders();
 
         
-        $docenteid = $header['docenteid'];
+        $docenteid = $header['Docenteid'];
 
 
         $result = $this->seccion->obtenerCantidadSeccion([$docenteid, $this->getPeriodo()]);
@@ -148,8 +148,8 @@ class SeccionesController extends BaseController{
 
         $header = getallheaders();
 
-        $claseID = $header['claseid'];
-        $estu = $header['estudianteid'];
+        $claseID = $header['Claseid'];
+        $estu = $header['Estudianteid'];
         $centro = $this->seccion->getCentroByEstu([$estu]);
 
         $result = $this->seccion->obtenerSeccionesByEstu([$claseID, $this->getPeriodo(), $centro['id']]);
@@ -174,8 +174,8 @@ class SeccionesController extends BaseController{
         $header = getallheaders();
 
 
-        $claseID = $header['claseid'];
-        $jefe = $header['jefeid'];
+        $claseID = $header['Claseid'];
+        $jefe = $header['Jefeid'];
         $centro = $this->seccion->getCentroByJefe($jefe)['id'];
 
         $result = $this->seccion->obtenerSeccionesByClassCentro([$claseID, $this->getPeriodo(), $centro]);
@@ -199,8 +199,8 @@ class SeccionesController extends BaseController{
 
         $header = getallheaders();
 
-        $claseID = $header['claseid'];
-        $docID = $header['docenteid'];
+        $claseID = $header['Claseid'];
+        $docID = $header['Docenteid'];
 
         $result = $this->seccion->obtenerSeccionClaseByDoc([$claseID, $docID,$this->getPeriodo()]);
         
@@ -229,10 +229,10 @@ class SeccionesController extends BaseController{
     public function getHorarioDispo() {
         $header = getallheaders();
     
-        $diasString = $header['dias'];
+        $diasString = $header['Dias'];
         $diasArray = array_map('trim', explode(',', $diasString));
-        $aulaid = $header['aula'];
-        $docid = $header['docenteid'];
+        $aulaid = $header['Aula'];
+        $docid = $header['Docenteid'];
 
         $param = [$docid, $this->getPeriodo(), $aulaid];
     
@@ -447,7 +447,7 @@ class SeccionesController extends BaseController{
     public function deleteSeccion(){
         $header = getallheaders();
     
-        $sec = isset($header['seccionid']) ? $header['seccionid'] : null;
+        $sec = isset($header['Seccionid']) ? $header['Seccionid'] : null;
     
         try {
 

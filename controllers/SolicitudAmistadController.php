@@ -15,7 +15,7 @@ class SolicitudAmistadController extends BaseController{
 
         $header = getallheaders();
 
-        $user = $header['usuarioid'];
+        $user = $header['Usuarioid'];
 
         $result = $this->soli->obtenerUsuariosAmigos([$user, $user, $user, $user, $user, $user, $user]);
 
@@ -32,7 +32,7 @@ class SolicitudAmistadController extends BaseController{
 
         $header = getallheaders();
         
-        $user = $header['usuarioid'];
+        $user = $header['Usuarioid'];
     
         $result = $this->soli->obtenerUsuariosConMensajes([$user, $user, $user, $user, $user]);
     
@@ -48,7 +48,7 @@ class SolicitudAmistadController extends BaseController{
     public function getUsuariosEspera(){
         $header = getallheaders();
 
-        $user = $header['usuarioid'];
+        $user = $header['Usuarioid'];
 
         $result = $this->soli->obtenerSolicitudEspera([$user]);
 

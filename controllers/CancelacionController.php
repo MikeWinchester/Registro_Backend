@@ -16,7 +16,7 @@ class CancelacionController extends BaseController{
 
         $header = getallheaders();
 
-        $estudianteId = $header['estudianteid'];
+        $estudianteId = $header['Estudianteid'];
 
         $result = $this->cancelacion->clasesCanceladasEstu($estudianteId);
 

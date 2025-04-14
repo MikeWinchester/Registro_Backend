@@ -19,7 +19,7 @@ class AulaController extends BaseController{
 
         $header = getallheaders();
 
-        $edificioid = $header['edificioid'];
+        $edificioid = $header['Edificioid'];
 
         $resultExist = $this->aula->existeaula($edificioid);
 

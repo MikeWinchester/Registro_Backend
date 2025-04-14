@@ -17,7 +17,7 @@ class EstudianteController extends BaseController{
 
 
 
-        $estudiante = $header['estudianteid'];
+        $estudiante = $header['Estudianteid'];
         
 
         $result = $this->estudiante->obtenerEsperaEstudiante($estudiante);
@@ -35,7 +35,7 @@ class EstudianteController extends BaseController{
     public function getEstudiante(){
         $header = getallheaders();
 
-        $estudiante = $header['estudianteid'];
+        $estudiante = $header['Estudianteid'];
         
         $result = $this->estudiante->obtenerPerfilEstudiante($estudiante);
 
@@ -59,7 +59,7 @@ class EstudianteController extends BaseController{
     public function getEstudianteByCuenta(){
         $header = getallheaders();
 
-        $estudiante = $header['cuenta'];
+        $estudiante = $header['Cuenta'];
         
         $result = $this->estudiante->obtenerEstudianteByCuenta($estudiante);
 
@@ -110,7 +110,7 @@ class EstudianteController extends BaseController{
         $header = getallheaders();
 
        
-        $estudiante = $header['cuenta'];
+        $estudiante = $header['Cuenta'];
         
         $result = $this->estudiante->obtenerHistorialByCuenta($estudiante);
 
@@ -127,7 +127,7 @@ class EstudianteController extends BaseController{
         $header = getallheaders();
 
 
-        $result = $this->estudiante->obtenerUsuarioByEstudiante($header['estudianteid']);
+        $result = $this->estudiante->obtenerUsuarioByEstudiante($header['Estudianteid']);
 
         if($result){
             http_response_code(200);
@@ -325,7 +325,7 @@ class EstudianteController extends BaseController{
     public function getGaleriaEstu(){
         $header = getallheaders();
 
-        $usuario = $header['id'];
+        $usuario = $header['Id'];
 
         $result = $this->estudiante->getRouteGaleria([$usuario]);
 

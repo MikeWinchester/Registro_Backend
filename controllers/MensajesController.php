@@ -34,8 +34,8 @@ class MensajesController extends BaseController {
 
         $header = getallheaders();
 
-        $remid = $header['remitenteid'];
-        $desid = $header['destinatarioid'];
+        $remid = $header['Remitenteid'];
+        $desid = $header['Destinatarioid'];
 
         $result = $this->mensaje->obtenerMensajes([$remid, $remid, $desid, $remid, $desid]);
 
@@ -51,8 +51,8 @@ class MensajesController extends BaseController {
     public function leerMensaje(){
         $header = getallheaders();
 
-        $remid = $header['remitenteid'];
-        $desid = $header['destinatarioid'];
+        $remid = $header['Remitenteid'];
+        $desid = $header['Destinatarioid'];
 
         $result = $this->mensaje->leerMensajes([$desid, $remid]);
 
@@ -70,8 +70,8 @@ class MensajesController extends BaseController {
     public function getMensajesLeido(){
         $header = getallheaders();
         
-        $remid = $header['remitenteid'];
-        $desid = $header['destinatarioid'];
+        $remid = $header['Remitenteid'];
+        $desid = $header['Destinatarioid'];
 
         $result = $this->mensaje->obtenerCantidadMensajes([$remid, $desid]);
 
@@ -87,8 +87,8 @@ class MensajesController extends BaseController {
     public function getUltimoMensaje(){
         $header = getallheaders();
 
-        $emi = $header['emisorid'];
-        $rec = $header['receptorid'];
+        $emi = $header['Emisorid'];
+        $rec = $header['Receptorid'];
 
         $result = $this->mensaje->obtenerUltimoMensaje([$emi, $rec, $rec, $emi]);
 

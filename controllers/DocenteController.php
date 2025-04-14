@@ -101,8 +101,8 @@ class DocenteController extends BaseController{
 
         $header = getallheaders();
 
-        $dep = $header['areaid'];
-        $centro = $this->jefe->getCentroByJefe($header['jefeid']);
+        $dep = $header['Areaid'];
+        $centro = $this->jefe->getCentroByJefe($header['Jefeid']);
 
         $result = $this->docente->listaDocentes($dep, $centro);
 
@@ -119,9 +119,9 @@ class DocenteController extends BaseController{
         header('Content-Type: application/json');
         $header = getallheaders();
     
-        $sec = $header['seccionid'];
-        $dep = $header['areaid'];
-        $centro = $this->jefe->getCentroByJefe($header['jefeid']);
+        $sec = $header['Seccionid'];
+        $dep = $header['Areaid'];
+        $centro = $this->jefe->getCentroByJefe($header['Jefeid']);
         $periodo = $this->getPeriodo();
     
         $horario = $this->docente->obtenerHorarioBySeccion($sec);
@@ -162,7 +162,7 @@ class DocenteController extends BaseController{
         $header = getallheaders();
 
 
-        $result = $this->docente->obtenerUsuarioByDoc($header['docenteid']);
+        $result = $this->docente->obtenerUsuarioByDoc($header['Docenteid']);
 
         if($result){
             http_response_code(200);
@@ -277,7 +277,7 @@ class DocenteController extends BaseController{
     public function getId(){
         $header = getallheaders();
 
-        $result = $this->docente->obtenerDocenteId([$header['id']]);
+        $result = $this->docente->obtenerDocenteId([$header['Id']]);
 
         if($result){
             http_response_code(200);

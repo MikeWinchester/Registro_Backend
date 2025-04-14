@@ -23,7 +23,7 @@ class ClaseController extends BaseController{
 
         $header = array_change_key_case(getallheaders(), CASE_LOWER);
 
-        $depID = $header['areaid'];
+        $depID = $header['Areaid'];
 
         $result = $this->clase->obtenerClasesPorDep($depID);
 
@@ -40,8 +40,8 @@ class ClaseController extends BaseController{
 
         $header = array_change_key_case(getallheaders(), CASE_LOWER);
 
-        $depID = $header['areaid'];
-        $est = $header['estudianteid'];
+        $depID = $header['Areaid'];
+        $est = $header['Estudianteid'];
 
         $carID = $this->carrera->getCarrera($est)['carrera'];
 
@@ -83,7 +83,7 @@ class ClaseController extends BaseController{
 
         $header = array_change_key_case(getallheaders(), CASE_LOWER);
 
-        $claseID = $header['claseid']; 
+        $claseID = $header['Claseid']; 
 
         $result = $this->clase->obtenerEdificioPorClase($claseID);
 
@@ -105,7 +105,7 @@ class ClaseController extends BaseController{
     public function getClasesAsigDoc(){
         $header = array_change_key_case(getallheaders(), CASE_LOWER);
 
-        $claseID = $header['docenteid'];
+        $claseID = $header['Docenteid'];
 
         $result = $this->clase->obtenerClasesAsignadasDoc($claseID, $this->getPeriodo());
 

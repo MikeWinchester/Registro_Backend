@@ -19,12 +19,7 @@ class EdificioController extends BaseController{
 
         $header = getallheaders();
 
-        if(!isset($header['jefeid'])){
-            http_response_code(400);
-            echo json_encode(['Error'=>'campo jefeid necesario']);
-        }
-
-        $jefeid = $header['jefeid'];
+        $jefeid = $header['Jefeid'];
 
         $result = $this->edificio->obtenerEdificioByJefe($jefeid);
 
