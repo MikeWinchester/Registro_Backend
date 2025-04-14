@@ -183,7 +183,7 @@ class EstudianteController extends BaseController{
 
         error_log(print_r($header, true));
 
-        error_log("ID recibido: " . $header['id']);
+        error_log("ID recibido: " . $header['Id']);
 
         $result = $this->estudiante->obtenerEstudianteId([$header['id']]);
 
