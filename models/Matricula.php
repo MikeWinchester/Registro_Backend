@@ -152,8 +152,7 @@ class Matricula extends BaseModel {
         ON sc.clase_id = cl.clase_id
         INNER JOIN tbl_notas as nt
         ON sc.seccion_id = nt.seccion_id
-        WHERE mt.estudiante_id = ?
-        ";
+        WHERE mt.estudiante_id = ?";
 
         return $this->fetchAll($sql, $param);
     }
@@ -188,6 +187,32 @@ class Matricula extends BaseModel {
         WHERE us.id = ?";
 
         return $this->fetchOne($sql, $param);
+    }
+
+    public function obteneClasesMatriculadas($param){
+        $sql = "SELECT cl.nombre, us_do.nombre_completo AS docente, sc.dias, sc.horario, al.aula, ed.edificio
+                FROM tbl_matricula AS mt
+                INNER JOIN tbl_seccion AS sc
+                ON sc.seccion_id = mt.seccion_id
+                INNER JOIN tbl_clase AS cl
+                ON sc.clase_id = cl.clase_id
+                INNER JOIN tbl_estudiante AS et
+                ON et.estudiante_id = mt.estudiante_id
+                INNER JOIN tbl_usuario AS us_et
+                ON et.usuario_id = us_et.usuario_id
+                INNER JOIN tbl_docente AS dc
+                ON sc.docente_id = dc.docente_id
+                INNER JOIN tbl_usuario AS us_do
+                ON dc.usuario_id = us_do.usuario_id
+                INNER JOIN tbl_aula AS al
+                ON sc.aula_id = al.aula_id
+                INNER JOIN tbl_edificio AS ed
+                ON al.edificio_id = ed.edificio_id
+                WHERE us_et.id = ?
+                AND sc.periodo_academico = ?
+                LIMIT 3";
+
+        return $this->fetchAll($sql, $param);
     }
 }
 

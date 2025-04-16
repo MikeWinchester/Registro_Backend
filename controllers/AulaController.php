@@ -15,11 +15,9 @@ class AulaController extends BaseController{
         header("Content-Type: application/json");
     }
 
-    public function getAulasByEdificio(){
+    public function getAulasByEdificio($request){
 
-        $header = getallheaders();
-
-        $edificioid = $header['Edificioid'];
+        $edificioid = $request->getRouteParam(0);
 
         $resultExist = $this->aula->existeaula($edificioid);
 

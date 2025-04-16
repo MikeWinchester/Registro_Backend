@@ -10,8 +10,6 @@ class MensajesController extends BaseController {
         $this->mensaje = new Mensaje();
     }
 
-
-
     public function setMensaje(){
         date_default_timezone_set('date_default_timezone_set("America/Tegucigalpa")');
         $data = json_decode(file_get_contents("php://input"), true);
@@ -30,12 +28,10 @@ class MensajesController extends BaseController {
         }
     }
 
-    public function getMensaje(){
+    public function getMensaje($request){
 
-        $header = getallheaders();
-
-        $remid = $header['Remitenteid'];
-        $desid = $header['Destinatarioid'];
+        $remid = $request->getRouteParam(0);
+        $desid = $request->getRouteParam(1);
 
         $result = $this->mensaje->obtenerMensajes([$remid, $remid, $desid, $remid, $desid]);
 
@@ -48,11 +44,10 @@ class MensajesController extends BaseController {
         }
     }
 
-    public function leerMensaje(){
-        $header = getallheaders();
-
-        $remid = $header['Remitenteid'];
-        $desid = $header['Destinatarioid'];
+    public function leerMensaje($request){
+        
+        $remid = $request->getRouteParam(0);
+        $desid = $request->getRouteParam(1);
 
         $result = $this->mensaje->leerMensajes([$desid, $remid]);
 
@@ -67,11 +62,10 @@ class MensajesController extends BaseController {
     }
 
 
-    public function getMensajesLeido(){
-        $header = getallheaders();
+    public function getMensajesLeido($request){
         
-        $remid = $header['Remitenteid'];
-        $desid = $header['Destinatarioid'];
+        $remid = $request->getRouteParam(0);
+        $desid = $request->getRouteParam(1);
 
         $result = $this->mensaje->obtenerCantidadMensajes([$remid, $desid]);
 
@@ -84,11 +78,10 @@ class MensajesController extends BaseController {
         }
     }
 
-    public function getUltimoMensaje(){
-        $header = getallheaders();
+    public function getUltimoMensaje($request){
 
-        $emi = $header['Emisorid'];
-        $rec = $header['Receptorid'];
+        $emi = $request->getRouteParam(0);
+        $rec = $request->getRouteParam(1);
 
         $result = $this->mensaje->obtenerUltimoMensaje([$emi, $rec, $rec, $emi]);
 
@@ -99,6 +92,22 @@ class MensajesController extends BaseController {
             http_response_code(400);
             echo json_encode(["error" => "No se obtuvieron los mensajes"]);
         }
+    }
+
+    public function getInfoLastMessage($request){
+        
+        $estudiante = $request->getRouteParam(0);
+
+        $result = $this->mensaje->obtenerUltimosMensajeInfo([$estudiante, $estudiante]);
+
+        if($result){
+            http_response_code(200);
+            echo json_encode(['message' => 'Mensajes Obtenidos', 'data' => $result]);
+        }else{
+            http_response_code(400);
+            echo json_encode(['error' => 'Mensajes No Obtenidos']);
+        }
+
     }
 }
 

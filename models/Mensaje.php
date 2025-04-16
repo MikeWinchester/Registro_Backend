@@ -57,5 +57,23 @@ class Mensaje extends BaseModel {
 
         return $this->fetchOne($sql, $param);
     }
+
+    public function obtenerUltimosMensajeInfo($param){
+        
+        $sql = "SELECT
+                    ms.mensaje,
+                    ms.fecha_envio,
+                    us_em.nombre_completo AS remitente, 
+                    us_de.nombre_completo AS destinatario
+                FROM tbl_mensajes AS ms
+                INNER JOIN tbl_usuario AS us_em ON ms.remitente_id = us_em.usuario_id
+                INNER JOIN tbl_usuario AS us_de ON ms.destinatario_id = us_de.usuario_id
+                WHERE us_em.id = ? OR us_de.id = ?
+                ORDER BY ms.fecha_envio DESC
+                LIMIT 3";
+
+        return $this->fetchAll($sql, $param);
+        
+    }
 }
 ?>

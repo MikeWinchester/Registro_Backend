@@ -15,11 +15,9 @@ class SeccionesController extends BaseController{
         header("Content-Type: application/json"); // Estandariza las respuestas como JSON
     }
 
-    public function getSeccionesActuales(){
-
-        $header = getallheaders();
+    public function getSeccionesActuales($request){
         
-        $docenteid = $header['Docenteid'];
+        $docenteid = $request->getRouteParam(0);
 
         $result = $this->seccion->obtenerSeccionesActuByDoc([$docenteid, $this->getPeriodo()]);
 
@@ -34,11 +32,9 @@ class SeccionesController extends BaseController{
     }
 
 
-    public function getSecciones(){
-
-        $header = getallheaders();
+    public function getSecciones($request){
         
-        $docenteid = $header['Docenteid'];
+        $docenteid = $request->getRouteParam(0);
         
         $result = $this->seccion->obtenerSeccionesByDoc([$docenteid]);
 
@@ -68,11 +64,9 @@ class SeccionesController extends BaseController{
     }
 
 
-    public function getSeccion(){
-
-        $header = getallheaders();
+    public function getSeccion($request){
         
-        $secID = $header['Seccionid'];
+        $secID = $request->getRouteParam(0);
         
         $result = $this->seccion->obtenerSeccion([$secID]);
 
@@ -86,13 +80,9 @@ class SeccionesController extends BaseController{
     }
     
 
-    public function getSeccionCount(){
-
-
-        $header = getallheaders();
-
+    public function getSeccionCount($request){
         
-        $docenteid = $header['Docenteid'];
+        $docenteid = $request->getRouteParam(0);
 
 
         $result = $this->seccion->obtenerCantidadSeccion([$docenteid, $this->getPeriodo()]);
@@ -144,12 +134,11 @@ class SeccionesController extends BaseController{
         return $result['existe'];
     }
 
-    public function getSeccionesByClassEstu(){
+    public function getSeccionesByClassEstu($request){
 
-        $header = getallheaders();
+        $claseID = $request->getRouteParam(0);
+        $estu = $request->getRouteParam(1);
 
-        $claseID = $header['Claseid'];
-        $estu = $header['Estudianteid'];
         $centro = $this->seccion->getCentroByEstu([$estu]);
 
         $result = $this->seccion->obtenerSeccionesByEstu([$claseID, $this->getPeriodo(), $centro['id']]);
@@ -169,13 +158,10 @@ class SeccionesController extends BaseController{
         }
     }
 
-    public function getSeccionesByClass(){
+    public function getSeccionesByClass($request){
 
-        $header = getallheaders();
-
-
-        $claseID = $header['Claseid'];
-        $jefe = $header['Jefeid'];
+        $claseID = $request->getRouteParam(0);
+        $jefe = $request->getRouteParam(1);
         $centro = $this->seccion->getCentroByJefe($jefe)['id'];
 
         $result = $this->seccion->obtenerSeccionesByClassCentro([$claseID, $this->getPeriodo(), $centro]);
@@ -195,12 +181,10 @@ class SeccionesController extends BaseController{
         }
     }
 
-    public function getSeccionesByClassDoc(){
+    public function getSeccionesByClassDoc($request){
 
-        $header = getallheaders();
-
-        $claseID = $header['Claseid'];
-        $docID = $header['Docenteid'];
+        $claseID = $request->getRouteParam(0);
+        $docID = $request->getRouteParam(1);
 
         $result = $this->seccion->obtenerSeccionClaseByDoc([$claseID, $docID,$this->getPeriodo()]);
         
@@ -226,13 +210,12 @@ class SeccionesController extends BaseController{
         return intval($cupo_seccion['cupo_maximo']) - intval($cupo_ocupados['estudiantes']);
     }
 
-    public function getHorarioDispo() {
-        $header = getallheaders();
+    public function getHorarioDispo($request) {
     
-        $diasString = $header['Dias'];
+        $diasString = $request->getRouteParam(0);
         $diasArray = array_map('trim', explode(',', $diasString));
-        $aulaid = $header['Aula'];
-        $docid = $header['Docenteid'];
+        $aulaid = $request->getRouteParam(1);
+        $docid = $request->getRouteParam(2);
 
         $param = [$docid, $this->getPeriodo(), $aulaid];
     
@@ -347,7 +330,6 @@ class SeccionesController extends BaseController{
 
     private function updateDocente($docenteID, $sec){
         
-    
             $result = $this->seccion->actualizarDocente([$docenteID, $sec]);
     
             if ($result) {
@@ -444,8 +426,9 @@ class SeccionesController extends BaseController{
         return !empty($result); 
     }
 
-    public function deleteSeccion(){
-        $header = getallheaders();
+    public function deleteSeccion($request){
+
+        $header['Seccionid'] = $request->getRouteParam(0);
     
         $sec = isset($header['Seccionid']) ? $header['Seccionid'] : null;
     

@@ -19,11 +19,9 @@ class ClaseController extends BaseController{
      *
      * @version 0.1.1
      */
-    public function getClasesByArea(){
+    public function getClasesByArea($request){
 
-        $header = getallheaders();
-
-        $depID = $header['Areaid'];
+        $depID = $request->getRouteParam(0);
 
         $result = $this->clase->obtenerClasesPorDep($depID);
 
@@ -36,12 +34,10 @@ class ClaseController extends BaseController{
         }
     }
 
-    public function getClasesByAreaEstu(){
+    public function getClasesByAreaEstu($request){
 
-        $header = getallheaders();
-
-        $depID = $header['Areaid'];
-        $est = $header['Estudianteid'];
+        $depID = $request->getRouteParam(0);
+        $est = $request->getRouteParam(1);
 
         $carID = $this->carrera->getCarrera($est)['carrera'];
 
@@ -79,10 +75,9 @@ class ClaseController extends BaseController{
      * 
      * @version 0.1.0
      */
-    public function getEdidByClass(){
+    public function getEdidByClass($request){
 
-        $header = getallheaders();
-        $claseID = $header['Claseid']; 
+        $claseID = $request->getRouteParam(0);
 
         $result = $this->clase->obtenerEdificioPorClase($claseID);
 
@@ -101,10 +96,9 @@ class ClaseController extends BaseController{
      * 
      * @version 0.1.0
      */
-    public function getClasesAsigDoc(){
-        $header = getallheaders();
-
-        $claseID = $header['Docenteid'];
+    public function getClasesAsigDoc($request){
+    
+        $claseID = $request->getRouteParam(0);
 
         $result = $this->clase->obtenerClasesAsignadasDoc($claseID, $this->getPeriodo());
 

@@ -15,11 +15,9 @@ class EdificioController extends BaseController{
     }
 
 
-    public function getEdificioByJefe(){
+    public function getEdificioByJefe($request){
 
-        $header = getallheaders();
-
-        $jefeid = $header['Jefeid'];
+        $jefeid = $request->getRouteParam(0);
 
         $result = $this->edificio->obtenerEdificioByJefe($jefeid);
 

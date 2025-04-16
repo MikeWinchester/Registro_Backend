@@ -59,13 +59,9 @@ class DocenteController extends BaseController{
     }
 
     
-    public function getDocente(){
+    public function getDocente($request){
         
-
-        $header = getallheaders();
-
-
-        $docenteid = $header['Docenteid'];
+        $docenteid = $request->getRouteParam(0);
 
 
         $result = $this->docente->obtenerPerfilDocente($docenteid);
@@ -93,12 +89,11 @@ class DocenteController extends BaseController{
         }
     }
 
-    public function getDocentesBydepartment(){
+    public function getDocentesBydepartment($request){
 
-        $header = getallheaders();
-
-        $dep = $header['Areaid'];
-        $centro = $this->jefe->getCentroByJefe($header['Jefeid']);
+        $dep = $request->getRouteParam(0);
+        $jefe = $request->getRouteParam(1);
+        $centro = $this->jefe->getCentroByJefe($jefe);
 
         $result = $this->docente->listaDocentes($dep, $centro);
 
@@ -111,13 +106,13 @@ class DocenteController extends BaseController{
         }
     }
 
-    public function getDocentesByHorario() {
+    public function getDocentesByHorario($request) {
         header('Content-Type: application/json');
-        $header = getallheaders();
     
-        $sec = $header['Seccionid'];
-        $dep = $header['Areaid'];
-        $centro = $this->jefe->getCentroByJefe($header['Jefeid']);
+        $sec = $request->getRouteParam(0);
+        $dep = $request->getRouteParam(1);
+        $jefe = $request->getRouteParam(2);
+        $centro = $this->jefe->getCentroByJefe($jefe);
         $periodo = $this->getPeriodo();
     
         $horario = $this->docente->obtenerHorarioBySeccion($sec);
@@ -154,11 +149,10 @@ class DocenteController extends BaseController{
         }
     }
     
-    public function getUsuarioByDocente(){
-        $header = getallheaders();
+    public function getUsuarioByDocente($request){
 
-
-        $result = $this->docente->obtenerUsuarioByDoc($header['Docenteid']);
+        $docente = $request->getRouteParam(0);
+        $result = $this->docente->obtenerUsuarioByDoc($docente);
 
         if($result){
             http_response_code(200);
@@ -270,10 +264,9 @@ class DocenteController extends BaseController{
         return "$year-$trimestre";
     }
 
-    public function getId(){
-        $header = getallheaders();
-
-        $result = $this->docente->obtenerDocenteId([$header['Id']]);
+    public function getId($request){
+        $id = $request->getRouteParam(0);
+        $result = $this->docente->obtenerDocenteId([$id]);
 
         if($result){
             http_response_code(200);

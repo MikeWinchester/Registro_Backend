@@ -12,11 +12,9 @@ class CancelacionController extends BaseController{
         header("Content-Type: application/json");
     }
 
-    public function getCanByEstudiante(){
+    public function getCanByEstudiante($request){
 
-        $header = getallheaders();
-
-        $estudianteId = $header['Estudianteid'];
+        $estudianteId = $request->getRouteParam(0);
 
         $result = $this->cancelacion->clasesCanceladasEstu($estudianteId);
 

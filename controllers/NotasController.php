@@ -46,9 +46,11 @@ class NotasController extends BaseController{
         
     }
 
-    public function searchNotas(){
-        $header = getallheaders();
-    
+    public function searchNotas($request){
+        
+        $header['Docenteid'] = $request->getRouteParam(0);
+        $header['Claseid'] = $request->getRouteParam(1);
+        $header['Periodoacademico'] = $request->getRouteParam(2);
        
         $result = $this->notas->buscarNotas($header);
     
@@ -95,8 +97,60 @@ class NotasController extends BaseController{
             echo json_encode(['message' => 'Notas obtenidas con exito', 'data' => $result]);
         }else{
             http_response_code(400);
-            echo json_encode(['message' => 'Notas no obtenidas con exito']);
+            echo json_encode(['error' => 'Notas no obtenidas con exito']);
         }
+    }
+    
+    private function searchNotasPrivate($header){
+        
+        $result = $this->notas->buscarNotas($header);
+    
+        if ($result) {
+            http_response_code(200);
+            echo json_encode(["message" => "Notas encontradas correctamente", "data" => $result]);
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "No se encontraron notas"]);
+        }
+    }
+
+    public function searchDoc($request){
+        $header['Docenteid'] = $request->getRouteParam(0);
+
+        $this->searchNotasPrivate($header);
+    }
+
+    public function searchDocClase($request){
+        $header['Docenteid'] = $request->getRouteParam(0);
+        $header['Claseid'] = $request->getRouteParam(1);
+
+        $this->searchNotasPrivate($header);
+    }
+
+    public function searchClase($request){
+        $header['Claseid'] = $request->getRouteParam(0);
+
+        $this->searchNotasPrivate($header);
+    }
+
+    public function searchClasePeriodo($request){
+        $header['Claseid'] = $request->getRouteParam(0);
+        $header['Periodoacademico'] = $request->getRouteParam(1);
+
+        $this->searchNotasPrivate($header);
+    }
+
+    public function searchPeriodo($request){
+        $header['Periodoacademico'] = $request->getRouteParam(0);
+
+        $this->searchNotasPrivate($header);
+    }
+
+    public function searchDocPeriodo($request){
+        $header['Docenteid'] = $request->getRouteParam(0);
+        $header['Periodoacademico'] = $request->getRouteParam(1);
+
+        $this->searchNotasPrivate($header);
     }
 
     public function createEvaluacion(){

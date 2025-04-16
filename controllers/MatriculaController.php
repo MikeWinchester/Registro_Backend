@@ -21,12 +21,9 @@ class MatriculaController extends BaseController{
     }
 
  
-    public function getEstudiantes(){
+    public function getEstudiantes($request){
 
-
-        $header = getallheaders();
-    
-        $secID = $header['Seccionid'];
+        $secID = $request->getRouteParam(0);
 
         $result = $this->matricula->obtenerEstudianteBySeccion($secID);
 
@@ -41,14 +38,9 @@ class MatriculaController extends BaseController{
 
     }
 
-    public function getEstudiantesNotas(){
-
-
-        $header = getallheaders();
+    public function getEstudiantesNotas($request){
     
-        $secID = $header['Seccionid'];
-
-
+        $secID = $request->getRouteParam(0);
 
         $result = $this->matricula->obtenerEstudiantesByNotas([$secID]);
 
@@ -133,11 +125,10 @@ class MatriculaController extends BaseController{
         }
     }
     
-    public function cumpleRequisito(){
-        $header = getallheaders();
+    public function cumpleRequisito($request){
 
-        $est = $header['Estudianteid'];
-        $cla = $header['Claseid'];
+        $est = $request->getRouteParam(0);
+        $cla = $request->getRouteParam(1);
 
         $result = $this->matricula->comprobarRequisitos([$est, $cla, $cla]);
 
@@ -152,12 +143,9 @@ class MatriculaController extends BaseController{
         
     }
 
+    public function getMatriculaEst($request){
 
-    public function getMatriculaEst(){
-
-        $header = getallheaders();
-    
-        $estId = $header['Estudianteid'];
+        $estId = $request->getRouteParam(0);
 
         $result = $this->matricula->obtenerEstudiantesMatriculados([$estId, $this->getPeriodo()]);
 
@@ -186,12 +174,10 @@ class MatriculaController extends BaseController{
         }
     }
 
-    public function delMat(){
-
-        $header = getallheaders();
+    public function delMat($request){
     
-        $estId = $header['Estudianteid'];
-        $secId = $header['Seccionid'];
+        $estId = $request->getRouteParam(0);
+        $secId = $request->getRouteParam(1);
 
         $resultMAT = $this->matricula->eliminarMatricula([$estId, $secId]);
 
@@ -223,12 +209,10 @@ class MatriculaController extends BaseController{
         return "$year-$trimestre";
     }
 
-    public function permitirMatriculaEstu() {
+    public function permitirMatriculaEstu($request) {
         date_default_timezone_set('America/Tegucigalpa');
-    
-        $header = getallheaders();
 
-        $estudianteId = $header['Id'];
+        $estudianteId = $request->getRouteParam(0);
 
         $rango = $this->matricula->obtenerFechaMatricula();
     
@@ -302,6 +286,22 @@ class MatriculaController extends BaseController{
     
         $res = $this->matricula->obtenerIndiceGlobal([$estudianteid]);
         return $res && isset($res['promedio']) ? floatval($res['promedio']) : null;
+    }
+
+    public function getClases($request){
+
+        $estudiante = $request->getRouteParam(0);
+
+        $result = $this->matricula->obteneClasesMatriculadas([$estudiante, $this->getPeriodo()]);
+
+        if($result){
+            http_response_code(200);
+            echo json_encode(["message" => "Clases Obtenidas", 'data' => $result]);
+        }else{
+            http_response_code(400);
+            echo json_encode(["error" => "Clases No Obtenidas"]);
+        }
+        
     }
     
     

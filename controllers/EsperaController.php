@@ -12,11 +12,9 @@ class EsperaController extends BaseController {
         header("Content-Type: application/json"); // Estandariza las respuestas como JSON
     }
 
-    public function getEspByEstudiante(){
+    public function getEspByEstudiante($request){
 
-        $header = getallheaders();
-
-        $estudianteId = $header['Estudianteid'];
+        $estudianteId = $request->getRouteParam(0);
 
         $result = $this->espera->obtenerListaEsperaByEstu($estudianteId);
 
@@ -29,10 +27,9 @@ class EsperaController extends BaseController {
     }
 
 
-    public function getCupoEsperaBySec(){
-        $header = getallheaders();
-
-        $seccionId = $header['Seccionid'];
+    public function getCupoEsperaBySec($request){
+        
+        $seccionId = $request->getRouteParam(0);
 
         $result = $this->espera->obtenerCuposEspera($seccionId);
 
@@ -44,12 +41,10 @@ class EsperaController extends BaseController {
     }
     
 
-    public function delEspera(){
+    public function delEspera($request){
 
-        $header = getallheaders();
-
-        $seccionId = $header['Seccionid'];
-        $estudianteId = $header['Estudianteid'];
+        $seccionId = $request->getRouteParam(0);
+        $estudianteId = $request->getRouteParam(1);
 
         $result = $this->espera->eliminarEspera($seccionId, $estudianteId);
 
@@ -61,10 +56,9 @@ class EsperaController extends BaseController {
         }
     }
 
-    public function getEstEsperaDep(){
-        $header = getallheaders();
+    public function getEstEsperaDep($request){
         
-        $departamentoid = $header['Departamentoid'];
+        $departamentoid = $request->getRouteParam(0);
 
         $result = $this->espera->obtenerEsperaByDep($departamentoid);
 

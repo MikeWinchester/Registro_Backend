@@ -12,12 +12,9 @@ class EstudianteController extends BaseController{
     }
 
 
-    public function getEspEstudiante(){
-        $header = getallheaders();
+    public function getEspEstudiante($request){
 
-
-
-        $estudiante = $header['Estudianteid'];
+        $estudiante = $request->getRouteParam(0);
         
 
         $result = $this->estudiante->obtenerEsperaEstudiante($estudiante);
@@ -31,11 +28,9 @@ class EstudianteController extends BaseController{
         }
     }
 
-
-    public function getEstudiante(){
-        $header = getallheaders();
-
-        $estudiante = $header['Estudianteid'];
+    public function getEstudiante($request){
+        
+        $estudiante = $request->getRouteParam(0);
         
         $result = $this->estudiante->obtenerPerfilEstudiante($estudiante);
 
@@ -56,10 +51,9 @@ class EstudianteController extends BaseController{
         }
     }
 
-    public function getEstudianteByCuenta(){
-        $header = getallheaders();
-
-        $estudiante = $header['Cuenta'];
+    public function getEstudianteByCuenta($request){
+        
+        $estudiante = $request->getRouteParam(0);
         
         $result = $this->estudiante->obtenerEstudianteByCuenta($estudiante);
 
@@ -105,12 +99,34 @@ class EstudianteController extends BaseController{
         return 0;
     }
 
+    public function getIndicesById($request){
+        
+        $id = $request->getRouteParam(0);
+        $result_periodo = $this->estudiante->obtenerIndicePeriodoByid($id, $this->getPeriodo());
+        $result_global = $this->estudiante->obtenerIndiceGlobalById($id);
 
-    public function getHistorial(){
-        $header = getallheaders();
+        if($result_periodo['indice_periodo'] != null){
+            http_response_code(200);
+            echo json_encode(['message' => 'Indice obtenido', 'data' => ['indice_periodo' => $result_periodo['indice_periodo'],
+                'indice_global' => $result_global['indice_global']]]);
+        }else{
+            $result_periodo = $this->estudiante->obtenerIndicePeriodoByid($id, $this->getPeriodoPasado());
 
+            if($result_periodo['indice_periodo'] != null){
+                http_response_code(200);
+                echo json_encode(['message' => 'Indice obtenido', 'data' => ['indice_periodo' => $result_periodo['indice_periodo'],
+                'indice_global' => $result_global['indice_global']]]);
+            }else{
+                http_response_code(400);
+                echo json_encode(['error' => 'No se obtuvo el indice', 'data' => $result_global['ondoce_global']]);
+            }
+        }
+    }
+
+
+    public function getHistorial($request){
        
-        $estudiante = $header['Cuenta'];
+        $estudiante = $request->getRouteParam(0);
         
         $result = $this->estudiante->obtenerHistorialByCuenta($estudiante);
 
@@ -138,11 +154,10 @@ class EstudianteController extends BaseController{
         }
     }
 
-    public function getUsuarioByEstu(){
-        $header = getallheaders();
-
-
-        $result = $this->estudiante->obtenerUsuarioByEstudiante($header['Estudianteid']);
+    public function getUsuarioByEstu($request){
+        
+        $estudiante = $request->getRouteParam(0);
+        $result = $this->estudiante->obtenerUsuarioByEstudiante($estudiante);
 
         if($result){
             http_response_code(200);
@@ -194,13 +209,10 @@ class EstudianteController extends BaseController{
     }
 
     public function getId($request){
-        $header = $request->getHeaders();
+        
+        $id = $request->getRouteParam(0);
 
-        error_log(print_r($header, true));
-
-        error_log("ID recibido: " . $header['Id']);
-
-        $result = $this->estudiante->obtenerEstudianteId([$header['Id']]);
+        $result = $this->estudiante->obtenerEstudianteId([$id]);
 
         if($result){
             http_response_code(200);
@@ -209,6 +221,22 @@ class EstudianteController extends BaseController{
             http_response_code(400);
             echo json_encode(['error' => "No se pudo completa la accion"]);
         }
+    }
+
+    public function getLastClass($request){
+
+        $estudiante = $request -> getRouteParam(0);
+
+        $result = $this->estudiante->obtenerUltimasNotas([$estudiante]);
+
+        if($result){
+            http_response_code(200);
+            echo json_encode(['message' => 'Notas Obtenidas', 'data' => $result ]);
+        }else{
+            http_response_code(400);
+            echo json_encode(['error' => 'Notas No Obtenidas']);
+        }
+
     }
 
     public function getAll() {
@@ -337,10 +365,9 @@ class EstudianteController extends BaseController{
         }
     }
 
-    public function getGaleriaEstu(){
-        $header = getallheaders();
+    public function getGaleriaEstu($request){
 
-        $usuario = $header['Id'];
+        $usuario = $request->getRouteParam(0);
 
         $result = $this->estudiante->getRouteGaleria([$usuario]);
 

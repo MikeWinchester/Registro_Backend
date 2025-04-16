@@ -11,10 +11,9 @@ class JefeController extends BaseController{
         $this->jefe = new Jefe();
     }
 
-    public function getDepByJefe(){
-        $header = getallheaders();
-
-        $jefeID = $header['Jefeid'];
+    public function getDepByJefe($request){
+        
+        $jefeID = $request->getRouteParam(0);
 
         $result = $this->jefe->getDepartamentoByJefe($jefeID);
 
@@ -28,12 +27,9 @@ class JefeController extends BaseController{
     }
 
 
-    public function getFacByJefe(){
+    public function getFacByJefe($request){
 
-        $header = getallheaders();
-
-
-        $jefeID = $header['Jefeid'];
+        $jefeID = $request->getRouteParam(0);
 
         $result = $this->jefe->obtenerFacultadByJefe($jefeID);
 
@@ -52,10 +48,10 @@ class JefeController extends BaseController{
         return $this->jefe->obtenerCentroByJefe($jefe)['id'];
     }
 
-    public function getUsuarioByJefe(){
-        $header = getallheaders();
-
-        $result = $this->jefe->getUsuarioByJefe($header['Jefeid']);
+    public function getUsuarioByJefe($request){
+        
+        $jefe = $request->getRouteParam(0);
+        $result = $this->jefe->getUsuarioByJefe($jefe);
 
         if($result){
             http_response_code(200);
@@ -66,11 +62,10 @@ class JefeController extends BaseController{
         }
     }
 
-    public function getId(){
+    public function getId($request){
         
-        $header = getallheaders();
-        
-        $result = $this->jefe->obtenerJefeId([$header['Id']]);
+        $jefe = $request->getRouteParam(0);
+        $result = $this->jefe->obtenerJefeId([$jefe]);
 
         if($result){
             http_response_code(200);
