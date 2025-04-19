@@ -262,5 +262,42 @@ class Seccion extends BaseModel {
     
         return $this->fetchAll($sql);
     }
+
+    public function obtenerRecursosSeccion($param){
+        $sql = "SELECT recurso_id, titulo, video, descripcion
+                FROM tbl_recurso 
+                WHERE seccion_id = ?";
+
+        return $this->fetchAll($sql, $param);
+
+    }
+
+    public function obtenerIntegrantesSeccionDoc($param){
+        $sql = "SELECT
+            us_dc.nombre_completo AS docente_nombre,
+            us_dc.numero_cuenta AS docente_cuenta,
+            dc.foto_perfil AS docente_foto
+        FROM tbl_seccion AS sc
+        INNER JOIN tbl_docente AS dc ON sc.docente_id = dc.docente_id
+        INNER JOIN tbl_usuario AS us_dc ON dc.usuario_id = us_dc.usuario_id
+        WHERE sc.seccion_id = ?
+        LIMIT 1";
+
+        return $this->fetchOne($sql, $param);
+    }
+
+    public function obtenerIntegrantesSeccionEstu($param){
+        $sql = "SELECT 
+                us_et.nombre_completo AS estudiante_nombre,
+                us_et.numero_cuenta AS estudiante_cuenta,
+                et.foto_perfil AS estudiante_foto
+            FROM tbl_matricula AS mt
+            INNER JOIN tbl_estudiante AS et ON mt.estudiante_id = et.estudiante_id
+            INNER JOIN tbl_usuario AS us_et ON et.usuario_id = us_et.usuario_id
+            WHERE mt.seccion_id = ?";
+
+        return $this->fetchAll($sql, $param);
+    }
+
 }
 ?>

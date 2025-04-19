@@ -51,6 +51,27 @@ class EstudianteController extends BaseController{
         }
     }
 
+    public function getEstudianteInfo($request){
+        
+        $estudiante = $request->getRouteParam(0);
+        
+        $estudiante_info = $this->estudiante->obtenerPerfilEstudiante($estudiante);
+        $data = $estudiante_info;
+
+        if ($estudiante_info) {
+            $galeria = $this->estudiante->getRouteGaleriaById([$estudiante]);
+        
+            if($galeria){
+                $data['galeria'] = $galeria;
+                http_response_code(200);
+                echo json_encode(["message" => "Secciones encontradas", "data" => $data]);
+            }
+        } else {
+            http_response_code(404);
+            echo json_encode(["error" => "Secciones no disponibles"]);
+        }
+    }
+
     public function getEstudianteByCuenta($request){
         
         $estudiante = $request->getRouteParam(0);

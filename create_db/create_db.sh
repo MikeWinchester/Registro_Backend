@@ -2,9 +2,9 @@
 
 # Configuración de variables
 DB_NAME="bd_registro"
-DB_USER="winchester"
-DB_HOST="bd-registro-unah.mysql.database.azure.com"
-DB_PORT="3306"
+DB_USER="admin_registro"
+DB_HOST="localhost"
+DB_PORT="3806"
 SQL_FILE="database.sql"
 
 echo -n "Ingrese la contraseña para el usuario '$DB_USER': "

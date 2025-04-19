@@ -450,6 +450,53 @@ class SeccionesController extends BaseController{
             echo json_encode(["error" => "Error interno del servidor", "details" => $e->getMessage()]);
         }
     }
+
+    public function getResourcesBySec($request){
+
+        $seccion = $request->getRouteParam(0);
+
+        $result = $this->seccion->obtenerRecursosSeccion([$seccion]);
+
+        if($request){
+            http_response_code(200);
+            echo json_encode(["message" => "Recursos Obtenidos", 'data' => $result]);
+        } else {
+            http_response_code(500);
+            echo json_encode(["error" => "No se pudo obtener los recursos"]);
+        }    
+        
+
+    }
+
+    public function getMembersBySec($request){
+
+        $seccion = $request->getRouteParam(0);
+
+        $docente = $this->seccion->obtenerIntegrantesSeccionDoc([$seccion]);
+
+        $data = [];
+        if($docente){
+            $data['docente'] = [
+                'nombre' => $docente['docente_nombre'],
+                'cuenta' => $docente['docente_cuenta'],
+                'foto' => $docente['docente_foto']
+            ];
+            
+            $estudiantes = $this->seccion->obtenerIntegrantesSeccionEstu([$seccion]);
+            
+            if($estudiantes){
+                $data['estudiantes'] = $estudiantes;
+
+                http_response_code(200);
+                echo json_encode(["message" => "Integrantes Obtenidos", 'data' => $data]);
+            }
+        } else {
+            http_response_code(500);
+            echo json_encode(["error" => "No se pudo obtener los Integrante"]);
+        }
+        
+
+    }
     
     
 }

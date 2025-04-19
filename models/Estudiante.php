@@ -271,6 +271,18 @@ class Estudiante extends BaseModel {
         return $this->fetchAll($sql, $param);
     }
 
+    public function getRouteGaleriaById($param){
+        $sql = "SELECT fotografia
+                FROM tbl_recurso_estudiante AS re
+                INNER JOIN tbl_estudiante AS et
+                ON et.estudiante_id = re.estudiante_id
+                INNER JOIN tbl_usuario AS us
+                ON et.usuario_id = us.usuario_id
+                WHERE et.estudiante_id = ?";
+
+        return $this->fetchAll($sql, $param);
+    }
+
     public function eliminarFoto($param){
         $sql = "DELETE FROM tbl_recurso_estudiante WHERE fotografia = ?";
 

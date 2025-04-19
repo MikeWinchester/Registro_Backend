@@ -190,7 +190,7 @@ class Matricula extends BaseModel {
     }
 
     public function obteneClasesMatriculadas($param){
-        $sql = "SELECT cl.nombre, us_do.nombre_completo AS docente, sc.dias, sc.horario, al.aula, ed.edificio
+        $sql = "SELECT sc.seccion_id, cl.nombre, us_do.nombre_completo AS docente, sc.dias, sc.horario, al.aula, ed.edificio
                 FROM tbl_matricula AS mt
                 INNER JOIN tbl_seccion AS sc
                 ON sc.seccion_id = mt.seccion_id

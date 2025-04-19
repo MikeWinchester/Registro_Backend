@@ -5,6 +5,7 @@ function registerEstudianteRoutes($router) {
     $estudianteController = new EstudianteController();
     
     $router->get( "/estudiante/get/{id}", [$estudianteController, "getEstudiante"]);
+    $router->get( "/estudiante/get/info/{id}", [$estudianteController, "getEstudianteInfo"]);
     $router->get( "/estudiante/get/cuenta/{id}", [$estudianteController, "getEstudianteByCuenta"]);
     $router->get( "/estudiante/get/hist/{id}", [$estudianteController, "getHistorial"]);
     $router->get( "/estudiante/usuario/{id}", [$estudianteController, "getUsuarioByEstu"]);
