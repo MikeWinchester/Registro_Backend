@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . "/../models/Clase.php";
-require_once __DIR__ . "/../controllers/CarreraController.php";
+require_once __DIR__ . "/../controllers/CareerController.php";
 require_once __DIR__ . "/BaseController.php";
 
 class ClaseController extends BaseController{
@@ -10,7 +10,7 @@ class ClaseController extends BaseController{
     public function __construct() {
         parent::__construct();
         $this->clase = new Clase();
-        $this->carrera = new CarreraController();
+        $this->carrera = new CareerController();
     }
 
 

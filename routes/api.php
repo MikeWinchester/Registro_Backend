@@ -23,12 +23,13 @@ require_once __DIR__. '/EdificioRoutes.php';
 require_once __DIR__. '/EvaluacionRoutes.php';
 require_once __DIR__. '/SoliciturAmistadRoutes.php';
 require_once __DIR__. '/InfoMatriculaRoutes.php';
-require_once __DIR__. '/AmisionesRoutes.php';
+require_once __DIR__. '/AdmissionRoutes.php';
 require_once __DIR__. '/CarreraRoutes.php';
-require_once __DIR__. '/CentroRoutes.php';
+require_once __DIR__. '/CenterRoutes.php';
 require_once __DIR__. '/InfoNotasRoutes.php';
 require_once __DIR__. '/InfoAddCanRoutes.php';
-//
+require_once __DIR__ . '/ReviewerRoutes.php';
+
 function registerAllRoutes($router) {
     registerAuthRoutes($router);
     registerUserRoutes($router);
@@ -54,9 +55,10 @@ function registerAllRoutes($router) {
     registerEvaluacionRoutes($router);
     registerSolicitudAmistadRoutes($router);
     registerInfoMatriculaRoutes($router);
-    registerAdmisionesRoutes($router);
+    registerAdmissionRoutes($router);
     registerCarreraRoutes($router);
-    registerCentroRoutes($router);
+    registerCenterRoutes($router);
     registerInfoNotasRoutes($router);
     registerInfoAddCanRoutes($router);
+    registerReviewerRoutes($router);
 }

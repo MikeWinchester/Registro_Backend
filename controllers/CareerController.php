@@ -1,14 +1,14 @@
 <?php
-require_once __DIR__ . "/../models/Carrera.php";
+require_once __DIR__ . "/../models/Career.php";
 require_once __DIR__ . "/BaseController.php";
 
-class CarreraController extends BaseController{
+class CareerController extends BaseController{
 
     private $career;
 
     public function __construct() {
         parent::__construct();
-        $this->career = new Carrera();
+        $this->career = new Career();
         header("Content-Type: application/json"); 
     }
 

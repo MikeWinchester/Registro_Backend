@@ -14,5 +14,5 @@ function registerMatriculaRoutes($router) {
     $router->post( "/matricula/set", [$matriculaController, "setMatricula"],['Estudiante', 'Jefe']);
     $router->delete( "/matricula/delete/est/{id}/sec/{sec}", [$matriculaController, "delMat"],['Estudiante', 'Jefe']);
 }
-?>
+
 
