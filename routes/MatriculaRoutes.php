@@ -15,4 +15,3 @@ function registerMatriculaRoutes($router) {
     $router->delete( "/matricula/delete/est/{id}/sec/{sec}", [$matriculaController, "delMat"],['Estudiante', 'Jefe']);
 }
 
-
