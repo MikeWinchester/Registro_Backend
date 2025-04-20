@@ -112,8 +112,9 @@ CREATE TABLE tbl_solicitud (
     estado ENUM('Pendiente', 'Aprobada', 'Rechazada') NOT NULL DEFAULT 'Pendiente',
     codigo VARCHAR(20) UNIQUE NOT NULL,
     observaciones TEXT DEFAULT NULL,
+    admision_id SMALLINT UNSIGNED NOT NULL,
     id CHAR(36) NOT NULL DEFAULT (UUID()),    
-    FOREIGN KEY (solicitud_id) REFERENCES tbl_admision(admision_id) ON DELETE CASCADE
+    FOREIGN KEY (admision_id) REFERENCES tbl_admision(admision_id) ON DELETE CASCADE
 );
 
 CREATE TABLE tbl_departamento (
@@ -331,9 +332,6 @@ CREATE TABLE tbl_lista_cancelacion(
     lista_cancelacion_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     seccion_id SMALLINT UNSIGNED NOT NULL,
     estudiante_id SMALLINT UNSIGNED NOT NULL,
-    motivo VARCHAR(500),
-    documento VARCHAR(500),
-    estado_solicitud ENUM ('Pendiente', 'Aceptada', 'Rechazada'),  
     id CHAR(36) NOT NULL DEFAULT (UUID()),    
     FOREIGN KEY (estudiante_id) REFERENCES tbl_estudiante(estudiante_id),
     FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
@@ -451,14 +449,85 @@ CREATE TABLE tbl_libros_guardados (
     FOREIGN KEY (libro_id) REFERENCES tbl_libro(libro_id) ON DELETE CASCADE
 );
 
+-- Trigger para estudiantes
+DELIMITER //
+CREATE TRIGGER after_estudiante_insert
+AFTER INSERT ON tbl_estudiante
+FOR EACH ROW
+BEGIN
+    INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id)
+    VALUES (NEW.usuario_id, 1); -- 1 = Estudiante
+END//
+DELIMITER ;
+
+-- Trigger para docentes
+DELIMITER //
+CREATE TRIGGER after_docente_insert
+AFTER INSERT ON tbl_docente
+FOR EACH ROW
+BEGIN
+    INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id)
+    VALUES (NEW.usuario_id, 2); -- 2 = Docente
+END//
+DELIMITER ;
+
+-- Trigger para jefes (nota: jefe es un docente con rol adicional)
+DELIMITER //
+CREATE TRIGGER after_jefe_insert
+AFTER INSERT ON tbl_jefe
+FOR EACH ROW
+BEGIN
+    -- Primero obtenemos el usuario_id del docente
+    DECLARE v_usuario_id SMALLINT UNSIGNED;
+    
+    SELECT usuario_id INTO v_usuario_id 
+    FROM tbl_docente 
+    WHERE docente_id = NEW.docente_id;
+    
+    -- Insertamos el rol de jefe (3)
+    INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id)
+    VALUES (v_usuario_id, 3); -- 3 = Jefe
+END//
+DELIMITER ;
+
+-- Trigger para coordinadores (nota: coordinador es un docente con rol adicional)
+DELIMITER //
+CREATE TRIGGER after_coordinador_insert
+AFTER INSERT ON tbl_coordinador
+FOR EACH ROW
+BEGIN
+    -- Primero obtenemos el usuario_id del docente
+    DECLARE v_usuario_id SMALLINT UNSIGNED;
+    
+    SELECT d.usuario_id INTO v_usuario_id 
+    FROM tbl_docente d
+    WHERE d.docente_id = NEW.docente_id;
+    
+    -- Insertamos el rol de coordinador (4)
+    INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id)
+    VALUES (v_usuario_id, 4); -- 4 = Coordinador
+END//
+DELIMITER ;
+
+-- Trigger para revisores
+DELIMITER //
+CREATE TRIGGER after_revisor_insert
+AFTER INSERT ON tbl_revisor
+FOR EACH ROW
+BEGIN
+    INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id)
+    VALUES (NEW.usuario_id, 5); -- 5 = Revisor
+END//
+DELIMITER ;
+
 DELIMITER $$
 
 CREATE TRIGGER trg_create_solicitud
 AFTER INSERT ON tbl_admision
 FOR EACH ROW
 BEGIN
-    INSERT INTO tbl_solicitud (solicitud_id, estado)
-    VALUES (NEW.admision_id, 'Pendiente');
+    INSERT INTO tbl_solicitud (solicitud_id, estado, admision_id)
+    VALUES (NEW.admision_id, 'Pendiente', NEW.admision_id);
 END $$
 
 DELIMITER ;
@@ -614,11 +683,37 @@ INSERT INTO tbl_usuario (nombre_completo, identidad, correo, numero_cuenta, cont
 ("Andrea Camila Fuentes Navarro", "0801200612346", "andrea.fuentes@gmail.com", "20211002266", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702065"),
 ("Gabriel Emmanuel Vargas Torres", "0801200612347", "gabriel.vargas@gmail.com", "20211002267", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702066"),
 ("Martina Alejandra Castillo Ramírez", "0801200612348", "martina.castillo@gmail.com", "20211002268", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702067"),
-("Benjamín Nicolás Sánchez Reyes", "0801200612349", "benjamin.sanchez@gmail.com", "20211002269", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702068");
-
-
-INSERT INTO tbl_revisor (usuario_id) VALUES (1);
-INSERT INTO tbl_revisor (usuario_id) VALUES (2);
+("Benjamín Nicolás Sánchez Reyes", "0801200612349", "benjamin.sanchez@gmail.com", "20211002269", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702068"),
+("Ana Lucía Gutiérrez Mendoza", "0801200712340", "ana.gutierrez@gmail.com", "20211002270", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702069"),
+("José Manuel Castro Ríos", "0801200712341", "jose.castro@gmail.com", "20211002271", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702070"),
+("Carolina Estefanía Vega López", "0801200712342", "carolina.vega@gmail.com", "20211002272", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702071"),
+("Ricardo Alfonso Paredes Soto", "0801200712343", "ricardo.paredes@gmail.com", "20211002273", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702072"),
+("Daniela Patricia Cordero Flores", "0801200712344", "daniela.cordero@gmail.com", "20211002274", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702073"),
+("Oscar Eduardo Marín Chacón", "0801200712345", "oscar.marin@gmail.com", "20211002275", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702074"),
+("Laura Marcela Solís Durán", "0801200712346", "laura.solis@gmail.com", "20211002276", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702075"),
+("Javier Alejandro Mora Campos", "0801200712347", "javier.mora@gmail.com", "20211002277", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702076"),
+("Karla Vanessa Rivas Mejía", "0801200712348", "karla.rivas@gmail.com", "20211002278", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702077"),
+("Fernando José Zelaya Bonilla", "0801200712349", "fernando.zelaya@gmail.com", "20211002279", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702078"),
+("Gabriela María Acosta Jiménez", "0801200812340", "gabriela.acosta@gmail.com", "20211002280", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702079"),
+("Roberto Carlos Salazar Castro", "0801200812341", "roberto.salazar@gmail.com", "20211002281", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702080"),
+("Sara Isabel Quesada Rojas", "0801200812342", "sara.quesada@gmail.com", "20211002282", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702081"),
+("Juan Pablo Murillo Villalobos", "0801200812343", "juan.murillo@gmail.com", "20211002283", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702082"),
+("María José Granados Alfaro", "0801200812344", "maria.granados@gmail.com", "20211002284", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702083"),
+("Eduardo Antonio Chaves Céspedes", "0801200812345", "eduardo.chaves@gmail.com", "20211002285", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702084"),
+("Silvia Patricia Barrantes Mora", "0801200812346", "silvia.barrantes@gmail.com", "20211002286", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702085"),
+("Pablo Andrés Soto Rivas", "0801200812347", "pablo.soto@gmail.com", "20211002287", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702086"),
+("Adriana Marcela Jiménez Cordero", "0801200812348", "adriana.jimenez@gmail.com", "20211002288", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702087"),
+("Mario Alberto Vargas Salas", "0801200812349", "mario.vargas@gmail.com", "20211002289", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702088"),
+("Natalia Alejandra Brenes Soto", "0801200912340", "natalia.brenes@gmail.com", "20211002290", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702089"),
+("Alonso José Méndez Rojas", "0801200912341", "alonso.mendez@gmail.com", "20211002291", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702090"),
+("Verónica María Umaña Castro", "0801200912342", "veronica.umana@gmail.com", "20211002292", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702091"),
+("Héctor David Ríos Chacón", "0801200912343", "hector.rios@gmail.com", "20211002293", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702092"),
+("Glenda Patricia Mora Vega", "0801200912344", "glenda.mora@gmail.com", "20211002294", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702093"),
+("Raúl Esteban Guzmán Pérez", "0801200912345", "raul.guzman@gmail.com", "20211002295", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702094"),
+("Diana Carolina Herrera Navarro", "0801200912346", "diana.herrera@gmail.com", "20211002296", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702095"),
+("Walter Antonio Castro Méndez", "0801200912347", "walter.castro@gmail.com", "20211002297", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702096"),
+("María Fernanda Solano Rivas", "0801200912348", "maria.solano@gmail.com", "20211002298", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702097"),
+("Jorge Luis Quesada Alfaro", "0801200912349", "jorge.quesada@gmail.com", "20211002299", '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', "87702098");
 
 INSERT INTO tbl_rol (nombre_rol) VALUES ("Estudiante");
 INSERT INTO tbl_rol (nombre_rol) VALUES ("Docente");
@@ -627,43 +722,20 @@ INSERT INTO tbl_rol (nombre_rol) VALUES ("Coordinador");
 INSERT INTO tbl_rol (nombre_rol) VALUES ("Revisor");
 INSERT INTO tbl_rol (nombre_rol) VALUES ("Administrador");
 
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (1, 1);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (1, 5);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (2, 2);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (2, 5);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (3, 3);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (4, 4);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (5, 1);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (6, 1);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (8, 1);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (9, 1);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (10, 1);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (11, 1);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (12, 1);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (13, 1);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (14, 1);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (15, 1);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (16, 2);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (17, 2);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (18, 2);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (19, 2);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (20, 2);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (21, 2);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (22, 2);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (23, 2);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (24, 2);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (25, 2);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (26, 2);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (27, 2);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (28, 2);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (29, 2);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (30, 2);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (16, 3);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (19, 3);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (21, 3);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (23, 3);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (25, 3);
-INSERT INTO tbl_usuario_x_rol (usuario_id, rol_id) VALUES (26, 3);
+INSERT INTO tbl_revisor (usuario_id) VALUES (1);
+INSERT INTO tbl_revisor (usuario_id) VALUES (2);
+-- Inserts adicionales para revisores
+INSERT INTO tbl_revisor (usuario_id) VALUES 
+(3),   -- Estudiante
+(5),   -- Estudiante
+(16),  -- Docente
+(17),  -- Docente
+(18),  -- Docente
+(31),  -- Estudiante nuevo
+(32),  -- Estudiante nuevo
+(46),  -- Docente nuevo
+(47),  -- Docente nuevo
+(48);  -- Docente nuevo
 
 INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Ciencias Jurídicas");
 INSERT INTO tbl_facultad (nombre_facultad) VALUES ("Ciencias Sociales");
@@ -973,7 +1045,22 @@ INSERT INTO tbl_estudiante (usuario_id, carrera_id, centro_regional_id, correo) 
 (12, 16, 2, 'estudiante12@example.com'),
 (13, 17, 3, 'estudiante13@example.com'),
 (14, 18, 1, 'estudiante14@example.com'),
-(15, 19, 2, 'estudiante15@example.com');
+(15, 19, 2, 'estudiante15@example.com'),
+(31, 15, 1, 'estudiante16@example.com'),
+(32, 16, 2, 'estudiante17@example.com'),
+(33, 17, 3, 'estudiante18@example.com'),
+(34, 18, 1, 'estudiante19@example.com'),
+(35, 19, 2, 'estudiante20@example.com'),
+(36, 15, 3, 'estudiante21@example.com'),
+(37, 16, 1, 'estudiante22@example.com'),
+(38, 17, 2, 'estudiante23@example.com'),
+(39, 18, 3, 'estudiante24@example.com'),
+(40, 19, 1, 'estudiante25@example.com'),
+(41, 15, 2, 'estudiante26@example.com'),
+(42, 16, 3, 'estudiante27@example.com'),
+(43, 17, 1, 'estudiante28@example.com'),
+(44, 18, 2, 'estudiante29@example.com'),
+(45, 19, 3, 'estudiante30@example.com');
 
 -- Insertando 15 docentes
 INSERT INTO tbl_docente (usuario_id, carrera_id, departamento_id, centro_regional_id) VALUES
@@ -991,7 +1078,22 @@ INSERT INTO tbl_docente (usuario_id, carrera_id, departamento_id, centro_regiona
 (27, 19, 4, 1),
 (28, 21, 4, 2),
 (29, 21, 4, 2),
-(30, 15, 4, 1);
+(30, 15, 4, 1),
+(46, 21, 1, 1),
+(47, 21, 1, 2),
+(48, 21, 1, 3),
+(49, 19, 4, 1),
+(50, 19, 4, 2),
+(51, 15, 4, 3),
+(52, 15, 4, 1),
+(53, 16, 4, 2),
+(54, 16, 4, 3),
+(55, 17, 4, 1),
+(56, 18, 4, 2),
+(57, 19, 4, 3),
+(58, 21, 4, 1),
+(59, 21, 4, 2),
+(60, 15, 4, 3);
 
 insert into tbl_jefe(docente_id) values (1);
 insert into tbl_jefe(docente_id) values (4);
@@ -999,6 +1101,21 @@ insert into tbl_jefe(docente_id) values (6);
 insert into tbl_jefe(docente_id) values (8);
 insert into tbl_jefe(docente_id) values (10);
 insert into tbl_jefe(docente_id) values (11);
+
+-- Inserts para coordinadores (seleccionando docentes que no son jefes)
+INSERT INTO tbl_coordinador (docente_id) VALUES
+(2),  -- docente_id 2 (usuario_id 17)
+(3),  -- docente_id 3 (usuario_id 18)
+(5),  -- docente_id 5 (usuario_id 20)
+(7),  -- docente_id 7 (usuario_id 22)
+(9),  -- docente_id 9 (usuario_id 24)
+(12), -- docente_id 12 (usuario_id 27)
+(13), -- docente_id 13 (usuario_id 28)
+(14), -- docente_id 14 (usuario_id 29)
+(15), -- docente_id 15 (usuario_id 30)
+(16), -- docente_id 16 (usuario_id 46)
+(17), -- docente_id 17 (usuario_id 47)
+(18); -- docente_id 18 (usuario_id 48)
 
 insert into tbl_aula(aula, edificio_id) values
 ("Lab1", 2),
