@@ -343,12 +343,6 @@ class EstudianteController extends BaseController{
         $estudianteid = $input['estudiante_id'] ?? 0;
         $base64 = $input['fotografia'] ?? null;
     
-        if (!$base64) {
-            http_response_code(400);
-            echo json_encode(['error' => 'La imagen de perfil es obligatoria']);
-            return;
-        }
-    
         $data = [
             'estudiante_id' => $estudianteid,
             'fotografia' => null

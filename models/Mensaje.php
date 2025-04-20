@@ -20,8 +20,7 @@ class Mensaje extends BaseModel {
             FROM tbl_mensajes AS ms
             WHERE (ms.remitente_id = ? AND ms.destinatario_id = ?)
             OR (ms.destinatario_id = ? AND ms.remitente_id = ?)
-            ORDER BY fecha_envio ASC;
-            ";
+            ORDER BY fecha_envio ASC";
 
         return $this->fetchAll($sql, $param);
     }

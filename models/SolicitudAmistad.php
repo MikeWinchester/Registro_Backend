@@ -172,6 +172,8 @@ class SolicitudAmistad extends BaseModel {
         
         return $this->fetchOne($sql, $param);
     }
+
+
 }
 
 

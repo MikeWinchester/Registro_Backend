@@ -37,10 +37,10 @@ class MensajesController extends BaseController {
 
         if($result){
             http_response_code(200);
-            echo json_encode(["message" => "mensajes obtenidos", "data" => $result]);
+            echo json_encode(["message" => "Mensajes obtenidos", "data" => $result]);
         }else{
             http_response_code(400);
-            echo json_encode(["error" => "No se obtuvieron los mensajes"]);
+            echo json_encode(["error" => "No se pudo obtener los mensajes"]);
         }
     }
 
