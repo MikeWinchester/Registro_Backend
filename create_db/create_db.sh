@@ -2,7 +2,7 @@
 
 # Configuración de variables
 DB_NAME="bd_registro"
-DB_USER="admin_registro"
+DB_USER="root"
 DB_HOST="localhost"
 DB_PORT="3806"
 SQL_FILE="database.sql"

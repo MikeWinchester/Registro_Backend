@@ -265,6 +265,7 @@ class DocenteController extends BaseController{
     }
 
     public function getId($request){
+        
         $id = $request->getRouteParam(0);
         $result = $this->docente->obtenerDocenteId([$id]);
 

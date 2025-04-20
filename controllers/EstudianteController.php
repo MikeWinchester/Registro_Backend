@@ -65,6 +65,9 @@ class EstudianteController extends BaseController{
                 $data['galeria'] = $galeria;
                 http_response_code(200);
                 echo json_encode(["message" => "Secciones encontradas", "data" => $data]);
+            }else{
+                http_response_code(200);
+                echo json_encode(["message" => "Sin galeria encontrada", "data" => $data]);
             }
         } else {
             http_response_code(404);

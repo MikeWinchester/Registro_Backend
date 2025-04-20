@@ -331,6 +331,9 @@ CREATE TABLE tbl_lista_cancelacion(
     lista_cancelacion_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     seccion_id SMALLINT UNSIGNED NOT NULL,
     estudiante_id SMALLINT UNSIGNED NOT NULL,
+    motivo VARCHAR(500),
+    documento VARCHAR(500),
+    estado_solicitud ENUM ('Pendiente', 'Aceptada', 'Rechazada'),  
     id CHAR(36) NOT NULL DEFAULT (UUID()),    
     FOREIGN KEY (estudiante_id) REFERENCES tbl_estudiante(estudiante_id),
     FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
