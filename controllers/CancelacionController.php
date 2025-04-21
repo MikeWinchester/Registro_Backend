@@ -41,13 +41,31 @@ class CancelacionController extends BaseController{
         }
     }
 
+    public function responderSolicitud(){
+        $data = json_decode(file_get_contents('php://input'));
+
+        $info = [
+            $data->estado,
+            $data->seccion_id,
+            $data->estudiante_id
+        ];
+    
+        $result = $this->cancelacion->createSoli($info);
+    
+        if ($result) {
+            echo json_encode(["message" => "Solicitud contestada correctamente"]);
+        } else {
+            http_response_code(500);
+            echo json_encode(["error" => "Error al contestar la solicitud", 'data'=>$info]);
+        }
+    }
+    
+
     public function getSolicitudCancel() {
 
     
-        // Ejecutamos la consulta
         $result = $this->cancelacion->obtenerSolicitudCanceladas();
     
-        // Verificamos si la consulta devuelve resultados
         if ($result) {
             http_response_code(200);
             echo json_encode(["message" => "Encontradas!!!!!", "data" => $result]);
