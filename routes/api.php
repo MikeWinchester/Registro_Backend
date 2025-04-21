@@ -24,6 +24,7 @@ require_once __DIR__. '/EvaluacionRoutes.php';
 require_once __DIR__. '/SoliciturAmistadRoutes.php';
 require_once __DIR__. '/InfoMatriculaRoutes.php';
 require_once __DIR__. '/AdmissionRoutes.php';
+require_once __DIR__. '/ApplicationRoutes.php';
 require_once __DIR__. '/CarreraRoutes.php';
 require_once __DIR__. '/CenterRoutes.php';
 require_once __DIR__. '/InfoNotasRoutes.php';
@@ -61,4 +62,5 @@ function registerAllRoutes($router) {
     registerInfoNotasRoutes($router);
     registerInfoAddCanRoutes($router);
     registerReviewerRoutes($router);
+    registerApplicationRoutes($router);
 }
