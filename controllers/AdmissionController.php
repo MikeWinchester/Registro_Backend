@@ -27,7 +27,7 @@ class AdmissionController extends BaseController {
     }
 
     public function create($request) {
-        try {
+        //try {
             // 1. Validación básica de campos requeridos
             $requiredFields = [
                 'primerNombre', 'primerApellido', 'email', 'tipoDocumento', 'numeroDocumento', 'codigoPais', 'telefono',
@@ -56,7 +56,6 @@ class AdmissionController extends BaseController {
             $documentoId = $this->createDocumentIfNotExists($data);
             // 7. Crear admisión con solicitud (transacción)
             $admissionResult = $this->createAdmission($data, $fileName, $documentoId, $references);
-            error_log("Resultado de la admisión: " . print_r($admissionResult, true));
             
             $codigo = $this->getGeneratedCode($admissionResult['admision_id']['admision_id']);
 
@@ -66,9 +65,9 @@ class AdmissionController extends BaseController {
             // 10. Responder con éxito
             $this->sendSuccessResponse($data, $admissionResult['admision_id']['admision_id'], $codigo);
 
-        } catch (Exception $e) {
-            $this->handleException($e);
-        }
+        //} catch (Exception $e) {
+          //  $this->handleException($e);
+        //}
     }
 
     /* Métodos de validación */
