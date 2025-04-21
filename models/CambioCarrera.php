@@ -21,7 +21,7 @@ class CCarrera extends BaseModel {
         JOIN tbl_carrera c_solicitada ON tbl_solicitud_cambiocarrera.carrera_id = c_solicitada.carrera_id
         WHERE tbl_solicitud_cambiocarrera.estado = 'Pendiente'";
         
-        return $this->executeWrite($sql);
+        return $this->fetchAll($sql);
     }
 
     public function obtenerIdEstudiante($param){

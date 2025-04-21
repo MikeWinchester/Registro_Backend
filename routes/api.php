@@ -30,6 +30,8 @@ require_once __DIR__. '/CenterRoutes.php';
 require_once __DIR__. '/InfoNotasRoutes.php';
 require_once __DIR__. '/InfoAddCanRoutes.php';
 require_once __DIR__ . '/ReviewerRoutes.php';
+require_once __DIR__ . '/CambioCarreraRoutes.php';
+require_once __DIR__ . '/CambioCentroRoutes.php';
 
 function registerAllRoutes($router) {
     registerAuthRoutes($router);
@@ -63,4 +65,6 @@ function registerAllRoutes($router) {
     registerInfoAddCanRoutes($router);
     registerReviewerRoutes($router);
     registerApplicationRoutes($router);
+    registerCambioCarreraRoutes($router);
+    registerCambioCentroRoutes($router);
 }

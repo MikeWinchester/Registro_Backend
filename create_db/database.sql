@@ -349,6 +349,33 @@ CREATE TABLE tbl_solicitud_cancelacion(
     FOREIGN KEY (seccion_id) REFERENCES tbl_seccion(seccion_id)
 );
 
+CREATE TABLE tbl_solicitud_cambiocarrera (
+    solicitud_cambiocarrera_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    estudiante_id SMALLINT UNSIGNED NOT NULL,
+    carrera_id TINYINT UNSIGNED NOT NULL, -- Carrera solicitada
+    motivo VARCHAR(500),
+    documento VARCHAR(200),
+    fechaInscripcion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estado ENUM('Pendiente', 'Aprobado', 'Rechazado') DEFAULT 'Pendiente',
+    FOREIGN KEY (estudiante_id) REFERENCES tbl_estudiante(estudiante_id),
+    FOREIGN KEY (carrera_id) REFERENCES tbl_carrera(carrera_id)
+);
+
+
+CREATE TABLE tbl_solicitud_cambiocentro (
+    solicitud_cambiocentro_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    estudiante_id SMALLINT UNSIGNED NOT NULL,
+    centro_regional_id TINYINT UNSIGNED NOT NULL, 
+    motivo VARCHAR(500),
+    documento VARCHAR(200),
+    fechaInscripcion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estado ENUM('Pendiente', 'Aprobado', 'Rechazado') DEFAULT 'Pendiente',
+    FOREIGN KEY (estudiante_id) REFERENCES tbl_estudiante(estudiante_id),
+    FOREIGN KEY (centro_regional_id) REFERENCES tbl_centro_regional(centro_regional_id)
+);
+
+
+
 CREATE TABLE tbl_clase_requisito (
     clase_id SMALLINT UNSIGNED NOT NULL,
     requisito_clase_id SMALLINT UNSIGNED NOT NULL,
